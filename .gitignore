@@ -1,0 +1,27 @@
+
+/node_modules
+
+# testing
+/coverage
+
+# production
+/build
+
+# misc
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# npm files
+/package-lock.json
+/npm-debug.log*
+/npm-error.log*
+# pnpm files
+/pnpm-lock.yaml
+/.pnpm-debug.log*
+/.pnpm-error.log*
+# yarn files
+/yarn.lock
+/yarn-debug.log*
+/yarn-error.log*
