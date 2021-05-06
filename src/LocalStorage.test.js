@@ -128,10 +128,20 @@ describe('groups', () => {
         localStorage.updateGroup('groupC', 'groupC-EDITED');
         expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[123],"groupB":[]}' });
     });
+    test('it should return the groups when updated', () => {
+        storage.store = { 'groups': '{"groupA":[123],"groupB":[]}' };
+        const groups = localStorage.updateGroup('groupB', 'groupB-EDITED');
+        expect(groups).toStrictEqual({ "groupA": [123], "groupB-EDITED": [] });
+    });
     test('it should delete', () => {
         storage.store = { 'groups': '{"groupA":[123],"groupB":[]}' };
         localStorage.deleteGroup('groupA');
         expect(storage.store).toStrictEqual({ 'groups': '{"groupB":[]}' });
+    });
+    test('it should return groups after delete', () => {
+        storage.store = { 'groups': '{"groupA":[123],"groupB":[]}' };
+        const groups = localStorage.deleteGroup('groupA');
+        expect(groups).toStrictEqual({"groupB":[]});
     });
     test('it should delete if nonexistant', () => {
         storage.store = { 'groups': '{"groupA":[123],"groupB":[]}' };
@@ -177,6 +187,11 @@ describe('group items', () => {
         localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED');
         expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item1-EDITED","lat":"7","lon":"-3"}]}' });
     });
+    test('it should return groups when updating name', () => {
+        storage.store = { 'groups': '{"groupA":[{"name":"item1","lat":"7","lon":"-3"}]}' };
+        const groups = localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED');
+        expect(groups).toStrictEqual({"groupA":[{"name":"item1-EDITED","lat":"7","lon":"-3"}]});
+    });
     test('it should not update name if none exists', () => {
         storage.store = { 'groups': '{"groupA":[]}' };
         localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED');
@@ -192,6 +207,11 @@ describe('group items', () => {
         localStorage.moveGroupItemUp('groupA', 'item1');
         expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item1"},{"name":"item2"}]}' });
     });
+    test('it should return groups when moving an item up', () => {
+        storage.store = { 'groups': '{"groupA":[{"name":"item1"},{"name":"item2"}]}' };
+        const groups = localStorage.moveGroupItemUp('groupA', 'item2');
+        expect(groups).toStrictEqual({"groupA":[{"name":"item2"},{"name":"item1"}]});
+    });
     test('it should not move up if nonexistant', () => {
         storage.store = { 'groups': '{"groupA":[{"name":"item1"},{"name":"item2"}]}' };
         localStorage.moveGroupItemUp('groupA', 'item3');
@@ -202,6 +222,11 @@ describe('group items', () => {
         localStorage.moveGroupItemDown('groupA', 'item1');
         expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item2"},{"name":"item1"}]}' });
     });
+    test('it should return groups when moving an item down down', () => {
+        storage.store = { 'groups': '{"groupA":[{"name":"item1"},{"name":"item2"}]}' };
+        const groups = localStorage.moveGroupItemDown('groupA', 'item1');
+        expect(groups).toStrictEqual({"groupA":[{"name":"item2"},{"name":"item1"}]});
+    });
     test('it should not move down if at bottom', () => {
         storage.store = { 'groups': '{"groupA":[{"name":"item1"},{"name":"item2"}]}' };
         localStorage.moveGroupItemDown('groupA', 'item2');
@@ -211,6 +236,11 @@ describe('group items', () => {
         storage.store = { 'groups': '{"groupA":[{"name":"item1"},{"name":"item2"},{"name":"item3"}]}' };
         localStorage.deleteGroupItem('groupA', 'item2');
         expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item1"},{"name":"item3"}]}' });
+    });
+    test('it should return groups when deleting an item', () => {
+        storage.store = { 'groups': '{"groupA":[{"name":"item1"},{"name":"item2"},{"name":"item3"}]}' };
+        const groups = localStorage.deleteGroupItem('groupA', 'item2');
+        expect(groups).toStrictEqual({"groupA":[{"name":"item1"},{"name":"item3"}]});
     });
     test('it should delete when first', () => {
         storage.store = { 'groups': '{"groupA":[{"name":"item1"},{"name":"item2"},{"name":"item3"}]}' };

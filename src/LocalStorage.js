@@ -79,6 +79,7 @@ class LocalStorage {
       groups[newName] = oldGroup;
       this._setGroups(groups);
     }
+    return groups;
   }
   _setGroups(groups) {
     var groupsJSON = JSON.stringify(groups);
@@ -88,6 +89,7 @@ class LocalStorage {
     var groups = this.getGroups();
     delete groups[name];
     this._setGroups(groups);
+    return groups;
   }
 
   createGroupItem(groupName, name, latitude, longitude) {
@@ -114,12 +116,13 @@ class LocalStorage {
       item.name = newName;
       this._setGroups(groups)
     }
+    return groups;
   }
   moveGroupItemUp(groupName, name) {
-    this._moveGroupItem(groupName, name, -1);
+    return this._moveGroupItem(groupName, name, -1);
   }
   moveGroupItemDown(groupName, name) {
-    this._moveGroupItem(groupName, name, +1);
+    return this._moveGroupItem(groupName, name, +1);
   }
   _moveGroupItem(groupName, name, delta) {
     var groups = this.getGroups();
@@ -131,6 +134,7 @@ class LocalStorage {
       items[itemIndex+delta] = tmpItem;
       this._setGroups(groups)
     }
+    return groups
   }
   deleteGroupItem(groupName, name) {
     var groups = this.getGroups();
@@ -140,6 +144,7 @@ class LocalStorage {
       items.splice(itemIndex, 1);
       this._setGroups(groups);
     }
+    return groups;
   }
 }
 
