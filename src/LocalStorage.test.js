@@ -105,6 +105,11 @@ describe('groups', () => {
         localStorage.updateGroup('groupA', 'groupA-EDITED');
         expect(storage.store).toStrictEqual({ 'groups': '{"groupB":[],"groupA-EDITED":[123]}' });
     });
+    test('it should update name', () => {
+        storage.store = { 'groups': '{"groupA":[123],"groupB":[]}' };
+        localStorage.updateGroup('groupC', 'groupC-EDITED');
+        expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[123],"groupB":[]}' });
+    });
     test('it should delete', () => {
         storage.store = { 'groups': '{"groupA":[123],"groupB":[]}' };
         localStorage.deleteGroup('groupA');

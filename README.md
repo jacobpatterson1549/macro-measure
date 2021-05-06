@@ -8,3 +8,15 @@ Use the npm package manager of choice (`npm`/`yarn`/`pnpm`) with the argument `i
 pnpm install
 pnpm start
 ```
+
+### Test coverage 
+
+Run the commands below to generate and view coverage for all files
+
+```bash
+    # Generate coverage report
+    CI=true npm test -- --coverage
+
+    ## Open coverage report
+    xdg-open coverage/lcov-report/index.html
+```

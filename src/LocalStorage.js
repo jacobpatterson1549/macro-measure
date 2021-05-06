@@ -55,7 +55,7 @@ class LocalStorage {
   }
 
   createGroup(name) {
-    var groups = this.getGroups() || {};
+    var groups = this.getGroups();
     groups[name] = [];
     this._setGroups(groups);
   }
@@ -65,10 +65,12 @@ class LocalStorage {
   }
   updateGroup(oldName, newName) {
     var groups = this.getGroups();
-    var oldGroup = groups[oldName] || null;
-    delete groups[oldName];
-    groups[newName] = oldGroup;
-    this._setGroups(groups);
+    var oldGroup = groups[oldName];
+    if (oldGroup) {
+      delete groups[oldName];
+      groups[newName] = oldGroup;
+      this._setGroups(groups);
+    }
   }
   _setGroups(groups) {
     var groupsJSON = JSON.stringify(groups);

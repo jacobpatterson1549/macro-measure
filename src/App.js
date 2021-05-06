@@ -1,5 +1,6 @@
 import './App.css';
 import React from 'react';
+import LocalStorage from './LocalStorage';
 
 class App extends React.Component {
 
@@ -27,6 +28,18 @@ class App extends React.Component {
 export default App;
 
 class Header extends React.Component {
+
+  constructor(props) {
+    super(props);
+    let storage = window.localStorage;
+    let localStorage = new LocalStorage(storage);
+    this.state = {
+      currentGroup: localStorage.getCurrentGroup(),
+      currentGroupItem: localStorage.getCurrentGroupItem(),
+      distanceUnit: localStorage.getDistanceUnit(),
+      localStorage: localStorage
+    };
+  }
 
   headerItem(name, title, view) {
     return <span onClick={() => this.props.onClick(view)} title={title}>{name}</span>
