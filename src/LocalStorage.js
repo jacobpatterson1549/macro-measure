@@ -94,8 +94,8 @@ class LocalStorage {
     var groups = this.getGroups();
     var groupItem = {
       "name": name,
-      "x": String(latitude),
-      "y": String(longitude),
+      "lat": String(latitude),
+      "lon": String(longitude),
     }
     if (groups[groupName]) {
       groups[groupName].push(groupItem);

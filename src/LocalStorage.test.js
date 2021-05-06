@@ -144,12 +144,12 @@ describe('group items', () => {
     test('it should create one', () => {
         storage.store = { 'groups': '{"groupA":[]}' };
         localStorage.createGroupItem('groupA', 'item1', 7, -3);
-        expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item1","x":"7","y":"-3"}]}' });
+        expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item1","lat":"7","lon":"-3"}]}' });
     });
     test('it should append one', () => {
-        storage.store = { 'groups': '{"groupA":[{"name":"item1","x":"7","y":"-3"}]}' };
+        storage.store = { 'groups': '{"groupA":[{"name":"item1","lat":"7","lon":"-3"}]}' };
         localStorage.createGroupItem('groupA', 'item2', 1, 4);
-        expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item1","x":"7","y":"-3"},{"name":"item2","x":"1","y":"4"}]}' });
+        expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item1","lat":"7","lon":"-3"},{"name":"item2","lat":"1","lon":"4"}]}' });
     });
     test('it should not append one to missing group', () => {
         storage.store = { 'groups': '{}' };
@@ -157,25 +157,25 @@ describe('group items', () => {
         expect(storage.store).toStrictEqual({ 'groups': '{}' });
     });
     test('it should append one to correct group', () => {
-        storage.store = { 'groups': '{"groupA":[{"name":"item1","x":"7","y":"-3"}],"groupB":[]}' };
+        storage.store = { 'groups': '{"groupA":[{"name":"item1","lat":"7","lon":"-3"}],"groupB":[]}' };
         localStorage.createGroupItem('groupB', 'itemB1', 2, 4);
-        expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item1","x":"7","y":"-3"}],"groupB":[{"name":"itemB1","x":"2","y":"4"}]}' });
+        expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item1","lat":"7","lon":"-3"}],"groupB":[{"name":"itemB1","lat":"2","lon":"4"}]}' });
     });
     test('it should get all', () => {
-        storage.store = { 'groups': '{"groupA":[{"name":"item1","x":"7","y":"-3"},{"name":"item2","x":"1","y":"4"}]}' };
-        expect(localStorage.getGroupItems('groupA')).toStrictEqual([{ "name": "item1", "x": "7", "y": "-3" }, { "name": "item2", "x": "1", "y": "4" }]);
+        storage.store = { 'groups': '{"groupA":[{"name":"item1","lat":"7","lon":"-3"},{"name":"item2","lat":"1","lon":"4"}]}' };
+        expect(localStorage.getGroupItems('groupA')).toStrictEqual([{ "name": "item1", "lat": "7", "lon": "-3" }, { "name": "item2", "lat": "1", "lon": "4" }]);
     });
     test('it should get all if none exist', () => {
-        storage.store = { 'groups': '{"groupA":[{"name":"item1","x":"7","y":"-3"},{"name":"item2","x":"1","y":"4"}]}' };
+        storage.store = { 'groups': '{"groupA":[{"name":"item1","lat":"7","lon":"-3"},{"name":"item2","lat":"1","lon":"4"}]}' };
         expect(localStorage.getGroupItems('groupB')).toStrictEqual([]);
     });
     test('it should get all if no group exists', () => {
         expect(localStorage.getGroupItems('groupC')).toStrictEqual([]);
     });
     test('it should update name', () => {
-        storage.store = { 'groups': '{"groupA":[{"name":"item1","x":"7","y":"-3"}]}' };
+        storage.store = { 'groups': '{"groupA":[{"name":"item1","lat":"7","lon":"-3"}]}' };
         localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED');
-        expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item1-EDITED","x":"7","y":"-3"}]}' });
+        expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[{"name":"item1-EDITED","lat":"7","lon":"-3"}]}' });
     });
     test('it should not update name if none exists', () => {
         storage.store = { 'groups': '{"groupA":[]}' };
