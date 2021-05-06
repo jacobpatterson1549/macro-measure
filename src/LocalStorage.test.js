@@ -7,7 +7,7 @@ class LocalStorageMock {
     }
 
     getItem(name) {
-        return this.store[name] || null;
+        return this.store[name];
     }
 
     setItem(name, value) {
@@ -38,7 +38,19 @@ describe('clear', () => {
     });
 });
 
-describe('distance unit group', () => {
+describe('view', () => {
+    test('it should get', () => {
+        storage.store['distanceUnit'] = 'settings';
+        expect(localStorage.getDistanceUnit()).toBe('settings');
+    });
+    test('it should set', () => {
+        storage.store['view'] = 'help';
+        localStorage.setView('about');
+        expect(storage.store).toStrictEqual({ 'view': 'about' });
+    });
+});
+
+describe('distance unit', () => {
     test('it should get', () => {
         storage.store['distanceUnit'] = 'm';
         expect(localStorage.getDistanceUnit()).toBe('m');
@@ -59,6 +71,9 @@ describe('current group', () => {
         storage.store['currentGroup'] = 'abc';
         expect(localStorage.getCurrentGroup()).toBe('abc');
     });
+    test('it should default to null', () => {
+        expect(localStorage.getCurrentGroup()).toBeNull();
+    });
     test('it should set', () => {
         storage.store['currentGroup'] = 'def';
         localStorage.setCurrentGroup('ghi');
@@ -70,6 +85,9 @@ describe('current group item', () => {
     test('it should get', () => {
         storage.store['currentGroupItem'] = 'abc';
         expect(localStorage.getCurrentGroupItem()).toBe('abc');
+    });
+    test('it should default to null', () => {
+        expect(localStorage.getCurrentGroupItem()).toBeNull();
     });
     test('it should set', () => {
         storage.store['currentGroupItem'] = 'def';

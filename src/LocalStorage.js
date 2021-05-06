@@ -18,10 +18,11 @@
   */
 class LocalStorage {
 
+  static _view_key = 'view';
+  static _distance_unit_key = 'distanceUnit';
   static _current_group_key = 'currentGroup';
   static _current_group_item_key = 'currentGroupItem';
   static _groups_key = 'groups';
-  static _distance_unit_key = 'distanceUnit';
 
   constructor(storage) {
     // window.localStorage
@@ -30,6 +31,13 @@ class LocalStorage {
 
   clear() {
     this.storage.clear()
+  }
+
+  getView() {
+    return this.storage.getItem(LocalStorage._view_key);
+  }
+  setView(view) {
+    this.storage.setItem(LocalStorage._view_key, view);
   }
 
   getDistanceUnit() {
@@ -41,14 +49,14 @@ class LocalStorage {
   }
 
   getCurrentGroup() {
-    return this.storage.getItem(LocalStorage._current_group_key);
+    return this.storage.getItem(LocalStorage._current_group_key) || null;
   }
   setCurrentGroup(name) {
     this.storage.setItem(LocalStorage._current_group_key, name);
   }
 
   getCurrentGroupItem() {
-    return this.storage.getItem(LocalStorage._current_group_item_key);
+    return this.storage.getItem(LocalStorage._current_group_item_key) || null;
   }
   setCurrentGroupItem(name) {
     this.storage.setItem(LocalStorage._current_group_item_key, name);
@@ -60,7 +68,7 @@ class LocalStorage {
     this._setGroups(groups);
   }
   getGroups() {
-    var groupsJSON = this.storage.getItem(LocalStorage._groups_key);
+    var groupsJSON = this.storage.getItem(LocalStorage._groups_key) || null;
     return JSON.parse(groupsJSON) || {};
   }
   updateGroup(oldName, newName) {
@@ -101,7 +109,7 @@ class LocalStorage {
   updateGroupItem(groupName, oldName, newName) {
     var groups = this.getGroups();
     var items = groups[groupName];
-    var item = items.find(item => item.name == oldName);
+    var item = items.find(item => item.name === oldName);
     if (item != null) {
       item.name = newName;
       this._setGroups(groups)
@@ -116,7 +124,7 @@ class LocalStorage {
   _moveGroupItem(groupName, name, delta) {
     var groups = this.getGroups();
     var items = groups[groupName];
-    var itemIndex = items.findIndex(item => item.name == name);
+    var itemIndex = items.findIndex(item => item.name === name);
     if (itemIndex+delta >= 0 && itemIndex+delta < items.length) {
       var tmpItem = items[itemIndex];
       items[itemIndex] = items[itemIndex+delta];
@@ -127,7 +135,7 @@ class LocalStorage {
   deleteGroupItem(groupName, name) {
     var groups = this.getGroups();
     var items = groups[groupName];
-    var itemIndex = items.findIndex(item => item.name == name);
+    var itemIndex = items.findIndex(item => item.name === name);
     if (itemIndex >= 0) {
       items.splice(itemIndex, 1);
       this._setGroups(groups);
