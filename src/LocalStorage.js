@@ -1,20 +1,22 @@
 /* structure:
   * 
-  * "currentGroup"   : "string"
-  * currentGroupItem : "string"
-  * "distanceUnit"   : "string"
-  * "groups" : {
-  *   "groupName" : [
+  * "currentGroup": "string"
+  * "currentGroupItem": "string"
+  * "distanceUnit": "string"
+  * "groups" : [
+  *   {
+  *     "name": "groupName"
+  *     "items": [
   *         {
   *           "itemName"  : "string",
   *           "latitude"  : "string",
   *           "longitude" : "string"
   *         },
   *         ...
-  *       ],
-  *     ...
-  *   ]
-  * }
+  *       ]
+  *   },
+  *   ...
+  * ]
   */
 class LocalStorage {
 
@@ -63,59 +65,91 @@ class LocalStorage {
   }
 
   createGroup(name) {
-    var groups = this.getGroups();
-    groups[name] = [];
+    const groups = this.deleteGroup(name);
+    const group = {
+      name: name,
+      items: []
+    };
+    groups.push(group);
     this._setGroups(groups);
     return groups;
   }
   getGroups() {
-    var groupsJSON = this.storage.getItem(LocalStorage._groups_key) || null;
-    return JSON.parse(groupsJSON) || {};
+    const groupsJSON = this.storage.getItem(LocalStorage._groups_key) || null;
+    return JSON.parse(groupsJSON) || [];
   }
   updateGroup(oldName, newName) {
-    var groups = this.getGroups();
-    var oldGroup = groups[oldName];
-    if (oldGroup) {
-      delete groups[oldName];
-      groups[newName] = oldGroup;
+    const groups = this.getGroups();
+    const group = groups.find(group => group.name === oldName);
+    if (group) {
+      group.name = newName;
       this._setGroups(groups);
+    }
+    return groups;
+  }
+  moveGroupUp(name) {
+    return this._moveGroup(name, -1);
+  }
+  moveGroupDown(name) {
+    return this._moveGroup(name, +1);
+  }
+  _moveGroup(name, delta) {
+    const groups = this.getGroups();
+    const index = groups.findIndex(group => group.name === name);
+    if (index + delta >= 0 && index + delta < groups.length) {
+      const tmp = groups[index];
+      groups[index] = groups[index + delta];
+      groups[index + delta] = tmp;
+      this._setGroups(groups)
     }
     return groups;
   }
   _setGroups(groups) {
-    var groupsJSON = JSON.stringify(groups);
+    const groupsJSON = JSON.stringify(groups);
     this.storage.setItem(LocalStorage._groups_key, groupsJSON);
   }
   deleteGroup(name) {
-    var groups = this.getGroups();
-    delete groups[name];
-    this._setGroups(groups);
+    const groups = this.getGroups();
+    const index = groups.findIndex(group => group.name === name);
+    if (index >= 0) {
+      groups.splice(index, 1);
+      this._setGroups(groups);
+    }
     return groups;
   }
 
   createGroupItem(groupName, name, latitude, longitude) {
-    var groups = this.getGroups();
-    var groupItem = {
-      "name": name,
-      "lat": String(latitude),
-      "lon": String(longitude),
-    }
-    if (groups[groupName]) {
-      groups[groupName].push(groupItem);
+    const groups = this.getGroups();
+    const group = groups.find(group => group.name === groupName);
+    if (group) {
+      const items = group.items;
+      const item = {
+        "name": name,
+        "lat": String(latitude),
+        "lng": String(longitude),
+      };
+      items.push(item);
       this._setGroups(groups);
     }
   }
   getGroupItems(groupName) {
-    var groups = this.getGroups();
-    return groups[groupName] || [];
+    const groups = this.getGroups();
+    const group = groups.find(group => group.name === groupName);
+    if (group) {
+      return group.items;
+    }
+    return [];
   }
   updateGroupItem(groupName, oldName, newName) {
-    var groups = this.getGroups();
-    var items = groups[groupName];
-    var item = items.find(item => item.name === oldName);
-    if (item != null) {
-      item.name = newName;
-      this._setGroups(groups)
+    const groups = this.getGroups();
+    const group = groups.find(group => group.name === groupName);
+    if (group) {
+      const items = group.items;
+      const item = items.find(item => item.name === oldName);
+      if (item != null) {
+        item.name = newName;
+        this._setGroups(groups)
+      }
     }
     return groups;
   }
@@ -126,24 +160,30 @@ class LocalStorage {
     return this._moveGroupItem(groupName, name, +1);
   }
   _moveGroupItem(groupName, name, delta) {
-    var groups = this.getGroups();
-    var items = groups[groupName];
-    var itemIndex = items.findIndex(item => item.name === name);
-    if (itemIndex+delta >= 0 && itemIndex+delta < items.length) {
-      var tmpItem = items[itemIndex];
-      items[itemIndex] = items[itemIndex+delta];
-      items[itemIndex+delta] = tmpItem;
-      this._setGroups(groups)
+    const groups = this.getGroups();
+    const group = groups.find(group => group.name === groupName);
+    if (group) {
+      const items = group.items;
+      const index = items.findIndex(item => item.name === name);
+      if (index + delta >= 0 && index + delta < items.length) {
+        const tmp = items[index];
+        items[index] = items[index + delta];
+        items[index + delta] = tmp;
+        this._setGroups(groups)
+      }
     }
     return groups
   }
   deleteGroupItem(groupName, name) {
-    var groups = this.getGroups();
-    var items = groups[groupName];
-    var itemIndex = items.findIndex(item => item.name === name);
-    if (itemIndex >= 0) {
-      items.splice(itemIndex, 1);
-      this._setGroups(groups);
+    const groups = this.getGroups();
+    const group = groups.find(group => group.name === groupName);
+    if (group) {
+      const items = group.items;
+      const index = items.findIndex(item => item.name === name);
+      if (index >= 0) {
+        items.splice(index, 1);
+        this._setGroups(groups);
+      }
     }
     return groups;
   }
