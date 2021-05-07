@@ -12,6 +12,7 @@ class App extends React.Component {
 
     this.state = {
       view: this.localStorage.getView() || Main.DefaultView,
+      groups: this.localStorage.getGroups(),
       currentGroup: this.localStorage.getCurrentGroup(),
       currentGroupItem: this.localStorage.getCurrentGroupItem(),
       distanceUnit: this.localStorage.getDistanceUnit() || Settings.DefaultDistanceUnit
@@ -42,11 +43,15 @@ class App extends React.Component {
     return (
       <div className="App">
         <Header
+          currentGroup={this.state.currentGroup}
           setView={view => this.setView(view)}
         />
         <Main
           distanceUnit={this.state.distanceUnit}
           view={this.state.view}
+          groups={this.state.groups}
+          currentGroup={this.state.currentGroup}
+          currentGroupItem={this.state.currentGroupItem}
           setDistanceUnit={unit => this.setDistanceUnit(unit)}
           clearStorage={() => this.clearStorage()}
         />
@@ -70,7 +75,7 @@ class Header extends React.Component {
           onClick={(e) => preventDefault(() => this.props.setView("groups"), e)}
           title="group list"
         >
-          <span>Macro Measure</span>
+          <span>{this.props.currentGroup}[ADD GROUP]</span>
         </a>
         {this.headerItem('ⓘ', 'about page', 'about')}
         {this.headerItem('?', 'help page', 'help')}
@@ -97,7 +102,11 @@ class Main extends React.Component {
           clearStorage={() => this.props.clearStorage()}
         />);
       default:
-        return (<Groups />);
+        return (<Groups
+          groups={this.props.groups}
+          currentGroup={this.props.currentGroup}
+          currentGroupItem={this.props.currentGroupItem}
+        />);
     }
   }
 
@@ -165,10 +174,55 @@ class Settings extends React.Component {
   }
 }
 
-function Groups() {
-  return (
-    <p>TODO: groups page</p>
-  )
+class Groups extends React.Component {
+
+  addGroup() {
+    console.log("TODO: add group");
+  }
+
+  renameGroup(name) {
+    console.log("TODO: rename group: " + name);
+  }
+
+  deleteGroup(name) {
+    console.log("TODO: delete group: " + name);
+  }
+
+  render() {
+    const items = Object.entries(this.props.groups).map((name, items) => (
+      <tr key={name}>
+        <td>{name}</td>
+        <td>{items.length}</td>
+        <td onClick={this.renameGroup(name)}>Edit</td>
+        <td onClick={this.deleteGroup(name)}>Delete</td>
+      </tr>
+    ));
+    if (items.length === 0) {
+      items.push(<tr key="no-groups"><td colSpan="4">No groups exist.  Create one.</td></tr>);
+    }
+    return (
+      <div>
+        	
+        <table>
+          <caption>groups</caption>
+          <thead>
+          <tr>
+            <th scope="col" title="identifier of items">Name</th>
+            <th scope="col" title="number of items">#</th>
+            <th scope="col" title="Rename">✎</th>
+            <th scope="col" title="Delete">␡</th>
+          </tr>
+          </thead>
+          <tbody>{items}</tbody>
+        </table>
+        <input
+          type="button"
+          value="Add Group"
+          onClick={this.addGroup}
+        />
+      </div>
+    );
+  }
 }
 
 function preventDefault(fn, event) {
