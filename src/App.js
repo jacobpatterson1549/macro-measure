@@ -47,9 +47,17 @@ class App extends React.Component {
   }
 
   renameGroup(oldName, newName) {
-    console.log("oldName:" + oldName + ", newName: " + newName);
     const groups = this.localStorage.updateGroup(oldName, newName);
-    console.log("reloading groups with " + JSON.stringify(groups))
+    this.setState({ groups: groups });
+  }
+
+  moveGroupUp(name) {
+    const groups = this.localStorage.moveGroupUp(name);
+    this.setState({ groups: groups });
+  }
+
+  moveGroupDown(name) {
+    const groups = this.localStorage.moveGroupDown(name);
     this.setState({ groups: groups });
   }
 
@@ -84,6 +92,8 @@ class App extends React.Component {
           setCurrentGroup={groupName => this.setCurrentGroup(groupName)}
           createGroup={name => this.createGroup(name)}
           renameGroup={(oldName, newName) => this.renameGroup(oldName, newName)}
+          moveGroupUp={name => this.moveGroupUp(name)}
+          moveGroupDown={name => this.moveGroupDown(name)}
           deleteGroup={name => this.deleteGroup(name)}
           setDistanceUnit={unit => this.setDistanceUnit(unit)}
           clearStorage={() => this.clearStorage()}
@@ -147,6 +157,8 @@ class Main extends React.Component {
           setCurrentGroup={name => this.props.setCurrentGroup(name)}
           createGroup={name => this.props.createGroup(name)}
           renameGroup={(oldName, newName) => this.props.renameGroup(oldName, newName)}
+          moveGroupUp={name => this.props.moveGroupUp(name)}
+          moveGroupDown={name => this.props.moveGroupDown(name)}
           deleteGroup={name => this.props.deleteGroup(name)}
         />);
     }
@@ -273,12 +285,14 @@ class Groups extends React.Component {
   }
 
   getItems() {
-    const items = Object.entries(this.props.groups).map(([name, items]) => (
-      <tr key={name}>
-        <td onClick={() => this.props.setCurrentGroup(name)}>{name}</td>
-        <td>{items.length}</td>
-        <td onClick={() => this.setState({ name: name, action: 'rename-form', oldName: name })}>Edit</td>
-        <td onClick={() => this.setState({ name: name, action: 'delete-form' })}>Delete</td>
+    const items = this.props.groups.map((group, index, groups) => (
+      <tr key={group.name}>
+        <td onClick={() => this.props.setCurrentGroup(group.name)}>{group.name}</td>
+        <td>{group.items.length}</td>
+        <td><MoveRowSpan valid={index > 0} onClick={() => this.props.moveGroupUp(group.name)} title="move up" value="▲" /></td>
+        <td><MoveRowSpan valid={index + 1 < groups.length} onClick={() => this.props.moveGroupDown(group.name)} title="move down" value="▼" /></td>
+        <td onClick={() => this.setState({ name: group.name, action: 'rename-form', oldName: group.name })}>Edit</td>
+        <td onClick={() => this.setState({ name: group.name, action: 'delete-form' })}>Delete</td>
       </tr>
     ));
     if (items.length === 0) {
@@ -294,6 +308,8 @@ class Groups extends React.Component {
         <tr>
           <th scope="col" title="name of group">Name</th>
           <th scope="col" title="number of items in group">#</th>
+          <th scope="col" title="Move Group Up"></th>
+          <th scope="col" title="Move Group Down"></th>
           <th scope="col" title="Rename group">✎</th>
           <th scope="col" title="Delete group">␡</th>
         </tr>
@@ -334,6 +350,18 @@ class Groups extends React.Component {
         {this.getAction()}
       </div>
     );
+  }
+}
+
+class MoveRowSpan extends React.Component {
+  render() {
+    let span;
+    if (this.props.valid) {
+      span = (<span title={this.props.title} onClick={this.props.onClick}>{this.props.value}</span>);
+    } else {
+      span = (<span />);
+    }
+    return (<div>{span}</div>);
   }
 }
 
