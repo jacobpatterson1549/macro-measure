@@ -29,6 +29,35 @@ class App extends React.Component {
     this.setState({ distanceUnit: distanceUnit });
   }
 
+  setCurrentGroup(name) {
+    this.localStorage.setCurrentGroup(name);
+    this.setState({
+      view: "items",
+      currentGroup: name
+    });
+  }
+
+  createGroup(name) {
+    const groups = this.localStorage.createGroup(name);
+    this.setState({
+      currentGroup: name,
+      view: "items",
+      groups: groups
+    });
+  }
+
+  renameGroup(oldName, newName) {
+    console.log("oldName:" + oldName + ", newName: " + newName);
+    const groups = this.localStorage.updateGroup(oldName, newName);
+    console.log("reloading groups with " + JSON.stringify(groups))
+    this.setState({ groups: groups });
+  }
+
+  deleteGroup(name) {
+    const groups = this.localStorage.deleteGroup(name);
+    this.setState({ groups: groups });
+  }
+
   clearStorage() {
     this.localStorage.clear();
     this.setState({
@@ -52,6 +81,10 @@ class App extends React.Component {
           groups={this.state.groups}
           currentGroup={this.state.currentGroup}
           currentGroupItem={this.state.currentGroupItem}
+          setCurrentGroup={groupName => this.setCurrentGroup(groupName)}
+          createGroup={name => this.createGroup(name)}
+          renameGroup={(oldName, newName) => this.renameGroup(oldName, newName)}
+          deleteGroup={name => this.deleteGroup(name)}
           setDistanceUnit={unit => this.setDistanceUnit(unit)}
           clearStorage={() => this.clearStorage()}
         />
@@ -75,7 +108,7 @@ class Header extends React.Component {
           onClick={(e) => preventDefault(() => this.props.setView("groups"), e)}
           title="group list"
         >
-          <span>{this.props.currentGroup}[ADD GROUP]</span>
+          <span>{this.props.currentGroup || '[ADD GROUP]'}</span>
         </a>
         {this.headerItem('ⓘ', 'about page', 'about')}
         {this.headerItem('?', 'help page', 'help')}
@@ -101,11 +134,20 @@ class Main extends React.Component {
           setDistanceUnit={unit => this.props.setDistanceUnit(unit)}
           clearStorage={() => this.props.clearStorage()}
         />);
+      case 'items':
+        return (<Items
+          currentGroup={this.props.currentGroup}
+          distanceUnit={this.props.distanceUnit}
+        />);
       default:
         return (<Groups
           groups={this.props.groups}
           currentGroup={this.props.currentGroup}
           currentGroupItem={this.props.currentGroupItem}
+          setCurrentGroup={name => this.props.setCurrentGroup(name)}
+          createGroup={name => this.props.createGroup(name)}
+          renameGroup={(oldName, newName) => this.props.renameGroup(oldName, newName)}
+          deleteGroup={name => this.props.deleteGroup(name)}
         />);
     }
   }
@@ -176,51 +218,129 @@ class Settings extends React.Component {
 
 class Groups extends React.Component {
 
-  addGroup() {
-    console.log("TODO: add group");
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: "[New Group Name]",
+      action: "add-button"
+    };
+
+    this.setName = this.setName.bind(this);
+    this.setAction = this.setAction.bind(this);
+    this.createGroup = this.createGroup.bind(this);
+    this.renameGroup = this.renameGroup.bind(this);
+    this.deleteGroup = this.deleteGroup.bind(this);
   }
 
-  renameGroup(name) {
-    console.log("TODO: rename group: " + name);
+  setAction(action) {
+    this.setState({ action: action });
   }
 
-  deleteGroup(name) {
-    console.log("TODO: delete group: " + name);
+  createGroup(event) {
+    event.preventDefault();
+    this.props.createGroup(this.state.name);
+    this.setState({ action: "add-button" });
   }
 
-  render() {
-    const items = Object.entries(this.props.groups).map((name, items) => (
+  renameGroup(event) {
+    event.preventDefault();
+    this.props.renameGroup(this.state.oldName, this.state.name);
+    this.setState({ action: "add-button" });
+  }
+
+  deleteGroup(event) {
+    event.preventDefault();
+    this.props.deleteGroup(this.state.name);
+    this.setState({ action: "add-button" });
+  }
+
+  setName(event) {
+    this.setState({ name: event.target.value });
+  }
+
+  // TODO: validate to ensure unique name when creating/renaming
+  uniqueName() {
+    for (const existingName in Object.keys(this.props.groups)) {
+      if (existingName === this.state.groupName) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  cancelButton() {
+    return (<input type="button" value="cancel" onClick={() => this.setAction("add-button")} />);
+  }
+
+  getItems() {
+    const items = Object.entries(this.props.groups).map(([name, items]) => (
       <tr key={name}>
-        <td>{name}</td>
+        <td onClick={() => this.props.setCurrentGroup(name)}>{name}</td>
         <td>{items.length}</td>
-        <td onClick={this.renameGroup(name)}>Edit</td>
-        <td onClick={this.deleteGroup(name)}>Delete</td>
+        <td onClick={() => this.setState({ name: name, action: 'rename-form', oldName: name })}>Edit</td>
+        <td onClick={() => this.setState({ name: name, action: 'delete-form' })}>Delete</td>
       </tr>
     ));
     if (items.length === 0) {
       items.push(<tr key="no-groups"><td colSpan="4">No groups exist.  Create one.</td></tr>);
     }
+    return items;
+  }
+
+  groupsTable() {
+    return (<table>
+      <caption>groups</caption>
+      <thead>
+        <tr>
+          <th scope="col" title="name of group">Name</th>
+          <th scope="col" title="number of items in group">#</th>
+          <th scope="col" title="Rename group">✎</th>
+          <th scope="col" title="Delete group">␡</th>
+        </tr>
+      </thead>
+      <tbody>{this.getItems()}</tbody>
+    </table>);
+  }
+
+  getAction() {
+    switch (this.state.action) {
+      case "add-form":
+        return (<form onSubmit={this.createGroup}>
+          <input type="text" value={this.state.name} required onChange={this.setName} />
+          {this.cancelButton()}
+          <input type="submit" />
+        </form>);
+      case "rename-form":
+        return (<form onSubmit={this.renameGroup}>
+          <input type="text" value={this.state.name} required onChange={this.setName} />
+          {this.cancelButton()}
+          <input type="submit" />
+        </form>);
+      case "delete-form":
+        return (<form onSubmit={this.deleteGroup}>
+          <span>Delete {this.state.name}?</span>
+          {this.cancelButton()}
+          <input type="submit" />
+        </form>);
+      default:
+        return (<input type="button" value="Add Group" onClick={() => this.setAction("add-form")} />);
+    }
+  }
+
+  render() {
     return (
-      <div>
-        	
-        <table>
-          <caption>groups</caption>
-          <thead>
-          <tr>
-            <th scope="col" title="identifier of items">Name</th>
-            <th scope="col" title="number of items">#</th>
-            <th scope="col" title="Rename">✎</th>
-            <th scope="col" title="Delete">␡</th>
-          </tr>
-          </thead>
-          <tbody>{items}</tbody>
-        </table>
-        <input
-          type="button"
-          value="Add Group"
-          onClick={this.addGroup}
-        />
+      <div className="Groups">
+        {this.groupsTable()}
+        {this.getAction()}
       </div>
+    );
+  }
+}
+
+class Items extends React.Component {
+  render() {
+    return (
+      <p>TODO: show items for {this.props.currentGroup}</p>
     );
   }
 }

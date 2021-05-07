@@ -101,6 +101,10 @@ describe('groups', () => {
         localStorage.createGroup('groupA');
         expect(storage.store).toStrictEqual({ 'groups': '{"groupA":[]}' });
     });
+    test('it should return the groups', () => {
+        const groups = localStorage.createGroup('groupA');
+        expect(groups).toStrictEqual({"groupA":[]});
+    });
     test('it will overwrite previous group of same name', () => {
         storage.store = { 'groups': '{"groupA":["will be overwritten"]}' };
         localStorage.createGroup('groupA');

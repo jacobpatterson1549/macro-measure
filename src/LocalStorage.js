@@ -66,6 +66,7 @@ class LocalStorage {
     var groups = this.getGroups();
     groups[name] = [];
     this._setGroups(groups);
+    return groups;
   }
   getGroups() {
     var groupsJSON = this.storage.getItem(LocalStorage._groups_key) || null;
