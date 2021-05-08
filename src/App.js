@@ -290,7 +290,6 @@ class Groups extends React.Component {
     const items = this.props.groups.map((group, index, groups) => (
       <tr key={group.name}>
         <td onClick={() => this.props.setCurrentGroup(group.name)}>{group.name}</td>
-        <td>{group.items.length}</td>
         <td><MoveRowSpan valid={index > 0} onClick={() => this.props.moveGroupUp(group.name)} title="move up" value="▲" /></td>
         <td><MoveRowSpan valid={index + 1 < groups.length} onClick={() => this.props.moveGroupDown(group.name)} title="move down" value="▼" /></td>
         <td onClick={() => this.setState({ name: group.name, action: 'rename-form', oldName: group.name })}>Edit</td>
@@ -309,7 +308,6 @@ class Groups extends React.Component {
       <thead>
         <tr>
           <th scope="col" title="name of group">Name</th>
-          <th scope="col" title="number of items in group">#</th>
           <th scope="col" title="Move Group Up"></th>
           <th scope="col" title="Move Group Down"></th>
           <th scope="col" title="Rename group">✎</th>
