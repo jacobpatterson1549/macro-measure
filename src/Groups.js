@@ -1,6 +1,6 @@
 import React from 'react';
 
-import MoveRowSpan from './MoveRowSpan';
+import NameTable from './NameTable';
 
 export default class Groups extends React.Component {
 
@@ -8,7 +8,7 @@ export default class Groups extends React.Component {
         super(props);
         this.state = {
             name: '',
-            action: ""
+            action: ''
         };
 
         this.setName = this.setName.bind(this);
@@ -57,40 +57,6 @@ export default class Groups extends React.Component {
         return (<input type="button" value="cancel" onClick={() => this.setState({ action: "add-button" })} />);
     }
 
-    getItems() {
-        const items = this.props.groups.map((group, index, groups) => (
-            <tr key={group.name}>
-                <td onClick={() => this.props.setCurrentGroup(group.name)}>{group.name}</td>
-                <td><MoveRowSpan valid={index > 0} onClick={() => this.props.moveGroupUp(group.name)} title="move up" value="▲" /></td>
-                <td><MoveRowSpan valid={index + 1 < groups.length} onClick={() => this.props.moveGroupDown(group.name)} title="move down" value="▼" /></td>
-                <td onClick={() => this.setState({ name: group.name, action: 'rename-form', oldName: group.name })}>Edit</td>
-                <td onClick={() => this.setState({ name: group.name, action: 'delete-form' })}>Delete</td>
-            </tr>
-        ));
-        if (items.length === 0) {
-            items.push(<tr key="no-groups"><td colSpan="4">No groups exist.  Create one.</td></tr>);
-        }
-        return items;
-    }
-
-    groupsTable() {
-        return (
-            <table>
-                <caption>groups</caption>
-                <thead>
-                    <tr>
-                        <th scope="col" title="name of group">Name</th>
-                        <th scope="col" title="Move Group Up"></th>
-                        <th scope="col" title="Move Group Down"></th>
-                        <th scope="col" title="Rename group">✎</th>
-                        <th scope="col" title="Delete group">␡</th>
-                    </tr>
-                </thead>
-                <tbody>{this.getItems()}</tbody>
-            </table>
-        );
-    }
-
     getAction() {
         switch (this.state.action) {
             case "add-form":
@@ -127,7 +93,14 @@ export default class Groups extends React.Component {
     render() {
         return (
             <div className="Groups">
-                {this.groupsTable()}
+                <NameTable
+                    values={this.props.groups}
+                    select={(group) => this.props.setCurrentGroup(group.name)}
+                    moveUp={(group) => this.props.moveGroupUp(group.name)}
+                    moveDown={(group) => this.props.moveGroupDown(group.name)}
+                    edit={(group) => this.setState({ name: group.name, action: 'rename-form', oldName: group.name })}
+                    delete={(group) => this.setState({ name: group.name, action: 'delete-form' })}
+                />
                 {this.getAction()}
             </div>
         );
