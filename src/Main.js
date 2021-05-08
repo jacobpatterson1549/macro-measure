@@ -1,11 +1,12 @@
 import React from 'react';
+
 import About from './About';
 import Help from './Help';
+import Settings from './Settings';
 import Groups from './Groups';
 import Items from './Items';
-import Settings from './Settings';
 
-class Main extends React.Component {
+export default class Main extends React.Component {
 
     static DefaultView = 'groups';
 
@@ -49,5 +50,3 @@ class Main extends React.Component {
         );
     }
 }
-
-export default Main;

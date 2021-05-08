@@ -1,11 +1,12 @@
-import './App.css';
 import React from 'react';
+
+import './App.css';
+import LocalStorage from './LocalStorage';
 import Header from './Header';
 import Main from './Main';
 import Settings from './Settings';
-import LocalStorage from './LocalStorage';
 
-class App extends React.Component {
+export default class App extends React.Component {
 
   constructor(props) {
     super(props);
@@ -107,5 +108,3 @@ class App extends React.Component {
     );
   }
 }
-
-export default App;

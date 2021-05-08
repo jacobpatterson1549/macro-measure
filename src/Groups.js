@@ -1,7 +1,8 @@
 import React from 'react';
+
 import MoveRowSpan from './MoveRowSpan';
 
-class Groups extends React.Component {
+export default class Groups extends React.Component {
 
     constructor(props) {
         super(props);
@@ -132,5 +133,3 @@ class Groups extends React.Component {
         );
     }
 }
-
-export default Groups;

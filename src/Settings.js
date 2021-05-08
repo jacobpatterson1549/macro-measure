@@ -1,6 +1,6 @@
 import React from 'react';
 
-class Settings extends React.Component {
+export default class Settings extends React.Component {
 
     static DefaultDistanceUnit = 'm';
 
@@ -35,5 +35,3 @@ class Settings extends React.Component {
         );
     }
 }
-
-export default Settings;
