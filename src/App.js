@@ -233,20 +233,16 @@ class Groups extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name: "[New Group Name]",
-      action: "add-button"
+      name: '',
+      action: ""
     };
 
     this.setName = this.setName.bind(this);
-    this.setAction = this.setAction.bind(this);
     this.createGroup = this.createGroup.bind(this);
     this.renameGroup = this.renameGroup.bind(this);
     this.deleteGroup = this.deleteGroup.bind(this);
   }
 
-  setAction(action) {
-    this.setState({ action: action });
-  }
 
   createGroup(event) {
     event.preventDefault();
@@ -267,13 +263,16 @@ class Groups extends React.Component {
   }
 
   setName(event) {
+    const uniqueName = this.uniqueName(event.target.value);
+    const nameInput = event.target;
+    nameInput.setCustomValidity(uniqueName ? '' : 'duplicate name');
     this.setState({ name: event.target.value });
   }
 
-  // TODO: validate to ensure unique name when creating/renaming
-  uniqueName() {
-    for (const existingName in Object.keys(this.props.groups)) {
-      if (existingName === this.state.groupName) {
+  uniqueName(name) {
+    for (const group of this.props.groups) {
+      const existingName = group.name;
+      if (existingName === name && (this.state.action !== 'rename-form' || name !== this.state.oldName)) {
         return false;
       }
     }
@@ -281,7 +280,7 @@ class Groups extends React.Component {
   }
 
   cancelButton() {
-    return (<input type="button" value="cancel" onClick={() => this.setAction("add-button")} />);
+    return (<input type="button" value="cancel" onClick={() => this.setState({ action: "add-button"})} />);
   }
 
   getItems() {
@@ -322,13 +321,13 @@ class Groups extends React.Component {
     switch (this.state.action) {
       case "add-form":
         return (<form onSubmit={this.createGroup}>
-          <input type="text" value={this.state.name} required onChange={this.setName} />
+          <input type="text" value={this.state.name} required onChange={this.setName} onFocus={(event) => event.target.select()} />
           {this.cancelButton()}
           <input type="submit" />
         </form>);
       case "rename-form":
         return (<form onSubmit={this.renameGroup}>
-          <input type="text" value={this.state.name} required onChange={this.setName} />
+          <input type="text" value={this.state.name} required onChange={this.setName} onFocus={(event) => event.target.select()} />
           {this.cancelButton()}
           <input type="submit" />
         </form>);
@@ -339,7 +338,7 @@ class Groups extends React.Component {
           <input type="submit" />
         </form>);
       default:
-        return (<input type="button" value="Add Group" onClick={() => this.setAction("add-form")} />);
+        return (<input type="button" value="Add Group" onClick={() => this.setState({ name: '[New Group Name]', action: 'add-form' })} onFocus={(event) => event.target.select()} />);
     }
   }
 
