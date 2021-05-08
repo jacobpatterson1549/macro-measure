@@ -18,22 +18,6 @@
   justify-content: center;
 }
 
-.Header {
-  display: flex;
-  align-items: center;
-}
-
-.Header * {
-  font-size: 8vw;
-  padding-left: 1vw;
-  cursor: pointer;
-}
-
-.Header > *:first-child {
-  margin-right: auto;
-  overflow: hidden;
-}
-
 form > * {
   display: block;
 }
