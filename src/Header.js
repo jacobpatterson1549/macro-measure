@@ -13,7 +13,9 @@ class Header extends React.Component {
     }
 
     headerItem(name, title, view) {
-        return <span onClick={() => this.props.setView(view)} title={title}>{name}</span>
+        return (
+            <span onClick={() => this.props.setView(view)} title={title}>{name}</span>
+        );
     }
 
     render() {

@@ -73,43 +73,53 @@ class Groups extends React.Component {
     }
 
     groupsTable() {
-        return (<table>
-            <caption>groups</caption>
-            <thead>
-                <tr>
-                    <th scope="col" title="name of group">Name</th>
-                    <th scope="col" title="Move Group Up"></th>
-                    <th scope="col" title="Move Group Down"></th>
-                    <th scope="col" title="Rename group">✎</th>
-                    <th scope="col" title="Delete group">␡</th>
-                </tr>
-            </thead>
-            <tbody>{this.getItems()}</tbody>
-        </table>);
+        return (
+            <table>
+                <caption>groups</caption>
+                <thead>
+                    <tr>
+                        <th scope="col" title="name of group">Name</th>
+                        <th scope="col" title="Move Group Up"></th>
+                        <th scope="col" title="Move Group Down"></th>
+                        <th scope="col" title="Rename group">✎</th>
+                        <th scope="col" title="Delete group">␡</th>
+                    </tr>
+                </thead>
+                <tbody>{this.getItems()}</tbody>
+            </table>
+        );
     }
 
     getAction() {
         switch (this.state.action) {
             case "add-form":
-                return (<form onSubmit={this.createGroup}>
-                    <input type="text" value={this.state.name} required onChange={this.setName} onFocus={(event) => event.target.select()} />
-                    {this.cancelButton()}
-                    <input type="submit" />
-                </form>);
+                return (
+                    <form onSubmit={this.createGroup}>
+                        <input type="text" value={this.state.name} required onChange={this.setName} onFocus={(event) => event.target.select()} />
+                        {this.cancelButton()}
+                        <input type="submit" />
+                    </form>
+                );
             case "rename-form":
-                return (<form onSubmit={this.renameGroup}>
-                    <input type="text" value={this.state.name} required onChange={this.setName} onFocus={(event) => event.target.select()} />
-                    {this.cancelButton()}
-                    <input type="submit" />
-                </form>);
+                return (
+                    <form onSubmit={this.renameGroup}>
+                        <input type="text" value={this.state.name} required onChange={this.setName} onFocus={(event) => event.target.select()} />
+                        {this.cancelButton()}
+                        <input type="submit" />
+                    </form>
+                );
             case "delete-form":
-                return (<form onSubmit={this.deleteGroup}>
-                    <span>Delete {this.state.name}?</span>
-                    {this.cancelButton()}
-                    <input type="submit" />
-                </form>);
+                return (
+                    <form onSubmit={this.deleteGroup}>
+                        <span>Delete {this.state.name}?</span>
+                        {this.cancelButton()}
+                        <input type="submit" />
+                    </form>
+                );
             default:
-                return (<input type="button" value="Add Group" onClick={() => this.setState({ name: '[New Group Name]', action: 'add-form' })} onFocus={(event) => event.target.select()} />);
+                return (
+                    <input type="button" value="Add Group" onClick={() => this.setState({ name: '[New Group Name]', action: 'add-form' })} onFocus={(event) => event.target.select()} />
+                );
         }
     }
 
