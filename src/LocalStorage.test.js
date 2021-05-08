@@ -275,10 +275,15 @@ describe('group items', () => {
                 const groups = localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED', 7, -3);
                 expect(groups).toStrictEqual([{ "name": "groupA", "items": [{ "name": "item1-EDITED", "lat": "7", "lng": "-3" }] }]);
             });
-            test('it should not update name if none exists', () => {
+            test('it should not update if none exists', () => {
                 storage.store = { 'groups': '[{"name":"groupA","items":[]}]' };
-                localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED');
+                localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED', 1, 2);
                 expect(storage.store).toStrictEqual({ 'groups': '[{"name":"groupA","items":[]}]' });
+            });
+            test('it should not update name if group does not exist', () => {
+                storage.store = { 'groups': '[{"name":"groupA","items":[{"name":"item1","lat":"7","lng":"-3"}]}]' };
+                localStorage.updateGroupItem('groupB', 'item1', 'item1-EDITED', 1, 2);
+                expect(storage.store).toStrictEqual({ 'groups': '[{"name":"groupA","items":[{"name":"item1","lat":"7","lng":"-3"}]}]' });
             });
         });
         describe('move', () => {
@@ -300,6 +305,11 @@ describe('group items', () => {
             test('it should not move up if nonexistant', () => {
                 storage.store = { 'groups': '[{"name":"groupA","items":[{"name":"item1"},{"name":"item2"}]}]' };
                 localStorage.moveGroupItemUp('groupA', 'item3');
+                expect(storage.store).toStrictEqual({ 'groups': '[{"name":"groupA","items":[{"name":"item1"},{"name":"item2"}]}]' });
+            });
+            test('it should not move up if group nonexistant', () => {
+                storage.store = { 'groups': '[{"name":"groupA","items":[{"name":"item1"},{"name":"item2"}]}]' };
+                localStorage.moveGroupItemUp('groupB', 'item2');
                 expect(storage.store).toStrictEqual({ 'groups': '[{"name":"groupA","items":[{"name":"item1"},{"name":"item2"}]}]' });
             });
             test('it should move down', () => {
@@ -343,6 +353,11 @@ describe('group items', () => {
         test('it should not if nonexistant', () => {
             storage.store = { 'groups': '[{"name":"groupA","items":[{"name":"item1"},{"name":"item2"},{"name":"item3"}]}]' };
             localStorage.deleteGroupItem('groupA', 'item4');
+            expect(storage.store).toStrictEqual({ 'groups': '[{"name":"groupA","items":[{"name":"item1"},{"name":"item2"},{"name":"item3"}]}]' });
+        });
+        test('it should not if group nonexistant', () => {
+            storage.store = { 'groups': '[{"name":"groupA","items":[{"name":"item1"},{"name":"item2"},{"name":"item3"}]}]' };
+            localStorage.deleteGroupItem('groupB', 'item2');
             expect(storage.store).toStrictEqual({ 'groups': '[{"name":"groupA","items":[{"name":"item1"},{"name":"item2"},{"name":"item3"}]}]' });
         });
     });
