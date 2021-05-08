@@ -140,7 +140,7 @@ class LocalStorage {
     }
     return [];
   }
-  updateGroupItem(groupName, oldName, newName) {
+  updateGroupItem(groupName, oldName, newName, newLat, newLng) {
     const groups = this.getGroups();
     const group = groups.find(group => group.name === groupName);
     if (group) {
@@ -148,6 +148,8 @@ class LocalStorage {
       const item = items.find(item => item.name === oldName);
       if (item != null) {
         item.name = newName;
+        item.lat = String(newLat);
+        item.lng = String(newLng);
         this._setGroups(groups)
       }
     }

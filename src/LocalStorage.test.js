@@ -174,7 +174,7 @@ describe('groups', () => {
             test('it should return groups when moving one up', () => {
                 storage.store = { 'groups': '[{"name":"groupA"},{"name":"groupB"}]' };
                 const groups = localStorage.moveGroupUp('groupB');
-                expect(groups).toStrictEqual([{"name":"groupB"},{"name":"groupA"}]);
+                expect(groups).toStrictEqual([{ "name": "groupB" }, { "name": "groupA" }]);
             });
             test('it should not move up if nonexistant', () => {
                 storage.store = { 'groups': '[{"name":"groupA"},{"name":"groupB"}]' };
@@ -189,7 +189,7 @@ describe('groups', () => {
             test('it should return groups when moving one down', () => {
                 storage.store = { 'groups': '[{"name":"groupA"},{"name":"groupB"}]' };
                 const groups = localStorage.moveGroupDown('groupA');
-                expect(groups).toStrictEqual([{"name":"groupB"},{"name":"groupA"}]);
+                expect(groups).toStrictEqual([{ "name": "groupB" }, { "name": "groupA" }]);
             });
             test('it should not move down if at bottom', () => {
                 storage.store = { 'groups': '[{"name":"groupA"},{"name":"groupB"}]' };
@@ -254,15 +254,25 @@ describe('group items', () => {
         });
     });
     describe('update', () => {
-        describe('rename', () => {
+        describe('rename parts', () => {
             test('it should update name', () => {
                 storage.store = { 'groups': '[{"name":"groupA","items":[{"name":"item1","lat":"7","lng":"-3"}]}]' };
-                localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED');
+                localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED', 7, -3);
                 expect(storage.store).toStrictEqual({ 'groups': '[{"name":"groupA","items":[{"name":"item1-EDITED","lat":"7","lng":"-3"}]}]' });
+            });
+            test('it should update lat and lng', () => {
+                storage.store = { 'groups': '[{"name":"groupA","items":[{"name":"item1","lat":"7","lng":"-3"}]}]' };
+                localStorage.updateGroupItem('groupA', 'item1', 'item1', 5, 6);
+                expect(storage.store).toStrictEqual({ 'groups': '[{"name":"groupA","items":[{"name":"item1","lat":"5","lng":"6"}]}]' });
+            });
+            test('it should update name, lat, and lng', () => {
+                storage.store = { 'groups': '[{"name":"groupA","items":[{"name":"item1","lat":"7","lng":"-3"}]}]' };
+                localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED', 5, 6);
+                expect(storage.store).toStrictEqual({ 'groups': '[{"name":"groupA","items":[{"name":"item1-EDITED","lat":"5","lng":"6"}]}]' });
             });
             test('it should return groups when updating name', () => {
                 storage.store = { 'groups': '[{"name":"groupA","items":[{"name":"item1","lat":"7","lng":"-3"}]}]' };
-                const groups = localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED');
+                const groups = localStorage.updateGroupItem('groupA', 'item1', 'item1-EDITED', 7, -3);
                 expect(groups).toStrictEqual([{ "name": "groupA", "items": [{ "name": "item1-EDITED", "lat": "7", "lng": "-3" }] }]);
             });
             test('it should not update name if none exists', () => {
