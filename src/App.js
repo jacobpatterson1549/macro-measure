@@ -70,6 +70,7 @@ class App extends React.Component {
     this.localStorage.clear();
     this.setState({
       view: Main.DefaultView,
+      groups: [],
       currentGroup: null,
       currentGroupItem: null,
       distanceUnit: Settings.DefaultDistanceUnit
@@ -81,6 +82,7 @@ class App extends React.Component {
       <div className="App">
         <Header
           currentGroup={this.state.currentGroup}
+          view={this.state.view}
           setView={view => this.setView(view)}
         />
         <Main
@@ -112,13 +114,14 @@ class Header extends React.Component {
   }
 
   render() {
+    const groupListName = (!['items'].includes(this.props.view)) ? '[Groups]' : this.props.currentGroup || '[ADD Group]';
     return (
       <header className="Header">
         <a href="/"
           onClick={(e) => preventDefault(() => this.props.setView("groups"), e)}
           title="group list"
         >
-          <span>{this.props.currentGroup || '[ADD GROUP]'}</span>
+          <span>{groupListName}</span>
         </a>
         {this.headerItem('ⓘ', 'about page', 'about')}
         {this.headerItem('?', 'help page', 'help')}
