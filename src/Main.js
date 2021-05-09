@@ -3,8 +3,8 @@ import React from 'react';
 import About from './About';
 import Help from './Help';
 import Settings from './Settings';
-import Groups from './Groups';
-import Items from './Items';
+import { GroupList } from './GroupList';
+import { ItemList } from './ItemList';
 
 export default class Main extends React.Component {
 
@@ -23,21 +23,18 @@ export default class Main extends React.Component {
                     clearStorage={() => this.props.clearStorage()}
                 />);
             case 'items':
-                return (<Items
+                return (<ItemList
                     currentGroup={this.props.currentGroup}
-                    distanceUnit={this.props.distanceUnit}
                 />);
             default:
-                return (<Groups
+                return (<GroupList
                     groups={this.props.groups}
-                    currentGroup={this.props.currentGroup}
-                    currentGroupItem={this.props.currentGroupItem}
-                    setCurrentGroup={name => this.props.setCurrentGroup(name)}
-                    createGroup={name => this.props.createGroup(name)}
-                    renameGroup={(oldName, newName) => this.props.renameGroup(oldName, newName)}
-                    moveGroupUp={name => this.props.moveGroupUp(name)}
-                    moveGroupDown={name => this.props.moveGroupDown(name)}
-                    deleteGroup={name => this.props.deleteGroup(name)}
+                    createGroup={this.props.createGroup}
+                    readGroup={this.props.readGroup}
+                    updateGroup={this.props.updateGroup}
+                    deleteGroup={this.props.deleteGroup}
+                    moveGroupUp={this.props.moveGroupUp}
+                    moveGroupDown={this.props.moveGroupDown}
                 />);
         }
     }

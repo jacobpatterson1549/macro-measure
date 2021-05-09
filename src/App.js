@@ -90,17 +90,19 @@ export default class App extends React.Component {
           setView={view => this.setView(view)}
         />
         <Main
-          distanceUnit={this.state.distanceUnit}
           view={this.state.view}
           groups={this.state.groups}
           currentGroup={this.state.currentGroup}
           currentGroupItem={this.state.currentGroupItem}
-          setCurrentGroup={groupName => this.setCurrentGroup(groupName)}
+          distanceUnit={this.state.distanceUnit}
+          // groupList
           createGroup={name => this.createGroup(name)}
-          renameGroup={(oldName, newName) => this.renameGroup(oldName, newName)}
+          readGroup={name => this.setCurrentGroup(name)}
+          updateGroup={(oldName, newName) => this.renameGroup(oldName, newName)}
           moveGroupUp={name => this.moveGroupUp(name)}
           moveGroupDown={name => this.moveGroupDown(name)}
           deleteGroup={name => this.deleteGroup(name)}
+          // settings
           setDistanceUnit={unit => this.setDistanceUnit(unit)}
           clearStorage={() => this.clearStorage()}
         />
