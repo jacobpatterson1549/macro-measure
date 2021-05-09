@@ -1,6 +1,6 @@
 import React from 'react';
 
-import MoveRowSpan from './MoveRowSpan';
+import { MoveRowSpan } from './MoveRowSpan';
 
 // props:
 // values[]: array of objects, each of which should have a 'name' attrtibute.  The names should be unique.

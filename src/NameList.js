@@ -2,7 +2,7 @@ import React from 'react';
 
 import { NameTable } from './NameTable';
 
-export default class NameList extends React.Component {
+export class NameList extends React.Component {
 
     // Most all properties are required.  One one of createStart/createEnd and updateStart/updateEnd should be used.
 

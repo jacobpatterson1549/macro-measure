@@ -1,5 +1,3 @@
-export default function About() {
-    return (
-        <p>TODO: about page</p>
-    )
-}
+export const About = () => (
+    <p>TODO: about page</p>
+);

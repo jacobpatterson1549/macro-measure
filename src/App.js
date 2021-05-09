@@ -1,10 +1,10 @@
 import React from 'react';
 
 import './App.css';
-import LocalStorage from './LocalStorage';
-import Header from './Header';
-import Main from './Main';
-import Settings from './Settings';
+import { LocalStorage } from './LocalStorage';
+import { Header } from './Header';
+import { Main } from './Main';
+import { Settings } from './Settings';
 
 export default class App extends React.Component {
 

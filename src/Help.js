@@ -1,5 +1,3 @@
-export default function Help() {
-    return (
-        <p>TODO: help page</p>
-    )
-}
+export const Help = () => (
+    <p>TODO: help page</p>
+);

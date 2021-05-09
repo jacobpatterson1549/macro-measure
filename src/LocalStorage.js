@@ -5,12 +5,12 @@
   * "distanceUnit": "string"
   * "groups" : [
   *   {
-  *     "name": "groupName"
+  *     "name": "string"
   *     "items": [
   *         {
-  *           "itemName"  : "string",
-  *           "latitude"  : "string",
-  *           "longitude" : "string"
+  *           "name"  : "string",
+  *           "lat"  : "string",
+  *           "lng" : "string"
   *         },
   *         ...
   *       ]
@@ -18,7 +18,7 @@
   *   ...
   * ]
   */
-class LocalStorage {
+export class LocalStorage {
 
   static _view_key = 'view';
   static _distance_unit_key = 'distanceUnit';
@@ -190,5 +190,3 @@ class LocalStorage {
     return groups;
   }
 }
-
-export default LocalStorage

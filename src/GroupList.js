@@ -1,4 +1,4 @@
-import NameList from './NameList';
+import { NameList } from './NameList';
 
 export const GroupList = props => (
     <NameList className="Groups"
