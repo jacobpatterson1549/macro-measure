@@ -87,7 +87,7 @@ export default class App extends React.Component {
         <Header
           currentGroup={this.state.currentGroup}
           view={this.state.view}
-          setView={view => this.setView(view)}
+          setView={(view) => this.setView(view)}
         />
         <Main
           view={this.state.view}
@@ -96,14 +96,14 @@ export default class App extends React.Component {
           currentGroupItem={this.state.currentGroupItem}
           distanceUnit={this.state.distanceUnit}
           // groupList
-          createGroup={name => this.createGroup(name)}
-          readGroup={name => this.setCurrentGroup(name)}
+          createGroup={(name) => this.createGroup(name)}
+          readGroup={(name) => this.setCurrentGroup(name)}
           updateGroup={(oldName, newName) => this.renameGroup(oldName, newName)}
-          moveGroupUp={name => this.moveGroupUp(name)}
-          moveGroupDown={name => this.moveGroupDown(name)}
-          deleteGroup={name => this.deleteGroup(name)}
+          moveGroupUp={(name) => this.moveGroupUp(name)}
+          moveGroupDown={(name) => this.moveGroupDown(name)}
+          deleteGroup={(name) => this.deleteGroup(name)}
           // settings
-          setDistanceUnit={unit => this.setDistanceUnit(unit)}
+          setDistanceUnit={(unit) => this.setDistanceUnit(unit)}
           clearStorage={() => this.clearStorage()}
         />
       </div>

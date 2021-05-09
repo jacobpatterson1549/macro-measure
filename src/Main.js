@@ -17,7 +17,7 @@ const render = (props) => {
         case 'settings':
             return (<Settings
                 distanceUnit={props.distanceUnit}
-                setDistanceUnit={unit => props.setDistanceUnit(unit)}
+                setDistanceUnit={(unit) => props.setDistanceUnit(unit)}
                 clearStorage={() => props.clearStorage()}
             />);
         case 'items':

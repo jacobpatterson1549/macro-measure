@@ -2,33 +2,22 @@ import React from 'react';
 
 import './Header.css';
 
-export class Header extends React.Component {
+const setView = (props, event) => {
+    event.preventDefault()
+    props.setView("groups")
+};
 
-    constructor(props) {
-        super(props);
-        this.setView = this.setView.bind(this);
-    }
+const headerItem = (props, name, title, view) => (
+    <span onClick={() => props.setView(view)} title={title}>{name}</span>
+);
 
-    setView(event) {
-        event.preventDefault()
-        this.props.setView("groups")
-    }
-
-    headerItem(name, title, view) {
-        return (
-            <span onClick={() => this.props.setView(view)} title={title}>{name}</span>
-        );
-    }
-
-    render() {
-        const groupListName = !['items', 'map'].includes(this.props.view) ? '[Groups]' : this.props.currentGroup || '[Add Group]';
-        return (
-            <header className="Header">
-                <a href="/" onClick={this.setView} title="group list">{groupListName}</a>
-                {this.headerItem('ⓘ', 'about page', 'about')}
-                {this.headerItem('?', 'help page', 'help')}
-                {this.headerItem('⚙', 'edit settings', 'settings')}
-            </header>
-        );
-    }
-}
+export const Header = (props) => (
+    <header className="Header">
+        <a href="/" onClick={(event) => setView(props, event)} title="group list">
+            {(!['items', 'map'].includes(props.view) ? '[Groups]' : props.currentGroup || '[Add Group]')}
+        </a>
+        {headerItem(props, 'ⓘ', 'about page', 'about')}
+        {headerItem(props, '?', 'help page', 'help')}
+        {headerItem(props, '⚙', 'edit settings', 'settings')}
+    </header>
+);

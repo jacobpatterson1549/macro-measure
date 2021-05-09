@@ -1,37 +1,27 @@
-import React from 'react';
+export const DefaultDistanceUnit = 'm';
 
-export class Settings extends React.Component {
+const distanceUnits = [
+    'm',
+    'km',
+    'ft',
+    'yd',
+    'mi'
+];
 
-    static DefaultDistanceUnit = 'm';
-
-    static distanceUnits = [
-        'm',
-        'km',
-        'ft',
-        'yd',
-        'mi'
-    ];
-
-    render() {
-        const distanceUnitOptions = Settings.distanceUnits.map(unit =>
-            <option key={unit}>{unit}</option>
-        );
-        return (
-            <div>
-                <h1>Macro Measure Settings</h1>
-                <form>
-                    <label>
-                        <span>Distance Unit:</span>
-                        <select value={this.props.distanceUnit} onChange={event => this.props.setDistanceUnit(event.target.value)}>
-                            {distanceUnitOptions}
-                        </select>
-                    </label>
-                    <label>
-                        <span>Clear ALL Saved Data:</span>
-                        <input type="button" value="Clear" onClick={this.props.clearStorage} />
-                    </label>
-                </form>
-            </div>
-        );
-    }
-}
+export const Settings = (props) => (
+    <div>
+        <h1>Macro Measure Settings</h1>
+        <form>
+            <label>
+                <span>Distance Unit:</span>
+                <select value={props.distanceUnit} onChange={(event) => props.setDistanceUnit(event.target.value)}>
+                    {distanceUnits.map((unit) => (<option key={unit}>{unit}</option>))}
+                </select>
+            </label>
+            <label>
+                <span>Clear ALL Saved Data:</span>
+                <input type="button" value="Clear" onClick={props.clearStorage} />
+            </label>
+        </form>
+    </div>
+);

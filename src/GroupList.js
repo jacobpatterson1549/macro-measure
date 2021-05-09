@@ -1,6 +1,6 @@
 import { NameList } from './NameList';
 
-export const GroupList = props => (
+export const GroupList = (props) => (
     <NameList className="Groups"
         values={props.groups}
         createEnd={(name) => props.createGroup(name)}

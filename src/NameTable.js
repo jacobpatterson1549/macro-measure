@@ -25,7 +25,7 @@ export const NameTable = (props) => (
         <tbody>
             {
                 props.values.length === 0
-                    ? <tr><td colSpan="4">No values exist.  Create one.</td></tr>
+                    ? (<tr><td colSpan="5">No values exist.  Create one.</td></tr>)
                     : props.values.map((value, index, values) => (
                         <tr key={value.name}>
                             <td onClick={() => props.read(value)} title="select value">{value.name}</td>

@@ -27,7 +27,6 @@ export class LocalStorage {
   static _groups_key = 'groups';
 
   constructor(storage) {
-    // window.localStorage
     this.storage = storage;
   }
 
@@ -80,7 +79,7 @@ export class LocalStorage {
   }
   updateGroup(oldName, newName) {
     const groups = this.getGroups();
-    const group = groups.find(group => group.name === oldName);
+    const group = groups.find((group) => group.name === oldName);
     if (group) {
       group.name = newName;
       this._setGroups(groups);
@@ -95,7 +94,7 @@ export class LocalStorage {
   }
   _moveGroup(name, delta) {
     const groups = this.getGroups();
-    const index = groups.findIndex(group => group.name === name);
+    const index = groups.findIndex((group) => group.name === name);
     if (index + delta >= 0 && index + delta < groups.length) {
       const tmp = groups[index];
       groups[index] = groups[index + delta];
@@ -110,7 +109,7 @@ export class LocalStorage {
   }
   deleteGroup(name) {
     const groups = this.getGroups();
-    const index = groups.findIndex(group => group.name === name);
+    const index = groups.findIndex((group) => group.name === name);
     if (index >= 0) {
       groups.splice(index, 1);
       this._setGroups(groups);
@@ -120,7 +119,7 @@ export class LocalStorage {
 
   createGroupItem(groupName, name, latitude, longitude) {
     const groups = this.getGroups();
-    const group = groups.find(group => group.name === groupName);
+    const group = groups.find((group) => group.name === groupName);
     if (group) {
       const items = group.items;
       const item = {
@@ -134,7 +133,7 @@ export class LocalStorage {
   }
   getGroupItems(groupName) {
     const groups = this.getGroups();
-    const group = groups.find(group => group.name === groupName);
+    const group = groups.find((group) => group.name === groupName);
     if (group) {
       return group.items;
     }
@@ -142,10 +141,10 @@ export class LocalStorage {
   }
   updateGroupItem(groupName, oldName, newName, newLat, newLng) {
     const groups = this.getGroups();
-    const group = groups.find(group => group.name === groupName);
+    const group = groups.find((group) => group.name === groupName);
     if (group) {
       const items = group.items;
-      const item = items.find(item => item.name === oldName);
+      const item = items.find((item) => item.name === oldName);
       if (item != null) {
         item.name = newName;
         item.lat = String(newLat);
@@ -163,10 +162,10 @@ export class LocalStorage {
   }
   _moveGroupItem(groupName, name, delta) {
     const groups = this.getGroups();
-    const group = groups.find(group => group.name === groupName);
+    const group = groups.find((group) => group.name === groupName);
     if (group) {
       const items = group.items;
-      const index = items.findIndex(item => item.name === name);
+      const index = items.findIndex((item) => item.name === name);
       if (index + delta >= 0 && index + delta < items.length) {
         const tmp = items[index];
         items[index] = items[index + delta];
@@ -178,10 +177,10 @@ export class LocalStorage {
   }
   deleteGroupItem(groupName, name) {
     const groups = this.getGroups();
-    const group = groups.find(group => group.name === groupName);
+    const group = groups.find((group) => group.name === groupName);
     if (group) {
       const items = group.items;
-      const index = items.findIndex(item => item.name === name);
+      const index = items.findIndex((item) => item.name === name);
       if (index >= 0) {
         items.splice(index, 1);
         this._setGroups(groups);
