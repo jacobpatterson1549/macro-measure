@@ -1,13 +1,14 @@
 import { NameList } from './NameList';
 
 export const GroupList = (props) => (
-    <NameList className="Groups"
+    <NameList className="GroupList"
+        type="Group"
         values={props.groups}
-        createEnd={(name) => props.createGroup(name)}
-        read={(group) => props.readGroup(group.name)}
-        updateEnd={(group, name) => props.updateGroup(group.name, name)}
-        delete={(group) => props.deleteGroup(group.name)}
-        moveUp={(group) => props.moveGroupUp(group.name)}
-        moveDown={(group) => props.moveGroupDown(group.name)}
+        createEnd={(name) => props.create(name)}
+        read={(index) => props.read(index)}
+        updateEnd={(index, name) => props.update(index, name)}
+        delete={(index) => props.delete(index)}
+        moveUp={(index) => props.moveUp(index)}
+        moveDown={(index) => props.moveDown(index)}
     />
 );

@@ -5,6 +5,7 @@ import { Help } from './Help';
 import { Settings } from './Settings';
 import { GroupList } from './GroupList';
 import { ItemList } from './ItemList';
+import { Item } from './Item';
 
 export const DefaultView = 'groups';
 
@@ -17,22 +18,40 @@ const render = (props) => {
         case 'settings':
             return (<Settings
                 distanceUnit={props.distanceUnit}
-                setDistanceUnit={(unit) => props.setDistanceUnit(unit)}
-                clearStorage={() => props.clearStorage()}
+                setDistanceUnit={props.setDistanceUnit}
+                clearStorage={props.clearStorage}
             />);
         case 'items':
             return (<ItemList
-                currentGroup={props.currentGroup}
+                items={props.items}
+                createStart={props.createItemStart}
+                read={props.readItem}
+                updateStart={props.updateItemStart}
+                delete={props.deleteItem}
+                move={props.moveItemUp}
+                moveDown={props.moveItemDown}
             />);
+        case 'item-create':
+        case 'item-read':
+        case 'item-update':
+            return (<Item
+                item={props.item}
+                create={props.createItemEnd}
+                update={props.updateItemEnd}
+                index={props.itemIndex}
+                count={props.items.length}
+                distanceUnit={props.distanceUnit}
+            />);
+        case 'groups':
         default:
             return (<GroupList
                 groups={props.groups}
-                createGroup={props.createGroup}
-                readGroup={props.readGroup}
-                updateGroup={props.updateGroup}
-                deleteGroup={props.deleteGroup}
-                moveGroupUp={props.moveGroupUp}
-                moveGroupDown={props.moveGroupDown}
+                create={props.createGroup}
+                read={props.readGroup}
+                update={props.updateGroup}
+                delete={props.deleteGroup}
+                moveUp={props.moveGroupUp}
+                moveDown={props.moveGroupDown}
             />);
     }
 }

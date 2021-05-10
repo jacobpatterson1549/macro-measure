@@ -7,7 +7,8 @@ export class NameList extends React.Component {
     // Most all properties are required.  One one of createStart/createEnd and updateStart/updateEnd should be used.
 
     // props:
-    // values[]: array of objects, each of which should have a 'name' attrtibute.  The names should be unique.
+    // type: the display name of the type of value in the table
+    // values[]: array of objects, each of which should have a 'name' attribute.  The names should be unique.
     // moveUp(value): function to decrease the index of the value
     // moveDown(value): function to increase the index of the value
     // createStart(): function to begin creating a value, called when the add button is clicked
@@ -20,8 +21,8 @@ export class NameList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            action: '?',
-            value: {},
+            view: '?',
+            index: -1,
             name: '?'
         };
         this.createStart = this.createStart.bind(this);
@@ -38,38 +39,38 @@ export class NameList extends React.Component {
         if (this.props.createStart) {
             this.props.createStart();
         } else {
-            this.setState({ action: 'create-form', name: '[New Value Name]' });
+            this.setState({ view: 'create-form', name: '[New Value Name]' });
         }
     }
 
-    updateStart(value) {
+    updateStart(index) {
         if (this.props.updateStart) {
             this.props.updateStart();
         } else {
-            this.setState({ action: 'update-form', value: value, name: value.name });
+            this.setState({ view: 'update-form', index: index, name: this.props.values[index].name });
         }
     }
 
-    deleteStart(value) {
-        this.setState({ action: 'delete-form', value: value });
+    deleteStart(index) {
+        this.setState({ view: 'delete-form', index: index, name: this.props.values[index].name });
     }
 
     createEnd(event) {
         event.preventDefault();
         this.props.createEnd(this.state.name);
-        this.setState({ action: "create-button" });
+        this.setState({ view: "create-button" });
     }
 
     updateEnd(event) {
         event.preventDefault();
-        this.props.updateEnd(this.state.value, this.state.name);
-        this.setState({ action: "create-button" });
+        this.props.updateEnd(this.state.index, this.state.name);
+        this.setState({ view: "create-button" });
     }
 
     deleteEnd(event) {
         event.preventDefault();
-        this.props.delete(this.state.value);
-        this.setState({ action: "create-button" });
+        this.props.delete(this.state.index);
+        this.setState({ view: "create-button" });
     }
 
     updateName(event) {
@@ -80,9 +81,9 @@ export class NameList extends React.Component {
     }
 
     uniqueName(name) {
-        for (const value of this.props.values) {
-            const existingName = value.name;
-            if (existingName === name && (this.state.action !== 'update-form' || name !== this.state.oldName)) {
+        for (let i = 0; i < this.props.values.length; i++) {
+            const value = this.props.values[i]
+            if (name === value.name && (this.state.view !== 'update-form' || i === this.state.index)) {
                 return false;
             }
         }
@@ -90,17 +91,17 @@ export class NameList extends React.Component {
     }
 
     cancelButton() {
-        return (<input type="button" value="cancel" onClick={() => this.setState({ action: "add-button" })} />);
+        return (<input type="button" value="cancel" onClick={() => this.setState({ view: "add-button" })} />);
     }
 
-    getAction() {
-        switch (this.state.action) {
+    getView() {
+        switch (this.state.view) {
             case "create-form":
                 return (
                     <form onSubmit={this.createEnd}>
                         <input type="text" value={this.state.name} required onChange={this.updateName} onFocus={(event) => event.target.select()} />
                         {this.cancelButton()}
-                        <input type="submit" />
+                        <input type="submit" value={"Create " + this.props.type} />
                     </form>
                 );
             case "update-form":
@@ -108,21 +109,21 @@ export class NameList extends React.Component {
                     <form onSubmit={this.updateEnd}>
                         <input type="text" value={this.state.name} required onChange={this.updateName} onFocus={(event) => event.target.select()} />
                         {this.cancelButton()}
-                        <input type="submit" />
+                        <input type="submit" value={"Rename " + this.props.type} />
                     </form>
                 );
             case "delete-form":
                 return (
                     <form onSubmit={this.deleteEnd}>
-                        <span>Delete {this.state.value.name}?</span>
+                        <span>Delete {this.state.name}?</span>
                         {this.cancelButton()}
-                        <input type="submit" />
+                        <input type="submit" value={"Delete " + this.props.type} />
                     </form>
                 );
             default: // "create-button"
                 return (
                     <form onSubmit={this.createStart}>
-                        <input type="submit" value="Create Value" />
+                        <input type="submit" value={"Create " + this.props.type} />
                     </form>
                 );
         }
@@ -132,6 +133,7 @@ export class NameList extends React.Component {
         return (
             <div>
                 <NameTable
+                    type={this.props.type}
                     values={this.props.values}
                     read={this.props.read}
                     update={this.updateStart}
@@ -139,7 +141,7 @@ export class NameList extends React.Component {
                     moveUp={this.props.moveUp}
                     moveDown={this.props.moveDown}
                 />
-                {this.getAction()}
+                {this.getView()}
             </div>
         );
     }

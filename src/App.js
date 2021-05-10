@@ -14,12 +14,17 @@ export default class App extends React.Component {
     const storage = window.localStorage;
     this.localStorage = new LocalStorage(storage);
 
+    const view = this.localStorage.getView();
+    const distanceUnit = this.localStorage.getDistanceUnit();
+    const currentGroupIndex = this.localStorage.getCurrentGroupIndex();
+    const currentItemIndex = this.localStorage.getCurrentItemIndex();
+    const groups = this.localStorage.getGroups();
     this.state = {
-      view: this.localStorage.getView() || Main.DefaultView,
-      groups: this.localStorage.getGroups(),
-      currentGroup: this.localStorage.getCurrentGroup(),
-      currentGroupItem: this.localStorage.getCurrentGroupItem(),
-      distanceUnit: this.localStorage.getDistanceUnit() || Settings.DefaultDistanceUnit
+      view: view || Main.DefaultView,
+      distanceUnit: distanceUnit || Settings.DefaultDistanceUnit,
+      currentGroupIndex: currentGroupIndex,
+      currentItemIndex: currentItemIndex,
+      groups: groups
     };
   }
 
@@ -33,41 +38,98 @@ export default class App extends React.Component {
     this.setState({ distanceUnit: distanceUnit });
   }
 
-  setCurrentGroup(name) {
-    this.localStorage.setCurrentGroup(name);
-    this.setState({
-      view: "items",
-      currentGroup: name
-    });
-  }
-
   createGroup(name) {
     const groups = this.localStorage.createGroup(name);
     this.setState({
-      currentGroup: name,
+      currentGroupIndex: groups.length - 1,
       view: "items",
       groups: groups
     });
   }
 
-  renameGroup(oldName, newName) {
-    const groups = this.localStorage.updateGroup(oldName, newName);
+  readGroup(index) {
+    this.localStorage.setCurrentGroupIndex(index);
+    this.setState({
+      view: "items",
+      currentGroupIndex: index
+    });
+  }
+
+  updateGroup(index, name) {
+    const groups = this.localStorage.updateGroup(index, name);
     this.setState({ groups: groups });
   }
 
-  moveGroupUp(name) {
-    const groups = this.localStorage.moveGroupUp(name);
+  deleteGroup(index) {
+    const groups = this.localStorage.deleteGroup(index);
     this.setState({ groups: groups });
   }
 
-  moveGroupDown(name) {
-    const groups = this.localStorage.moveGroupDown(name);
+  moveGroupUp(index) {
+    const groups = this.localStorage.moveGroupUp(index);
     this.setState({ groups: groups });
   }
 
-  deleteGroup(name) {
-    const groups = this.localStorage.deleteGroup(name);
+  moveGroupDown(index) {
+    const groups = this.localStorage.moveGroupDown(index);
     this.setState({ groups: groups });
+  }
+
+  createItemStart() {
+    this.setState({
+      view: 'item-create',
+      currentItemIndex: this.state.groups[this.state.currentGroupIndex].items.length
+    });
+  }
+
+  createItem(name, lat, lng) {
+    const groups = this.localStorage.createItem(this.state.currentGroupIndex, name, lat, lng);
+    this.setState({
+      currentItemIndex: groups[this.state.currentGroupIndex].length - 1,
+      groups: groups
+    });
+  }
+
+  readItem(index) {
+    this.setState({
+      view: 'item-read',
+      currentItemIndex: index
+    });
+  }
+
+  updateItemStart(index) {
+    this.setState({
+      view: 'item-create',
+      currentItemValue: this.state.groups[this.state.currentGroupIndex][index],
+      currentItemIndex: index
+    })
+  }
+
+  updateItem(index, name, lat, lng) {
+    const groups = this.localStorage.updateItem(this.state.currentGroupIndex, index, name, lat, lng);
+    this.setState({ groups: groups });
+  }
+
+  deleteItem(index) {
+    const groups = this.localStorage.deleteItem(this.state.currentGroupIndex, index);
+    this.setState({ groups: groups });
+  }
+
+  moveItemUp(index) {
+    const groups = this.localStorage.moveGroupUp(this.state.currentGroupIndex, index);
+    this.setState({
+      groups: groups,
+      currentItemIndex: this.state.currentItemIndex - 1
+    });
+  }
+
+  moveItemDown(index) {
+    const groups = this.localStorage.moveItemDown(this.state.currentGroupIndex, index);
+    this.setState({ groups: groups });
+    this.setState({
+      groups: groups,
+      currentItemIndex: this.state.currentItemIndex + 1
+    });
   }
 
   clearStorage() {
@@ -75,34 +137,68 @@ export default class App extends React.Component {
     this.setState({
       view: Main.DefaultView,
       groups: [],
-      currentGroup: null,
-      currentGroupItem: null,
+      currentGroupIndex: 0,
+      currentItemIndex: 0,
       distanceUnit: Settings.DefaultDistanceUnit
     });
+  }
+
+  currentGroupName() {
+    return (this.state.currentGroupIndex >= 0
+      && this.state.currentGroupIndex < this.state.groups.length)
+      ? this.state.groups[this.state.currentGroupIndex].name
+      : '?';
+  }
+
+  currentItems() {
+    return (this.state.currentGroupIndex >= 0
+      && this.state.currentGroupIndex < this.state.groups.length)
+      ? this.state.groups[this.state.currentGroupIndex].items
+      : [];
+  }
+
+  currentItem() {
+    return (this.state.currentGroupIndex >= 0
+      && this.state.currentGroupIndex < this.state.groups.length
+      && this.state.currentItemIndex >= 0
+      && this.state.currentItemIndex < this.state.groups[this.state.currentGroupIndex].items.length)
+      ? this.state.groups[this.state.currentGroupIndex].items[this.state.currentItemIndex]
+      : null;
   }
 
   render() {
     return (
       <div className="App">
         <Header
-          currentGroup={this.state.currentGroup}
+          currentGroupName={this.currentGroupName()}
           view={this.state.view}
           setView={(view) => this.setView(view)}
         />
         <Main
           view={this.state.view}
+          // GroupList
           groups={this.state.groups}
-          currentGroup={this.state.currentGroup}
-          currentGroupItem={this.state.currentGroupItem}
-          distanceUnit={this.state.distanceUnit}
-          // groupList
           createGroup={(name) => this.createGroup(name)}
-          readGroup={(name) => this.setCurrentGroup(name)}
-          updateGroup={(oldName, newName) => this.renameGroup(oldName, newName)}
-          moveGroupUp={(name) => this.moveGroupUp(name)}
-          moveGroupDown={(name) => this.moveGroupDown(name)}
-          deleteGroup={(name) => this.deleteGroup(name)}
-          // settings
+          readGroup={(index) => this.readGroup(index)}
+          updateGroup={(index, name) => this.updateGroup(index, name)}
+          deleteGroup={(index) => this.deleteGroup(index)}
+          moveGroupUp={(index) => this.moveGroupUp(index)}
+          moveGroupDown={(index) => this.moveGroupDown(index)}
+          // ItemList
+          items={this.currentItems()}
+          createItemStart={() => this.createItemStart()}
+          readItem={(index) => this.readItem(index)}
+          updateItemStart={(index) => this.updateItemStart(index)}
+          deleteItem={(index) => this.deleteItem(index)}
+          moveItemUp={(index) => this.moveItemUp(index)}
+          moveItemDown={(index) => this.moveItemDown(index)}
+          // Item
+          item={this.currentItem()}
+          createItemEnd={(name, lat, lng) => this.createItem(name, lat, lng)}
+          updateItemEnd={(index, name, lat, lng) => this.updateItem(index, name, lat, lng)}
+          itemIndex={this.currentItemIndex}
+          distanceUnit={this.state.distanceUnit}
+          // Settings
           setDistanceUnit={(unit) => this.setDistanceUnit(unit)}
           clearStorage={() => this.clearStorage()}
         />
