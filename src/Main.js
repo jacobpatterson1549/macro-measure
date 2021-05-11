@@ -35,12 +35,16 @@ const render = (props) => {
         case 'item-read':
         case 'item-update':
             return (<Item
-                item={props.item}
-                create={props.createItemEnd}
-                update={props.updateItemEnd}
+                view={props.view}
+                items={props.items}
                 index={props.itemIndex}
-                count={props.items.length}
                 distanceUnit={props.distanceUnit}
+                createStart={props.createItemStart}
+                createEnd={props.createItemEnd}
+                read={props.readItem}
+                updateStart={props.updateItemStart}
+                updateEnd={props.updateItemEnd}
+                delete={props.deleteItem}
             />);
         case 'groups':
         default:

@@ -3,8 +3,8 @@ import React from 'react';
 import './App.css';
 import { LocalStorage } from './LocalStorage';
 import { Header } from './Header';
-import { Main } from './Main';
-import { Settings } from './Settings';
+import { Main, DefaultView } from './Main';
+import { Settings, DefaultDistanceUnit } from './Settings';
 
 export default class App extends React.Component {
 
@@ -20,8 +20,8 @@ export default class App extends React.Component {
     const currentItemIndex = this.localStorage.getCurrentItemIndex();
     const groups = this.localStorage.getGroups();
     this.state = {
-      view: view || Main.DefaultView,
-      distanceUnit: distanceUnit || Settings.DefaultDistanceUnit,
+      view: view || DefaultView,
+      distanceUnit: distanceUnit || DefaultDistanceUnit,
       currentGroupIndex: currentGroupIndex,
       currentItemIndex: currentItemIndex,
       groups: groups
@@ -40,17 +40,20 @@ export default class App extends React.Component {
 
   createGroup(name) {
     const groups = this.localStorage.createGroup(name);
+    this.localStorage.setCurrentGroupIndex(groups.length - 1);
+    this.localStorage.setView('items');
     this.setState({
       currentGroupIndex: groups.length - 1,
-      view: "items",
+      view: 'items',
       groups: groups
     });
   }
 
   readGroup(index) {
     this.localStorage.setCurrentGroupIndex(index);
+    this.localStorage.setView('items');
     this.setState({
-      view: "items",
+      view: 'items',
       currentGroupIndex: index
     });
   }
@@ -76,21 +79,23 @@ export default class App extends React.Component {
   }
 
   createItemStart() {
+    this.localStorage.setView('item-create');
     this.setState({
       view: 'item-create',
-      currentItemIndex: this.state.groups[this.state.currentGroupIndex].items.length
+      currentItemIndex: this.state.groups[this.state.currentGroupIndex].items.length,
     });
   }
 
   createItem(name, lat, lng) {
     const groups = this.localStorage.createItem(this.state.currentGroupIndex, name, lat, lng);
     this.setState({
-      currentItemIndex: groups[this.state.currentGroupIndex].length - 1,
       groups: groups
     });
   }
 
   readItem(index) {
+    this.localStorage.setView('item-read');
+    this.localStorage.setCurrentItemIndex(index);
     this.setState({
       view: 'item-read',
       currentItemIndex: index
@@ -98,9 +103,10 @@ export default class App extends React.Component {
   }
 
   updateItemStart(index) {
+    this.localStorage.setView('item-create');
+    this.localStorage.setCurrentItemIndex(index);
     this.setState({
       view: 'item-create',
-      currentItemValue: this.state.groups[this.state.currentGroupIndex][index],
       currentItemIndex: index
     })
   }
@@ -125,7 +131,6 @@ export default class App extends React.Component {
 
   moveItemDown(index) {
     const groups = this.localStorage.moveItemDown(this.state.currentGroupIndex, index);
-    this.setState({ groups: groups });
     this.setState({
       groups: groups,
       currentItemIndex: this.state.currentItemIndex + 1
@@ -157,15 +162,6 @@ export default class App extends React.Component {
       : [];
   }
 
-  currentItem() {
-    return (this.state.currentGroupIndex >= 0
-      && this.state.currentGroupIndex < this.state.groups.length
-      && this.state.currentItemIndex >= 0
-      && this.state.currentItemIndex < this.state.groups[this.state.currentGroupIndex].items.length)
-      ? this.state.groups[this.state.currentGroupIndex].items[this.state.currentItemIndex]
-      : null;
-  }
-
   render() {
     return (
       <div className="App">
@@ -193,12 +189,15 @@ export default class App extends React.Component {
           moveItemUp={(index) => this.moveItemUp(index)}
           moveItemDown={(index) => this.moveItemDown(index)}
           // Item
-          item={this.currentItem()}
+          // createItemStart
           createItemEnd={(name, lat, lng) => this.createItem(name, lat, lng)}
+          // readItem
+          itemIndex={this.state.currentItemIndex}
+          // updateItemStart
           updateItemEnd={(index, name, lat, lng) => this.updateItem(index, name, lat, lng)}
-          itemIndex={this.currentItemIndex}
           distanceUnit={this.state.distanceUnit}
           // Settings
+          // distanceUnit
           setDistanceUnit={(unit) => this.setDistanceUnit(unit)}
           clearStorage={() => this.clearStorage()}
         />

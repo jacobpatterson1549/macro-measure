@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { MoveRowSpan } from './MoveRowSpan';
+import { CondSpan } from './CondSpan';
 
 // props:
 // type: the display name of the type of value in the table
@@ -30,8 +30,8 @@ export const NameTable = (props) => (
                     : props.values.map((value, index, values) => (
                         <tr key={value.name}>
                             <td onClick={() => props.read(index)} title="select value">{value.name}</td>
-                            <td><MoveRowSpan valid={index > 0} onClick={() => props.moveUp(index)} title="move up" value="▲" /></td>
-                            <td><MoveRowSpan valid={index + 1 < values.length} onClick={() => props.moveDown(index)} title="move down" value="▼" /></td>
+                            <td><CondSpan cond={index > 0} onClick={() => props.moveUp(index)} title="move up" value="▲" /></td>
+                            <td><CondSpan cond={index + 1 < values.length} onClick={() => props.moveDown(index)} title="move down" value="▼" /></td>
                             <td onClick={() => props.update(index)} title="edit value">Edit</td>
                             <td onClick={() => props.delete(index)} title="delete value">Delete</td>
                         </tr>

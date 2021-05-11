@@ -80,6 +80,10 @@ describe('current group index', () => {
             storage.store = { 'currentGroupIndex': 8 }
             expect(localStorage.getCurrentGroupIndex()).toBe(8);
         });
+        test('it should convert existing string to int', () => {
+            storage.store = { 'currentGroupIndex': '8' }
+            expect(localStorage.getCurrentGroupIndex()).toBe(8);
+        });
         test('it should default to zero', () => {
             expect(localStorage.getCurrentGroupIndex()).toBe(-1);
         });

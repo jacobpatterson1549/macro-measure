@@ -21,7 +21,7 @@ export class NameList extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            view: '?',
+            view: '?', // TODO: store view in App so this is restored on refresh
             index: -1,
             name: '?'
         };
@@ -97,19 +97,12 @@ export class NameList extends React.Component {
     getView() {
         switch (this.state.view) {
             case "create-form":
-                return (
-                    <form onSubmit={this.createEnd}>
-                        <input type="text" value={this.state.name} required onChange={this.updateName} onFocus={(event) => event.target.select()} />
-                        {this.cancelButton()}
-                        <input type="submit" value={"Create " + this.props.type} />
-                    </form>
-                );
             case "update-form":
                 return (
-                    <form onSubmit={this.updateEnd}>
+                    <form onSubmit={(this.state.view === 'create-form' ? this.createEnd : this.updateEnd)}>
                         <input type="text" value={this.state.name} required onChange={this.updateName} onFocus={(event) => event.target.select()} />
                         {this.cancelButton()}
-                        <input type="submit" value={"Rename " + this.props.type} />
+                        <input type="submit" value={(this.state.view === 'create-form' ? 'Create ' : 'Update ') + this.props.type} />
                     </form>
                 );
             case "delete-form":

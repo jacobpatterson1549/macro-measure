@@ -42,7 +42,6 @@ export class LocalStorage {
   }
 
   getDistanceUnit() {
-    // TODO: also return ratio?
     return this.storage.getItem(LocalStorage._distance_unit_key);
   }
   setDistanceUnit(unit) {
@@ -50,14 +49,16 @@ export class LocalStorage {
   }
 
   getCurrentGroupIndex() {
-    return this.storage.getItem(LocalStorage._current_group_index_key) || -1;
+    const index = this.storage.getItem(LocalStorage._current_group_index_key);
+    return index ? parseInt(index) : -1;
   }
   setCurrentGroupIndex(index) {
     this.storage.setItem(LocalStorage._current_group_index_key, index);
   }
 
   getCurrentItemIndex() {
-    return this.storage.getItem(LocalStorage._current_item_index_key) || -1;
+    const index = this.storage.getItem(LocalStorage._current_item_index_key);
+    return index ? parseInt(index) : -1;
   }
   setCurrentItemIndex(index) {
     this.storage.setItem(LocalStorage._current_item_index_key, index);
@@ -93,6 +94,7 @@ export class LocalStorage {
     return this._moveGroup(index, +1);
   }
   _moveGroup(index, delta) {
+    // TODO: use slice? (when mutating state directly)
     const groups = this.getGroups();
     if (index >= 0 && index < groups.length && index + delta >= 0 && index + delta < groups.length) {
       const tmp = groups[index];
