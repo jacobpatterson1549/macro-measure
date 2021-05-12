@@ -1,4 +1,8 @@
 # macro-measure
+
+[![Docker CI](https://github.com/jacobpatterson1549/macro-measure/actions/workflows/node.js.yml/badge.svg)](https://github.com/jacobpatterson1549/macro-measure/actions/workflows/node.js.yml)
+
+
 measure large distances with device gps
 
 ## Building
