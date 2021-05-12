@@ -2,7 +2,16 @@ import React from 'react';
 
 import './Item.css'
 import { Map } from './Map'
-import { GetCurrentLatLng, UpdateLatLng } from './LocationUtils'
+import { GetCurrentLatLng, GetDistance, UpdateLatLng } from './LocationUtils'
+
+const newItem = (current) => {
+    const item = {
+        name: '[New Item]',
+        lat: current.lat,
+        lng: current.lng,
+    };
+    return item;
+};
 
 export class Item extends React.Component {
 
@@ -18,12 +27,14 @@ export class Item extends React.Component {
     // delete(index): function called to delete the item
     constructor(props) {
         super(props);
+        const current = GetCurrentLatLng();
         const item = (props.index >= 0 && props.index < props.items.length)
             ? props.items[props.index]
-            : this.newItem();
+            : newItem(current);
         this.state = {
             item: item,
-            delta: 1 // TODO: store this in local storage
+            delta: 1, // TODO: store this in local storage
+            current: current,
         };
         this.createStart = this.createStart.bind(this);
         this.createEnd = this.createEnd.bind(this);
@@ -36,14 +47,14 @@ export class Item extends React.Component {
         this.updateDelta = this.updateDelta.bind(this);
     }
 
-    newItem() {
-        const position = GetCurrentLatLng();
-        const item = {
-            name: '[New Item]',
-            lat: position.lat,
-            lng: position.lng
-        };
-        return item;
+    // https://reactjs.org/docs/state-and-lifecycle.html#adding-lifecycle-methods-to-a-class
+    componentDidMount() {
+        if (this.props.view === 'item-read') {
+            this.timerID = setInterval(() => this.setState({ current: GetCurrentLatLng() }), 1000);
+        }
+    }
+    componentWillUnmount() {
+        clearInterval(this.timerID);
     }
 
     createStart() {
@@ -232,8 +243,12 @@ export class Item extends React.Component {
                 );
             default:
             case "item-read":
+                const distance = GetDistance(this.state.item, this.state.current, this.props.distanceUnit);
                 return (
-                    <p>TODO: show distance to [{this.state.item.lat},{this.state.item.lng}]</p>
+                    <div className="distance">
+                        <span>{distance}</span>
+                        <span> {this.props.distanceUnit}</span>
+                    </div>
                 );
         }
     }

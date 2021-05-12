@@ -47,3 +47,12 @@
 .Item-Header .right {
   margin-left: auto;
 }
+
+.Item .distance {
+  width: 100%;
+  font-size: 50vmin;
+}
+
+.Item .distance *:not(:first-child) {
+  font-size: 0.50em;
+}
