@@ -1,4 +1,49 @@
-.Item-header {
-    display: flex;
-    flex-direction: row;
+.Item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.Item > *:not(:first-child) {
+    height: 100%;
+  }
+
+.Item-Header {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.Item-Header .row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 1vh;
+  margin-bottom: 1vh;
+}
+
+.Item-Header button {
+    margin-left: 1vw;
+    margin-right: 1vw;
+    color: inherit;
+    cursor: pointer;
+}
+
+.Item-Header > *:first-child > * {
+  font-size: 10vw;
+}
+
+.Item-Header .name {
+  border: 0;
+  background: inherit;
+  overflow: hidden;
+}
+
+.Item-Header .left {
+  margin-right: auto;
+}
+  
+.Item-Header .right {
+  margin-left: auto;
 }

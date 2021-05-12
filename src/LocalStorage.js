@@ -130,6 +130,7 @@ export class LocalStorage {
       items.push(item);
       this._setGroups(groups);
     }
+    return groups;
   }
   updateItem(groupIndex, index, name, lat, lng) {
     const groups = this.getGroups();

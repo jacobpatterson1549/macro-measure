@@ -1,5 +1,5 @@
 // TODO: use geolocation (and https)
-export function getCurrentLatLng() {
+export function GetCurrentLatLng() {
     const getRandom = (max) => Math.random() * max;
     const lat = getRandom(180) - 90;
     const lng = getRandom(360) - 180;
@@ -7,12 +7,13 @@ export function getCurrentLatLng() {
 };
 
 // TODO
-export function updateLatLng(latLng, deltaN, deltaE, distanceUnit) {
+export function UpdateLatLng(latLng, deltaN, deltaE, distanceUnit) {
     return latLng;
 };
 
 // TODO
-export function getDistance(latLng1, latLng2, distanceUnit) {
+export function GetDistance(latLng1, latLng2, distanceUnit) {
+    // TODO: also return heading
     return 0;
 }
 

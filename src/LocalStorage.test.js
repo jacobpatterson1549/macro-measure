@@ -252,6 +252,11 @@ describe('group items', () => {
             localStorage.createItem(1, 'itemB1', 2, 4);
             expect(storage.store).toStrictEqual({ 'groups': '[{"name":"groupA","items":[{"name":"item1","lat":7,"lng":-3}]},{"name":"groupB","items":[{"name":"itemB1","lat":2,"lng":4}]}]' });
         });
+        test('it should return groups', () => {
+            storage.store = { 'groups': '[{"name":"groupA","items":[{"name":"item1","lat":7,"lng":-3}]},{"name":"groupB","items":[]}]' };
+            const groups = localStorage.createItem(1, 'itemB1', 2, 4);
+            expect(groups).toStrictEqual([{"name":"groupA","items":[{"name":"item1","lat":7,"lng":-3}]},{"name":"groupB","items":[{"name":"itemB1","lat":2,"lng":4}]}]);
+        });
     });
     describe('update', () => {
         describe('rename parts', () => {

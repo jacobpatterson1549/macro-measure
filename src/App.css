@@ -6,18 +6,15 @@
   color: red;
 }
 
-.App a:visited {
-  color: inherit;
+/* TODO: put this somewhere else */
+form > *, fieldset > * {
+  display: block;
 }
 
-.App > *:not(:first-child) {
+.App > .Main {
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-}
-
-form > * {
-  display: block;
 }

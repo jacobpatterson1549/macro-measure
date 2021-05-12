@@ -1,11 +1,15 @@
 .Header {
   display: flex;
+  flex-direction: row;
   align-items: center;
 }
 
 .Header * {
   font-size: 8vw;
-  padding-left: 1vw;
+  margin-left: 1vw;
+  border: 0;
+  background: inherit;
+  color: inherit;
   cursor: pointer;
 }
 
