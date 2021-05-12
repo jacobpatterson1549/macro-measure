@@ -1,9 +1,9 @@
 import { LocalStorage } from './LocalStorage';
 
-class LocalStorageMock {
+export class LocalStorageMock {
 
-    constructor() {
-        this.store = {};
+    constructor(store) {
+        this.store = store || {};
     }
 
     getItem(name) {

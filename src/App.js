@@ -16,7 +16,7 @@ export default class App extends React.Component {
   constructor(props) {
     super(props);
 
-    const storage = window.localStorage;
+    const storage = props.storage || window.localStorage;
     this.localStorage = new LocalStorage(storage);
 
     const view = this.localStorage.getView();
