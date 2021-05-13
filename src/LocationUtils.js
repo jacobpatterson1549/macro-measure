@@ -1,13 +1,5 @@
 import { moveTo, headingDistanceTo } from 'geolocation-utils'
 
-// TODO: use https
-export function GetCurrentLatLng() {
-    const getRandom = (max) => Math.random() * max;
-    const lat = getRandom(180) - 90;
-    const lng = getRandom(360) - 180;
-    return { lat: lat, lng: lng };
-};
-
 export function MoveTo(latLng, distance, unit, heading) {
     const amountMeters = toMeters(distance, unit);
     const headingDistance = { heading: heading, distance: amountMeters };

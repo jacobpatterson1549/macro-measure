@@ -239,6 +239,7 @@ export default class App extends React.Component {
       case 'item-read':
       case 'item-update':
       case 'item-delete':
+      case 'item-no-geo':
         return (<Item
           view={this.state.view}
           items={this.state.groups[this.state.groupIndex].items}
@@ -248,6 +249,7 @@ export default class App extends React.Component {
           createEnd={(name, lat, lng) => this.createItemEnd('item-read', name, lat, lng)}
           read={(index) => this.readItem('item-read', index)}
           readItems={() => this.readGroup('items-read', this.state.groupIndex)}
+          disableGeolocation={() => this.setView('item-no-geo')}
           updateStart={(index) => this.updateItemStart('item-update', index)}
           updateEnd={(index, name, lat, lng) => this.updateItemEnd('item-read', index, name, lat, lng)}
           deleteStart={(index) => this.deleteItemStart('item-delete', index)}
