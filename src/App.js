@@ -1,7 +1,7 @@
 import React from 'react';
 
 import './App.css';
-import { LocalStorage } from './LocalStorage';
+import { Groups } from './Groups';
 import { Header } from './Header';
 import { Settings, DefaultDistanceUnit } from './Settings';
 import { About } from './About';
@@ -15,223 +15,174 @@ export default class App extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = App.loadState(props);
+  }
 
-    const storage = props.storage || window.localStorage;
-    this.localStorage = new LocalStorage(storage);
+  static loadState(props) {
+    const defaultState = {
+      view: DefaultView,
+      distanceUnit: DefaultDistanceUnit,
+      groupIndex: 0,
+      itemIndex: 0,
+      groups: [],
+    }
+    const loadState = (key, defaultValue) => (
+      props.key || JSON.parse(window.localStorage.getItem(String(key))) || defaultValue
+    );
+    const state = Object.fromEntries(
+      Object.entries(defaultState).map(
+        ([key, defaultValue]) => [key, loadState(key, defaultValue)])
+    );
+    return state;
+  }
 
-    const view = this.localStorage.getView();
-    const distanceUnit = this.localStorage.getDistanceUnit();
-    const currentGroupIndex = this.localStorage.getCurrentGroupIndex();
-    const currentItemIndex = this.localStorage.getCurrentItemIndex();
-    const groups = this.localStorage.getGroups();
-    this.state = {
-      view: view || DefaultView,
-      distanceUnit: distanceUnit || DefaultDistanceUnit,
-      currentGroupIndex: currentGroupIndex,
-      currentItemIndex: currentItemIndex,
-      groups: groups,
-    };
+  setState(props) {
+    Object.entries(props).map(([key, value]) =>
+      window.localStorage.setItem(String(key), JSON.stringify(value))
+    );
+    super.setState(props);
+  }
+
+  clearStorage() {
+    window.localStorage.clear();
+    this.setState(App.loadState({}));
   }
 
   setView(view) {
-    this.localStorage.setView(view);
     this.setState({ view: view });
   }
 
   setDistanceUnit(distanceUnit) {
-    this.localStorage.setDistanceUnit(distanceUnit);
     this.setState({ distanceUnit: distanceUnit });
   }
 
   createGroupStart(view) {
-    this.localStorage.setView(view);
     this.setState({
       view: view,
     })
   }
 
   createGroupEnd(view, name) {
-    const groups = this.localStorage.createGroup(name);
-    const index = groups.length - 1;
-    this.localStorage.setView(view);
-    this.localStorage.setCurrentGroupIndex(index);
     this.setState({
       view: view,
-      groups: groups,
-      currentGroupIndex: index,
+      groups: Groups.createGroup(this.state.groups, name),
+      groupIndex: this.state.groups.length,
     });
   }
 
   readGroup(view, index) {
-    this.localStorage.setView(view);
-    this.localStorage.setCurrentGroupIndex(index);
     this.setState({
       view: view,
-      currentGroupIndex: index,
+      groupIndex: index,
     });
   }
 
   updateGroupStart(view, index) {
-    this.localStorage.setView(view);
-    this.localStorage.setCurrentGroupIndex(index);
     this.setState({
       view: view,
-      currentGroupIndex: index,
+      groupIndex: index,
     });
   }
 
   updateGroupEnd(view, index, name) {
-    this.localStorage.setView(view);
-    const groups = this.localStorage.updateGroup(index, name);
     this.setState({
       view: view,
-      groups: groups,
-      currentGroupIndex: index,
+      groups: Groups.updateGroup(this.state.groups, index, name),
+      groupIndex: index,
     });
   }
 
   deleteGroupStart(view, index) {
-    this.localStorage.setView(view);
-    this.localStorage.setCurrentGroupIndex(index);
     this.setState({
       view: view,
-      currentGroupIndex: index,
+      groupIndex: index,
     });
   }
 
   deleteGroupEnd(view, index) {
-    this.localStorage.setView(view);
-    const groups = this.localStorage.deleteGroup(index);
     this.setState({
       view: view,
-      groups: groups,
-      currentGroupIndex: index - 1,
+      groups: Groups.deleteGroup(this.state.groups, index),
     });
   }
 
   moveGroupUp(view, index) {
-    this.localStorage.setView(view);
-    const groups = this.localStorage.moveGroupUp(index);
     this.setState({
       view: view,
-      groups: groups,
-      currentGroupIndex: index - 1,
+      groups: Groups.moveGroupUp(this.state.groups, index),
     });
   }
 
   moveGroupDown(view, index) {
-    this.localStorage.setView(view);
-    const groups = this.localStorage.moveGroupDown(index);
     this.setState({
       view: view,
-      groups: groups,
-      currentGroupIndex: index + 1,
+      groups: Groups.moveGroupDown(this.state.groups, index),
     });
   }
 
   createItemStart(view) {
-    this.localStorage.setView(view);
-    const index = this.state.groups[this.state.currentGroupIndex].items.length;
     this.setState({
       view: view,
-      currentItemIndex: index,
+      itemIndex: this.state.groups[this.state.groupIndex].items.length,
     });
   }
 
   createItemEnd(view, name, lat, lng) {
-    this.localStorage.setView(view);
-    const index = this.state.groups[this.state.currentGroupIndex].items.length;
-    const groups = this.localStorage.createItem(this.state.currentGroupIndex, name, lat, lng);
     this.setState({
       view: view,
-      groups: groups,
-      currentItemIndex: index,
+      groups: Groups.createItem(this.state.groups, this.state.groupIndex, name, lat, lng),
+      itemIndex: this.state.groups[this.state.groupIndex].items.length,
     });
   }
 
   readItem(view, index) {
-    this.localStorage.setView(view);
-    this.localStorage.setCurrentItemIndex(index);
     this.setState({
       view: view,
-      currentItemIndex: index,
+      itemIndex: index,
     });
   }
 
   updateItemStart(view, index) {
-    this.localStorage.setView(view);
-    this.localStorage.setCurrentItemIndex(index);
     this.setState({
       view: view,
-      currentItemIndex: index,
+      itemIndex: index,
     })
   }
 
   updateItemEnd(view, index, name, lat, lng) {
-    this.localStorage.setView(view);
-    const groups = this.localStorage.updateItem(this.state.currentGroupIndex, index, name, lat, lng);
     this.setState({
       view: view,
-      groups: groups,
-      currentItemIndex: index,
+      groups: Groups.updateItem(this.state.groups, this.state.groupIndex, index, name, lat, lng),
+      itemIndex: index,
     });
   }
 
   deleteItemStart(view, index) {
-    this.localStorage.setView(view);
-    this.localStorage.setCurrentItemIndex(index);
     this.setState({
       view: view,
-      currentItemIndex: index,
+      itemIndex: index,
     })
   }
 
   deleteItemEnd(view, index) {
-    const groups = this.localStorage.deleteItem(this.state.currentGroupIndex, index);
-    this.localStorage.setView(view);
     this.setState({
       view: view,
-      groups: groups,
-      currentItemIndex: index - 1,
+      groups: Groups.deleteItem(this.state.groups, this.state.groupIndex, index),
     });
   }
 
   moveItemUp(view, index) {
-    this.localStorage.setView(view);
-    const groups = this.localStorage.moveItemUp(this.state.currentGroupIndex, index);
     this.setState({
       view: view,
-      groups: groups,
-      currentItemIndex: index - 1
+      groups: Groups.moveItemUp(this.state.groups, this.state.groupIndex, index),
     });
   }
 
   moveItemDown(view, index) {
-    this.localStorage.setView(view);
-    const groups = this.localStorage.moveItemDown(this.state.currentGroupIndex, index);
     this.setState({
       view: view,
-      groups: groups,
-      currentItemIndex: index + 1
+      groups: Groups.moveItemDown(this.state.groups, this.state.groupIndex, index),
     });
-  }
-
-  clearStorage() {
-    this.localStorage.clear();
-    this.setState({
-      view: DefaultView,
-      groups: [],
-      currentGroupIndex: 0,
-      currentItemIndex: 0,
-      distanceUnit: Settings.DefaultDistanceUnit
-    });
-  }
-
-  currentItems() {
-    return (this.state.currentGroupIndex >= 0
-      && this.state.currentGroupIndex < this.state.groups.length)
-      ? this.state.groups[this.state.currentGroupIndex].items
-      : [];
   }
 
   main() {
@@ -255,7 +206,7 @@ export default class App extends React.Component {
           <NameList className="GroupList"
             type="group"
             values={this.state.groups}
-            index={this.state.currentGroupIndex}
+            index={this.state.groupIndex}
             view={this.state.view}
             createStart={() => this.createGroupStart('group-create')}
             createEnd={(name) => this.createGroupEnd('groups-read', name)}
@@ -273,8 +224,8 @@ export default class App extends React.Component {
         return (
           <NameList className="ItemList"
             type="item"
-            values={this.state.groups[this.state.currentGroupIndex].items}
-            index={this.state.currentItemIndex}
+            values={this.state.groups[this.state.groupIndex].items}
+            index={this.state.itemIndex}
             view={this.state.view}
             createStart={() => this.createItemStart('item-create')}
             read={(index) => this.readItem('item-read', index)}
@@ -290,13 +241,13 @@ export default class App extends React.Component {
       case 'item-delete':
         return (<Item
           view={this.state.view}
-          items={this.state.groups[this.state.currentGroupIndex].items}
-          index={this.state.currentItemIndex}
+          items={this.state.groups[this.state.groupIndex].items}
+          index={this.state.itemIndex}
           distanceUnit={this.state.distanceUnit}
           createStart={() => this.createItemStart('item-create')}
           createEnd={(name, lat, lng) => this.createItemEnd('item-read', name, lat, lng)}
           read={(index) => this.readItem('item-read', index)}
-          readItems={() => this.readGroup('items-read', this.state.currentGroupIndex)}
+          readItems={() => this.readGroup('items-read', this.state.groupIndex)}
           updateStart={(index) => this.updateItemStart('item-update', index)}
           updateEnd={(index, name, lat, lng) => this.updateItemEnd('item-read', index, name, lat, lng)}
           deleteStart={(index) => this.deleteItemStart('item-delete', index)}
@@ -311,7 +262,7 @@ export default class App extends React.Component {
         <Header
           view={this.state.view}
           groups={this.state.groups}
-          currentGroupIndex={this.state.currentGroupIndex}
+          groupIndex={this.state.groupIndex}
           setView={(view) => this.setView(view)}
         />
         <main className="Main">

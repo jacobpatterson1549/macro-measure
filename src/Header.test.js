@@ -20,20 +20,20 @@ describe('Header', () => {
             expect(handleClick).toHaveBeenCalledWith(expected);
         });
     });
-    test.each`
-          view             | grpName     | expected
-          ${null}          | ${null}     | ${'[Groups]'}
-          ${'settings'}    | ${'any'}    | ${'[Groups]'}
-          ${'groups'}      | ${'ignore'} | ${'[Groups]'}
-          ${'items'}       | ${'groupA'} | ${'groupA'}
-          ${'item-create'} | ${'groupB'} | ${'groupB'}
-          ${'item-read'}   | ${'groupC'} | ${'groupC'}
-          ${'item-update'} | ${'groupD'} | ${'groupD'}
-          ${'item-delete'} | ${'groupE'} | ${'groupE'}
-      `('groups header text content should be $expected when view is $view and current group name is $grpName', ({ view, grpName, expected }) => {
-        const groups = [{ name: grpName }];
-        const currentGroupIndex = 0;
-        render(<Header view={view} groups={groups} currentGroupIndex={currentGroupIndex} />);
+    const groupNames = [
+        [null, null, '[Groups]'],
+        ['settings', 'any', '[Groups]'],
+        ['groups', 'ignore', '[Groups]'],
+        ['items', 'groupA', 'groupA'],
+        ['item-create', 'groupB', 'groupB'],
+        ['item-read', 'groupC', 'groupC'],
+        ['item-update', 'groupD', 'groupD'],
+        ['item-delete', 'groupE', 'groupE'],
+    ];
+    test.each(groupNames)('when view is %s and current group name is %s, groups header text content should be %s ', (view, groupName, expected) => {
+        const groups = [{ name: groupName }];
+        const groupIndex = 0;
+        render(<Header view={view} groups={groups} groupIndex={groupIndex} />);
         const groupElement = screen.getByTitle(/group/);
         expect(groupElement).toHaveTextContent(expected);
     });
