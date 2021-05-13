@@ -4,15 +4,6 @@ import './Item.css'
 import { Map } from './Map'
 import { GetCurrentLatLng, GetDistanceHeading, MoveTo, Heading } from './LocationUtils'
 
-const newItem = (current) => {
-    const item = {
-        name: '[New Item]',
-        lat: current.lat,
-        lng: current.lng,
-    };
-    return item;
-};
-
 export class Item extends React.Component {
 
     // props:
@@ -30,7 +21,7 @@ export class Item extends React.Component {
         const current = GetCurrentLatLng();
         const item = (props.index >= 0 && props.index < props.items.length)
             ? props.items[props.index]
-            : newItem(current);
+            : Item.newItem(current);
         this.state = {
             item: item,
             delta: 1, // TODO: store this in local storage
@@ -47,6 +38,15 @@ export class Item extends React.Component {
         this.updateDelta = this.updateDelta.bind(this);
     }
 
+    static newItem = (current) => {
+        const item = {
+            name: '[New Item]',
+            lat: current.lat,
+            lng: current.lng,
+        };
+        return item;
+    };
+
     // https://reactjs.org/docs/state-and-lifecycle.html#adding-lifecycle-methods-to-a-class
     componentDidMount() {
         if (this.props.view === 'item-read') {
@@ -59,7 +59,7 @@ export class Item extends React.Component {
 
     createStart() {
         this.setState({
-            item: this.newItem(),
+            item: Item.newItem(this.state.current),
         });
         this.props.createStart();
     }
