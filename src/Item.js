@@ -2,7 +2,7 @@ import React from 'react';
 
 import './Item.css'
 import { Map } from './Map'
-import { GetCurrentLatLng, GetDistance, UpdateLatLng } from './LocationUtils'
+import { GetCurrentLatLng, GetDistanceHeading, MoveTo, Heading } from './LocationUtils'
 
 const newItem = (current) => {
     const item = {
@@ -166,8 +166,9 @@ export class Item extends React.Component {
         this.setState({ item: item });
     }
 
-    updateLatLng(lat, lng) {
-        const item2 = UpdateLatLng(this.state.item, lat, lng, this.state.delta)
+    updateLatLng(event, heading) {
+        event.preventDefault(); // do not submit form
+        const item2 = MoveTo(this.state.item, this.state.delta, this.props.distanceUnit, heading);
         const item3 = Object.assign({}, this.state.item, item2); // overwrite lat and lng with item2
         this.setState({ item: item3 });
     }
@@ -208,14 +209,14 @@ export class Item extends React.Component {
                             </label>
                             <label>
                                 <span>Latitude</span>
-                                <button onClick={() => this.updateLatLng(+1, 0)}>+(N)</button>
-                                <button onClick={() => this.updateLatLng(-1, 0)}>-(S)</button>
+                                <button onClick={(event) => this.updateLatLng(event, Heading.N)}>+(N)</button>
+                                <button onClick={(event) => this.updateLatLng(event, Heading.S)}>-(S)</button>
                                 <input type="number" value={this.state.item.lat} disabled />
                             </label>
                             <label>
                                 <span>Longitude</span>
-                                <button onClick={() => this.updateLatLng(0, -1)}>-(W)</button>
-                                <button onClick={() => this.updateLatLng(0, +1)}>+(E)</button>
+                                <button onClick={(event) => this.updateLatLng(event, Heading.W)}>-(W)</button>
+                                <button onClick={(event) => this.updateLatLng(event, Heading.E)}>+(E)</button>
                                 <input type="number" value={this.state.item.lng} disabled />
                             </label>
                             <label>
@@ -243,10 +244,10 @@ export class Item extends React.Component {
                 );
             default:
             case "item-read":
-                const distance = GetDistance(this.state.item, this.state.current, this.props.distanceUnit);
+                const distanceHeading = GetDistanceHeading(this.state.item, this.state.current, this.props.distanceUnit);
                 return (
                     <div className="distance">
-                        <span>{distance}</span>
+                        <span>{distanceHeading.distance}</span>
                         <span> {this.props.distanceUnit}</span>
                     </div>
                 );

@@ -50,9 +50,9 @@
 
 .Item .distance {
   width: 100%;
-  font-size: 50vmin;
+  font-size: 30vmin;
 }
 
 .Item .distance *:not(:first-child) {
-  font-size: 0.50em;
+  font-size: 0.01vw;
 }

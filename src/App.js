@@ -309,12 +309,9 @@ export default class App extends React.Component {
     return (
       <div className="App">
         <Header
-          groupName={
-            /^item(s|(-\w+))$/.test(this.state.view)
-              ? this.state.groups[this.state.currentGroupIndex].name
-              : '[Groups]'
-          }
           view={this.state.view}
+          groups={this.state.groups}
+          currentGroupIndex={this.state.currentGroupIndex}
           setView={(view) => this.setView(view)}
         />
         <main className="Main">
