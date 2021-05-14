@@ -21,7 +21,7 @@ export class Item extends React.Component {
         super(props);
         const geolocation = Item.needsLocation(props.view) && navigator.geolocation;
         const current = props.current || null;
-        const item = props.item ? props.item : props.items[props.index];
+        const item = props.view === 'item-create' ? Item.newItem(current) : props.items[props.index];
         this.state = {
             geolocation: geolocation,
             item: item,
@@ -91,7 +91,8 @@ export class Item extends React.Component {
             const state = {
                 current: latLng,
             };
-            if (!this.state.item) {
+            if (this.props.view === 'item-create' && this.state.item.lat === 0 && this.state.item.lng === 0) { // TODO: hack
+                // TODO: enable create Item button (disable it initially)
                 state.item = Item.newItem(latLng);
             }
             this.setState(state);
