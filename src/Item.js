@@ -1,208 +1,156 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 
 import './Item.css'
 import { Map } from './Map'
 import { GetDistanceHeading, MoveTo, Heading } from './LocationUtils'
+import { useLocalStorage } from './LocalStorage';
 
-export class Item extends React.Component {
+const newItem = (currentLatLng) => {
+    const lat = currentLatLng ? currentLatLng.lat : 0;
+    const lng = currentLatLng ? currentLatLng.lng : 0;
+    const item = {
+        name: '[New Item]',
+        lat: lat,
+        lng: lng,
+    };
+    return item;
+};
 
-    // props:
-    // item{name,lat,lng}: the item to read/update
-    // index: the index of the item being shown
-    // numItems: the number of existing items
-    // createStart(): function called to create a new item
-    // createEnd(name, lat, lng): function called to create an item
-    // read(delta): function called to read the item at the offset from the index
-    // readItems(): function called to go back to the item list
-    // disableGeolocation(): a callback to indicate that the device does not support gps location
-    // updateEnd(index, name, lat, lng): function called to update an item
-    // delete(index): function called to delete the item
-    constructor(props) {
-        super(props);
-        const geolocation = Item.needsLocation(props.view) && navigator.geolocation;
-        const current = props.current || null;
-        const item = props.view === 'item-create' ? Item.newItem(current) : props.items[props.index];
-        this.state = {
-            geolocation: geolocation,
-            item: item,
-            delta: 1, // TODO: store this in local storage
-            current: current,
-        };
-        this.getCurrentLatLng = this.getCurrentLatLng.bind(this);
-        this.createStart = this.createStart.bind(this);
-        this.createEnd = this.createEnd.bind(this);
-        this.updateStart = this.updateStart.bind(this);
-        this.updateEnd = this.updateEnd.bind(this);
-        this.deleteStart = this.deleteStart.bind(this);
-        this.deleteEnd = this.deleteEnd.bind(this);
-        this.updateName = this.updateName.bind(this);
-        this.updateLatLng = this.updateLatLng.bind(this);
-        this.updateDelta = this.updateDelta.bind(this);
-    }
+const needsLocation = (view) => ['item-read', 'item-create'].includes(view);
 
-    static newItem = (current) => {
-        const lat = current ? current.lat : 0;
-        const lng = current ? current.lng : 0;
-        const item = {
-            name: '[New Item]',
-            lat: lat,
-            lng: lng,
-        };
-        return item;
+export const Item = ({
+    view, // the page being viewed
+    index, // the index of the item being shown
+    items, // the items in the group
+    distanceUnit, // the distance length
+    createStart, // function called to create a new item
+    createEnd, // (name, lat, lng): function called to create an item
+    read, //(delta): function called to read the item at the offset from the index
+    readItems, // function called to go back to the item list
+    disableGeolocation, // function to indicate that the device does not support gps location
+    updateStart, // function to begin updating the item
+    updateEnd, // function to finish updating the item
+    deleteStart, // function to begin deleting the item
+    deleteEnd, // function to finish deleting the item
+}) => {
+
+    const canGetGeolocation = navigator.geolocation;
+    const [currentLatLng, setCurrentLatLong] = useLocalStorage('currentLatLng', null);
+    const [item, setItem] = useState((view === 'item-create') ? newItem(currentLatLng) : items[index])
+    const [moveAmount, setMoveAmount] = useLocalStorage('move-amount', 1);
+
+    let timerID;
+    const stopGeoTimer = () => {
+        console.log('stopping timer', timerID, new Date());
+        clearInterval(timerID);
+    };
+    const startGeoTimer = () => {
+        if (needsLocation(view)) {
+            if (!canGetGeolocation) {
+                return;
+            }
+            const success = (position) => {
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                const latLng = { lat: latitude, lng: longitude };
+                if (view === 'item-create' && currentLatLng === null) {
+                    setItem(newItem(latLng));
+                }
+                setCurrentLatLong(latLng);
+                console.log('got location', latLng);
+                if (view !== 'item-read') {
+                    stopGeoTimer();
+                }
+            };
+            const error = disableGeolocation;
+            const options = {
+                enableHighAccuracy: false, // TODO: allow this to be a setting
+            };
+            stopGeoTimer();
+            timerID = navigator.geolocation.watchPosition(success, error, options);
+            console.log('STARTING timer', timerID, new Date());
+        }
+    };
+    useEffect(() => {
+        if (needsLocation(view)) {
+            if (canGetGeolocation) {
+                startGeoTimer();
+            } else {
+                disableGeolocation();
+            }
+        }
+        return stopGeoTimer;
+    });
+
+    const _createStart = () => {
+        setItem(newItem(currentLatLng));
+        createStart();
+    };
+    const _createEnd = (event) => {
+        event.preventDefault();
+        createEnd(item.name, item.lat, item.lng);
+    };
+    const _read = (delta) => {
+        setItem(items[index + delta]);
+        read(index + delta);
+    };
+    const _updateStart = () => {
+        setItem(items[index]);
+        updateStart(index);
+    };
+    const _updateEnd = (event) => {
+        event.preventDefault();
+        updateEnd(index, item.name, item.lat, item.lng);
+    };
+    const _deleteStart = () => {
+        setItem(items[index]);
+        deleteStart(index);
+    };
+    const _deleteEnd = (event) => {
+        event.preventDefault();
+        deleteEnd(index);
     };
 
-    static needsLocation = (view) => {
-        return ['item-read', 'item-create'].includes(view);
-    }
-
-    startGeoTimer(force) {
-        if (Item.needsLocation(this.props.view)) {
-            this.stopGeoTimer();
-            this.getCurrentLatLng();
-            if (force || this.props.view === 'item-read') {
-                this.timerID = setInterval(() => this.getCurrentLatLng(), 1000);
-            }
-        }
-    }
-
-    stopGeoTimer() {
-        clearInterval(this.timerID);
-    }
-
-    // https://reactjs.org/docs/state-and-lifecycle.html#adding-lifecycle-methods-to-a-class
-    componentDidMount() {
-        this.startGeoTimer();
-        if (Item.needsLocation(this.props.view) && !this.state.geolocation) {
-            this.props.disableGeolocation();
-        }
-    }
-    componentWillUnmount() {
-        this.stopGeoTimer()
-    }
-
-    getCurrentLatLng() {
-        if (!this.state.geolocation) {
-            return;
-        }
-        const success = (position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            const latLng = { lat: latitude, lng: longitude };
-            const state = {
-                current: latLng,
-            };
-            if (this.props.view === 'item-create' && this.state.item.lat === 0 && this.state.item.lng === 0) { // TODO: hack
-                // TODO: enable create Item button (disable it initially)
-                state.item = Item.newItem(latLng);
-            }
-            this.setState(state);
-        };
-        const error = () => {
-            this.props.disableGeolocation();
-        };
-        const options = {
-            enableHighAccuracy: false, // TODO: allow this to be a setting
-        };
-        // TODO: use navigator.Geolocation.watchPosition():
-        navigator.geolocation.getCurrentPosition(success, error, options);
-    }
-
-    createStart() {
-        this.startGeoTimer();
-        this.setState({
-            item: Item.newItem(this.state.current),
-        });
-        this.props.createStart();
-    }
-
-    createEnd(event) {
-        event.preventDefault();
-        this.props.createEnd(this.state.item.name, this.state.item.lat, this.state.item.lng);
-        this.startGeoTimer();
-    }
-
-    read(delta) {
-        this.startGeoTimer(true); // force because view will not change until props.read() returns
-        const index = this.props.index + delta;
-        this.props.read(index);
-    }
-
-    updateStart() {
-        this.stopGeoTimer();
-        this.setState({
-            item: this.props.items[this.props.index],
-        });
-        this.props.updateStart(this.props.index);
-    }
-
-    updateEnd(event) {
-        event.preventDefault();
-        this.startGeoTimer();
-        this.props.updateEnd(this.props.index, this.state.item.name, this.state.item.lat, this.state.item.lng);
-    }
-
-    deleteStart() {
-        this.stopGeoTimer();
-        this.setState({
-            item: this.props.items[this.props.index],
-        });
-        this.props.deleteStart(this.props.index);
-    }
-
-    deleteEnd(event) {
-        event.preventDefault();
-        this.startGeoTimer();
-        this.props.deleteEnd(this.props.index);
-    }
-
-    getHeader() {
+    const getHeader = () => {
         return (
             <div className="Item-Header">
                 <div className="row">
                     <button className="left arrow"
-                        disabled={this.props.index <= 0}
-                        onClick={() => this.read(-1)}
+                        disabled={index <= 0}
+                        onClick={() => _read(-1)}
                         title="previous item"
                     >
                         <span>◀</span>
                     </button>
-                    <button onClick={() => this.props.readItems()} title="items list" className="name">
-                        <span>
-                            {
-                                this.props.view === 'item-create'
-                                    ? '[Add Item]'
-                                    : this.props.index >= 0 && this.props.index < this.props.items.length
-                                        ? this.props.items[this.props.index].name
-                                        : '?'
-                            }
-                        </span>
+                    <button onClick={() => readItems()} title="items list" className="name">
+                        <span>{view === 'item-create' ? '[Add Item]' : items[index].name}</span>
                     </button>
                     <button className="right arrow"
-                        disabled={this.props.index + 1 >= this.props.items.length}
-                        onClick={() => this.read(+1)}
+                        disabled={index + 1 >= items.length}
+                        onClick={() => _read(+1)}
                         title="next item"
                     >
                         <span>▶</span>
                     </button>
                 </div>
                 {
-                    this.props.view === 'item-read' &&
+                    view === 'item-read' &&
                     <div className="row">
                         <button
-                            onClick={() => this.updateStart()}
+                            onClick={_updateStart}
                             title="edit item"
                         >
                             <span>Edit...</span>
                         </button>
                         <button
-                            onClick={() => this.deleteStart()}
+                            onClick={_deleteStart}
                             title="delete item"
                         >
                             <span>Delete...</span>
                         </button>
                         <button
-                            disabled={this.state.current === null}
-                            onClick={() => this.createStart()}
+                            disabled={currentLatLng === null}
+                            onClick={_createStart}
                             title="create item"
                         >
                             <span>Add...</span>
@@ -211,48 +159,44 @@ export class Item extends React.Component {
                 }
             </div>
         );
-    }
-
+    };
 
     // TODO: much of this is duplicated in NameTable.js
-    updateName(event) {
-        const name = event.target.value;
-        const uniqueName = this.uniqueName(name);
-        const nameInput = event.target;
-        const item = Object.assign({}, this.state.item, { name: name })
-        nameInput.setCustomValidity(uniqueName ? '' : 'duplicate name');
-        this.setState({ item: item });
-    }
-
-    updateLatLng(event, heading) {
-        event.preventDefault(); // do not submit form
-        const item2 = MoveTo(this.state.item, this.state.delta, this.props.distanceUnit, heading);
-        const item3 = Object.assign({}, this.state.item, item2); // overwrite lat and lng with item2
-        this.setState({ item: item3 });
-    }
-
-    updateDelta(event) {
-        const delta = event.target.value;
-        this.setState({ delta: delta });
-    }
-
-    uniqueName(name) {
-        for (let i = 0; i < this.props.items.length; i++) {
-            const item = this.props.items[i]
-            if (name === item.name && (this.props.view !== 'item-update' || i === this.props.index)) {
+    const uniqueName = (name) => {
+        for (let i = 0; i < items.length; i++) {
+            const otherItem = items[i]
+            if (name === otherItem.name && (view !== 'item-update' || i === index)) {
                 return false;
             }
         }
         return true;
+    };
+    const updateName = (event) => {
+        const name = event.target.value;
+        const isUniqueName = uniqueName(name);
+        const nameInput = event.target;
+        const item2 = Object.assign({}, item, { name: name });
+        nameInput.setCustomValidity(isUniqueName ? '' : 'duplicate name');
+        setItem(item2);
     }
 
-    cancelButton() {
-        const onClick = this.props.view === 'item-create' ? this.props.readItems : () => this.read(0);
+    const updateLatLng = (event, heading) => {
+        event.preventDefault();
+        const item2 = MoveTo(item, moveAmount, distanceUnit, heading);
+        const item3 = Object.assign({}, item, item2);
+        setItem(item3);
+    };
+    const updateMoveAmount = (event) => {
+        const moveAmount = event.target.value;
+        setMoveAmount(moveAmount);
+    };
+    const cancelButton = () => {
+        const onClick = (view === 'item-create') ? readItems : () => _read(0);
         return (<input type="button" value="cancel" onClick={onClick} />);
-    }
+    };
 
-    getAction() {
-        switch (this.props.view) {
+    const getAction = () => {
+        switch (view) {
             case "item-no-geo":
                 return (
                     <span>Cannot get location</span>
@@ -260,74 +204,75 @@ export class Item extends React.Component {
             case "item-create":
             case "item-update":
                 return (
-                    <form onSubmit={(this.props.view === 'item-create' ? this.createEnd : this.updateEnd)}>
+                    <form onSubmit={(view === 'item-create') ? _createEnd : _updateEnd}>
                         <fieldset>
                             <legend>
-                                {(this.props.view === 'item-create' ? 'Create Item' : 'Update ' + this.props.items[this.props.index].name)}
+                                {(view === 'item-create') ? 'Create Item' : ('Update ' + items[index].name)}
                             </legend>
                             <label>
                                 <span>Name</span>
-                                <input type="text" value={this.state.item ? this.state.item.name : '?'} onChange={this.updateName} onFocus={(event) => event.target.select()} />
+                                <input type="text" value={item ? item.name : '?'} onChange={updateName} onFocus={(event) => event.target.select()} />
                             </label>
                             <label>
                                 <span>Latitude</span>
-                                <button onClick={(event) => this.updateLatLng(event, Heading.N)}>+(N)</button>
-                                <button onClick={(event) => this.updateLatLng(event, Heading.S)}>-(S)</button>
-                                <input type="number" value={this.state.item ? this.state.item.lat : 0} disabled />
+                                <button onClick={(event) => updateLatLng(event, Heading.N)}>+(N)</button>
+                                <button onClick={(event) => updateLatLng(event, Heading.S)}>-(S)</button>
+                                <input type="number" value={item ? item.lat : 0} disabled />
                             </label>
                             <label>
                                 <span>Longitude</span>
-                                <button onClick={(event) => this.updateLatLng(event, Heading.W)}>-(W)</button>
-                                <button onClick={(event) => this.updateLatLng(event, Heading.E)}>+(E)</button>
-                                <input type="number" value={this.state.item ? this.state.item.lng : 0} disabled />
+                                <button onClick={(event) => updateLatLng(event, Heading.W)}>-(W)</button>
+                                <button onClick={(event) => updateLatLng(event, Heading.E)}>+(E)</button>
+                                <input type="number" value={item ? item.lng : 0} disabled />
                             </label>
                             <label>
-                                <span>Move Amount ({this.props.distanceUnit})</span>
-                                <input type="number" value={this.state.delta} onChange={this.updateDelta} min="0" max="1000" onFocus={(event) => event.target.select()} />
+                                <span>Move Amount ({distanceUnit})</span>
+                                <input type="number" value={moveAmount} onChange={updateMoveAmount} min="0" max="1000" onFocus={(event) => event.target.select()} />
                             </label>
                             <div>
-                                {this.cancelButton()}
-                                <input type="submit" value={this.props.view === 'item-create' ? 'Create Item' : 'Update Item'} />
+                                {cancelButton()}
+                                <input type="submit"
+                                    disabled={view === 'item-create' && currentLatLng === null}
+                                    value={(view === 'item-create') ? 'Create Item' : 'Update Item'}
+                                />
                             </div>
                         </fieldset>
                     </form>
                 );
             case "item-delete":
                 return (
-                    <form onSubmit={this.deleteEnd}>
+                    <form onSubmit={_deleteEnd}>
                         <fieldset>
-                            <legend>Delete {this.state.item.name}</legend>
+                            <legend>Delete {item.name}</legend>
                             <div>
-                                {this.cancelButton()}
-                                <input type="submit" value={"Delete " + this.props.type} />
+                                {cancelButton()}
+                                <input type="submit" value={"Delete item"} />
                             </div>
                         </fieldset>
                     </form>
                 );
             default:
             case "item-read":
-                if (this.state.current == null) {
+                if (currentLatLng == null) {
                     return (
                         <span>Getting location...</span>
                     )
                 }
-                const distanceHeading = GetDistanceHeading(this.state.item, this.state.current, this.props.distanceUnit);
+                const distanceHeading = GetDistanceHeading(item, currentLatLng, distanceUnit);
                 return (
                     <div className="distance">
                         <span>{distanceHeading.distance}</span>
-                        <span> {this.props.distanceUnit}</span>
+                        <span> {distanceUnit}</span>
                     </div>
                 );
         }
     }
 
-    render() {
-        return (
-            <div className="Item">
-                {this.getHeader()}
-                <Map />
-                {this.getAction()}
-            </div>
-        );
-    }
-}
+    return (
+        <div className="Item">
+            {getHeader()}
+            <Map />
+            {getAction()}
+        </div>
+    );
+};
