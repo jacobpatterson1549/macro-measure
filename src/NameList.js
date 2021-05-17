@@ -1,169 +1,130 @@
-import React from 'react';
+import { useState } from 'react';
 
 import { NameTable } from './NameTable';
 
-export class NameList extends React.Component {
+export const NameList = ({
+    view, // the action being performed
+    type, // the display name of the type of value in the table
+    values, // array of objects, each of which should have a 'name' attribute.  The names should be unique.
+    index, // the index of the value being edited
+    createStart, // function to begin creating a value
+    createEnd, // function to finish creating a value with the name
+    read, // function to read the value when the name is clicked
+    updateStart, // function to begin updating the name of the value at the index
+    updateEnd, // function to finish updating the name of the value at the index
+    deleteStart, // function to begin deleting the value at the index
+    deleteEnd, // function to finish deleting the value at index
+    moveUp, // function to decrease the index of the value
+    moveDown, // function to increase the index of the value
+    cancel, // function to cancel the current action
+}) => {
 
-    // props:
-    // type: the display name of the type of value in the table
-    // values[]: array of objects, each of which should have a 'name' attribute.  The names should be unique.
-    // index: the index of the value being edited
-    // moveUp(value): function to decrease the index of the value
-    // moveDown(value): function to increase the index of the value
-    // createStart(): function to begin creating a value, called when the add button is clicked
-    // createEnd(name): function called by the inner form to finish creating a value
-    // read(value): function that is called when a value's name is clicked
-    // updateStart(value): function to begin updating a value, called when the edit button is clicked for a value
-    // updateEnd(oldValue, name): function to finish updating a value, changing the name
-    // delete(value): function to delete a value
+    const [name, setName] = useState('?');
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            name: '?',
-        };
-        this.createStart = this.createStart.bind(this);
-        this.createEnd = this.createEnd.bind(this);
-        this.updateStart = this.updateStart.bind(this);
-        this.updateEnd = this.updateEnd.bind(this);
-        this.deleteStart = this.deleteStart.bind(this);
-        this.deleteEnd = this.deleteEnd.bind(this);
-        this.updateName = this.updateName.bind(this);
-        if (this.props.cancel) {
-            this.cancel = this.props.cancel.bind(this);
-        }
-    }
-
-    createStart(event) {
+    const _createStart = (event) => {
         event.preventDefault();
-        this.props.createStart();
-        this.setState({
-            name: '[New Value Name]',
-        });
-    }
-
-    createEnd(event) {
+        createStart();
+        setName('[New Value Name]');
+    };
+    const _createEnd = (event) => {
         event.preventDefault();
-        this.props.createEnd(this.state.name);
-    }
-
-    updateStart(index) {
-        const name = this.props.values[index].name;
-        this.setState({
-            index: index,
-            name: name,
-        });
-        this.props.updateStart(index);
-    }
-
-    updateEnd(event) {
+        createEnd(name);
+    };
+    const _updateStart = (index) => {
+        setName(values[index].name);
+        updateStart(index);
+    };
+    const _updateEnd = (event) => {
         event.preventDefault();
-        this.props.updateEnd(this.props.index, this.state.name);
-    }
-
-    deleteStart(index) {
-        const name = this.props.values[index].name;
-        this.setState({
-            index: index,
-            name: name,
-        });
-        this.props.deleteStart(index);
-    }
-
-    deleteEnd(event) {
+        updateEnd(index, name);
+    };
+    const _deleteStart = (index) => {
+        setName(values[index].name);
+        deleteStart(index);
+    };
+    const _deleteEnd = (event) => {
         event.preventDefault();
-        this.props.deleteEnd(this.props.index);
-    }
+        deleteEnd(index);
+    };
 
-    updateName(event) {
+    const updateName = (event) => {
         const nameInput = event.target;
         const name = nameInput.value;
-        const uniqueName = this.uniqueName(name);
-        nameInput.setCustomValidity(uniqueName ? '' : 'duplicate name');
-        this.setState({
-            name: name,
-        });
-    }
-
-    cancel() {
-        this.props.cancel();
-    }
-
-    uniqueName(name) {
-        for (let i = 0; i < this.props.values.length; i++) {
-            const value = this.props.values[i]
-            if (name === value.name && (this.props.view !== (this.props.type + '-update') || i === this.props.index)) {
+        const isUniqueName = uniqueName(name);
+        nameInput.setCustomValidity(isUniqueName ? '' : 'duplicate name');
+        setName(name);
+    };
+    const uniqueName = (name) => {
+        for (let i = 0; i < values.length; i++) {
+            const value = values[i]
+            if (name === value.name && (view !== (type + '-update') || i === index)) {
                 return false;
             }
         }
         return true;
-    }
+    };
 
-    cancelButton() {
+    const cancelButton = () => {
         return (
-            <button type="button" onClick={() => this.cancel()}>
+            <button type="button" onClick={() => cancel()}>
                 <span>Cancel</span>
             </button>
         );
-    }
-
-    getView() {
-        switch (this.props.view) {
-            case (this.props.type + "-create"):
-            case (this.props.type + "-update"):
+    };
+    const getView = () => {
+        switch (view) {
+            case (type + "-create"):
+            case (type + "-update"):
                 return (
-                    <form onSubmit={(this.props.view === (this.props.type + '-create') ? this.createEnd : this.updateEnd)}>
+                    <form onSubmit={(view === (type + '-create') ? _createEnd : _updateEnd)}>
                         <fieldset>
                             <legend>
-                                {(this.props.view === (this.props.type + '-create') ? 'Create ' + this.props.type : 'Update ' + this.props.values[this.props.index].name)}
+                                {(view === (type + '-create') ? 'Create ' + type : 'Update ' + values[index].name)}
                             </legend>
                             <label>
                                 <span>Name:</span>
-                                <input type="text" value={this.state.name} required onChange={this.updateName} onFocus={(event) => event.target.select()} />
+                                <input type="text" value={name} required onChange={updateName} onFocus={(event) => event.target.select()} />
                             </label>
                             <div>
-                                {this.cancelButton()}
-                                <input type="submit" value={(this.props.view === (this.props.type + '-create') ? 'Create ' : 'Update ') + this.props.type} />
+                                {cancelButton()}
+                                <input type="submit" value={(view === (type + '-create') ? 'Create ' : 'Update ') + type} />
                             </div>
                         </fieldset>
                     </form>
                 );
-            case (this.props.type + '-delete'):
+            case (type + '-delete'):
                 return (
-                    <form onSubmit={this.deleteEnd}>
+                    <form onSubmit={_deleteEnd}>
                         <fieldset>
-                            <legend>Delete {this.props.values[this.props.index].name}?</legend>
+                            <legend>Delete {values[index].name}?</legend>
                             <div>
-                                {this.cancelButton()}
-                                <input type="submit" value={"Delete " + this.props.type} />
+                                {cancelButton()}
+                                <input type="submit" value={"Delete " + type} />
                             </div>
                         </fieldset>
                     </form>
                 );
             default:
-            case (this.props.type + '-read'):
+            case (type + '-read'):
                 return (
-                    <form onSubmit={this.createStart}>
-                        <input type="submit" value={"Create " + this.props.type} />
+                    <form onSubmit={_createStart}>
+                        <input type="submit" value={"Create " + type} />
                     </form>
                 );
         }
-    }
-
-    render() {
-        return (
-            <div>
-                <NameTable
-                    type={this.props.type}
-                    values={this.props.values}
-                    read={this.props.read}
-                    update={this.updateStart}
-                    delete={this.deleteStart}
-                    moveUp={this.props.moveUp}
-                    moveDown={this.props.moveDown}
-                />
-                {this.getView()}
-            </div>
-        );
-    }
-}
+    };
+    return (
+        <div>
+            <NameTable
+                type={type}
+                values={values}
+                read={read}
+                update={_updateStart}
+                delete={_deleteStart}
+                moveUp={moveUp}
+                moveDown={moveDown}
+            />
+            {getView()}
+        </div>
+    );
+};
