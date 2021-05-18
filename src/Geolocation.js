@@ -30,7 +30,7 @@ export const Geolocation = ({
         if (view === 'item-create') {
             setItem(newItem(latLng));
         }
-    }, [view, stopTimer, setCurrentLatLng, setItem, newItem]);
+    }, [view, setItem, newItem, setCurrentLatLng, stopTimer]);
 
     const startTimer = useCallback(() => {
         const success = setPosition;
@@ -40,7 +40,7 @@ export const Geolocation = ({
         };
         stopTimer();
         setTimerID(navigator.geolocation.watchPosition(success, error, options));
-    }, [setPosition, disable, stopTimer, setTimerID]);
+    }, [disable, setPosition, stopTimer, setTimerID]);
 
     useEffect(() => {
         if (needsLocation(view) && timerID === null) {
@@ -51,7 +51,7 @@ export const Geolocation = ({
             }
         }
         return stopTimer;
-    }, [view, timerID, disable, startTimer, stopTimer]);
+    }, [view, disable, timerID, startTimer, stopTimer]);
 
     return null;
 };

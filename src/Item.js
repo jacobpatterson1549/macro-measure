@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import './Item.css';
 import { Map } from './Map';
@@ -226,22 +226,6 @@ export const Item = ({
         ? getDistanceHeading(item, currentLatLng, distanceUnit)
         : null;
 
-    const map = useMemo(() => {
-        console.log(
-            "requesting map",
-            new Date().getTime(),
-            JSON.stringify(item),
-            JSON.stringify(currentLatLng),
-            JSON.stringify(distanceHeading),
-            distanceUnit);
-        return <Map
-            itemLatLng={item}
-            currentLatLng={currentLatLng}
-            distanceHeading={distanceHeading}
-            distanceUnit={distanceUnit}
-        />
-    }, [item, currentLatLng, distanceHeading, distanceUnit]);
-
     return (
         <div className="Item">
             <Geolocation
@@ -252,7 +236,12 @@ export const Item = ({
                 disable={disableGeolocation}
             />
             {getHeader()}
-            {map}
+            <Map
+                itemLatLng={item}
+                currentLatLng={currentLatLng}
+                distanceHeading={distanceHeading}
+                distanceUnit={distanceUnit}
+            />
             {getAction(distanceHeading)}
         </div>
     );
