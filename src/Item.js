@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import './Item.css'
 import { Map } from './Map'
@@ -34,53 +34,49 @@ export const Item = ({
     deleteEnd, // function to finish deleting the item
 }) => {
 
-    const canGetGeolocation = navigator.geolocation;
-    const [currentLatLng, setCurrentLatLong] = useLocalStorage('currentLatLng', null);
-    const [item, setItem] = useState((view === 'item-create') ? newItem(currentLatLng) : items[index])
+    const [currentLatLng, setCurrentLatLng] = useLocalStorage('currentLatLng', null);
     const [moveAmount, setMoveAmount] = useLocalStorage('move-amount', 1);
+    const [item, setItem] = useState((view === 'item-create') ? newItem(currentLatLng) : items[index]);
+    const [timerID, setTimerID] = useState(null)
 
-    let timerID;
-    const stopGeoTimer = () => {
-        console.log('stopping timer', timerID, new Date());
-        clearInterval(timerID);
-    };
-    const startGeoTimer = () => {
-        if (needsLocation(view)) {
-            if (!canGetGeolocation) {
-                return;
-            }
-            const success = (position) => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
-                const latLng = { lat: latitude, lng: longitude };
-                if (view === 'item-create' && currentLatLng === null) {
-                    setItem(newItem(latLng));
-                }
-                setCurrentLatLong(latLng);
-                console.log('got location', latLng);
-                if (view !== 'item-read') {
-                    stopGeoTimer();
-                }
-            };
-            const error = disableGeolocation;
-            const options = {
-                enableHighAccuracy: false, // TODO: allow this to be a setting
-            };
-            stopGeoTimer();
-            timerID = navigator.geolocation.watchPosition(success, error, options);
-            console.log('STARTING timer', timerID, new Date());
+    const stopGeolocationTimer = useCallback(() => {
+        if (timerID !== null) {
+            clearInterval(timerID)
         }
-    };
+    }, [timerID]);
+    const startGeolocationTimer = useCallback(() => {
+        if (!needsLocation(view)) {
+            return;
+        }
+        const success = (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            const latLng = { lat: latitude, lng: longitude };
+            if (view === 'item-create') {
+                setItem(newItem(latLng));
+            }
+            setCurrentLatLng(latLng);
+            if (view !== 'item-read') {
+                stopGeolocationTimer();
+            }
+        };
+        const error = disableGeolocation;
+        const options = {
+            enableHighAccuracy: false, // TODO: allow this to be a setting
+        };
+        stopGeolocationTimer();
+        setTimerID(navigator.geolocation.watchPosition(success, error, options));
+    }, [view, setCurrentLatLng, disableGeolocation, stopGeolocationTimer, setTimerID]);
     useEffect(() => {
-        if (needsLocation(view)) {
-            if (canGetGeolocation) {
-                startGeoTimer();
+        if (needsLocation(view) && timerID === null) {
+            if (navigator.geolocation) {
+                startGeolocationTimer();
             } else {
                 disableGeolocation();
             }
         }
-        return stopGeoTimer;
-    });
+        return stopGeolocationTimer;
+    }, [view, timerID, disableGeolocation, startGeolocationTimer, stopGeolocationTimer]);
 
     const _createStart = () => {
         setItem(newItem(currentLatLng));
