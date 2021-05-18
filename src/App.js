@@ -157,7 +157,7 @@ export const App = () => {
           createStart={() => createItemStart('item-create')}
           createEnd={(name, lat, lng) => createItemEnd('item-read', name, lat, lng)}
           read={(index) => readItem('item-read', index)}
-          readItems={() => readGroup('items-read', groupIndex)}
+          readItems={() => readItems('items-read', groupIndex)}
           disableGeolocation={() => setView('item-no-geo')}
           updateStart={(index) => updateItemStart('item-update', index)}
           updateEnd={(index, name, lat, lng) => updateItemEnd('item-read', index, name, lat, lng)}

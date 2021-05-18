@@ -32,7 +32,7 @@ export const Groups = {
     }
     return groups;
   },
-  deleteGroup:(groups, index) => {
+  deleteGroup: (groups, index) => {
     if (index >= 0 && index < groups.length) {
       groups = deepCopy(groups);
       groups.splice(index, 1);
