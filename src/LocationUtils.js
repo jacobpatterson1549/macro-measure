@@ -1,24 +1,30 @@
-import { moveTo, headingDistanceTo } from 'geolocation-utils'
+import { moveTo, headingDistanceTo } from 'geolocation-utils';
 
-export function MoveTo(latLng, distance, unit, heading) {
-    const amountMeters = toMeters(distance, unit);
+export const MoveTo = (latLng, distance, unit, heading) => {
+    const amountMeters = _toMeters(distance, unit);
     const headingDistance = { heading: heading, distance: amountMeters };
     const latLng2 = moveTo(latLng, headingDistance);
-    const latLng3 = { lat: latLng2.lat, lng: latLng2.lng };
-    return latLng3;
+    return {
+        lat: round(latLng2.lat, 7),
+        lng: round(latLng2.lng, 7),
+    };
 };
 
-export function GetDistanceHeading(latLng1, latLng2, unit) {
+export const GetDistanceHeading = (latLng1, latLng2, unit) => {
     const distanceHeading = headingDistanceTo(latLng1, latLng2);
-    // calculate distance and heading to one decimal place
-    // TODO: allow precision to be set
-    const distance = Math.round(fromMeters(distanceHeading.distance, unit) * 10) / 10;
-    const heading = Math.round(distanceHeading.heading * 10) / 10;
-    const distanceHeading2 = { distance: distance, heading: heading };
-    return distanceHeading2;
-}
+    const distance = round(_fromMeters(distanceHeading.distance, unit), 1);
+    return {
+        distance: round(distance, 1),
+        heading: round(distanceHeading.heading, 1),
+    };
+};
 
-export function toMeters(distance, unit, invertRatio) {
+const round = (value, numDigits) => {
+    const m = Math.pow(10, numDigits);
+    return Math.round(value * m) / m;
+};
+
+export const _toMeters = (distance, unit, invertRatio) => {
     let ratio = unit === 'm' ? 1
         : unit === 'km' ? 1000
             : unit === 'ft' ? 3048 / 10000
@@ -29,11 +35,11 @@ export function toMeters(distance, unit, invertRatio) {
         ratio = 1 / ratio;
     }
     return distance * ratio;
-}
+};
 
-export function fromMeters(distance, unit) {
-    return toMeters(distance, unit, true)
-}
+export const _fromMeters = (distance, unit) => {
+    return _toMeters(distance, unit, true);
+};
 
 export const Heading = {
     N: 0,

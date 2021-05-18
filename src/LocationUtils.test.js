@@ -1,6 +1,4 @@
-import { MoveTo, GetDistanceHeading, toMeters, fromMeters } from './LocationUtils'
-
-const decimalPrecisionDigits = 2;
+import { MoveTo, GetDistanceHeading, _toMeters, _fromMeters } from './LocationUtils'
 
 describe('Distance', () => {
     const distanceTests = [
@@ -10,18 +8,20 @@ describe('Distance', () => {
         [100.0, 'yd', 180, { lat: 51.4934, lng: 0 }, { lat: 51.4925785805042, lng: 0 }], // S
         [600.0, 'km', 90, { lat: 0, lng: 0 }, { lat: 0, lng: 5.3898917047171295 }], // E
         [600.0, 'km', -90, { lat: 0, lng: 0 }, { lat: 0, lng: -5.3898917047171295 }], // W
+        [1.0, 'ft', 0, { lat: 0, lng: 0 }, { lat: 0.0000027, lng: 0 }], // N
+        [1.0, 'ft', 90, { lat: 0, lng: 0 }, { lat: 0, lng: 0.0000027 }], // E
     ];
     test.each(distanceTests)('MoveTo: distance %s%s with a heading %d° from should end at %s',
         (distance, unit, heading, latLng, expectedLatLng) => {
             const actualLatLng = MoveTo(latLng, distance, unit, heading);
-            expect(actualLatLng.lat).toBeCloseTo(expectedLatLng.lat, decimalPrecisionDigits);
-            expect(actualLatLng.lng).toBeCloseTo(expectedLatLng.lng, decimalPrecisionDigits);
+            expect(actualLatLng.lat).toBeCloseTo(expectedLatLng.lat, 7);
+            expect(actualLatLng.lng).toBeCloseTo(expectedLatLng.lng, 7);
         });
     test.each(distanceTests)('GetDistanceHeading: expected distance of %s%s with a heading of %d° whet getting distance from %s to %s',
         (expectedDistance, unit, expectedHeading, latLng1, latLng2) => {
             const actualDistanceHeading = GetDistanceHeading(latLng1, latLng2, unit);
-            expect(actualDistanceHeading.distance).toBe(expectedDistance);
-            expect(actualDistanceHeading.heading).toBe(expectedHeading);
+            expect(actualDistanceHeading.distance).toBeCloseTo(expectedDistance, 1);
+            expect(actualDistanceHeading.heading).toBeCloseTo(expectedHeading, 1);
         });
 });
 
@@ -43,13 +43,14 @@ describe('meters conversions', () => {
         [125, 'mi', 201168],
         [3.14159, 'km', 3141.59], // not exact
     ];
+    const decimalPrecisionDigits = 10;
     test.each(conversions)('toMeters(%d, %s) should be %d meters', (distance, unit, expected) => {
-        const m = toMeters(distance, unit);
+        const m = _toMeters(distance, unit);
         expect(m).toBeCloseTo(expected, decimalPrecisionDigits);
     });
     test.each(conversions)('fromMeters() of toMeters(%d, %s) should be the same', (distance, unit) => {
-        const m = toMeters(distance, unit);
-        const distance2 = fromMeters(m, unit);
+        const m = _toMeters(distance, unit);
+        const distance2 = _fromMeters(m, unit);
         expect(distance2).toBeCloseTo(distance, decimalPrecisionDigits);
     })
 });
