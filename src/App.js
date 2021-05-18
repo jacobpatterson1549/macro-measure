@@ -19,7 +19,7 @@ export const App = () => {
   const [groups, setGroups] = useLocalStorage('groups', []);
 
   const createGroupStart = () => {
-    setView('groups-create');
+    setView('group-create');
   };
   const createGroupEnd = (name) => {
     setView('groups-read');
