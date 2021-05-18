@@ -1,4 +1,4 @@
-import { MoveTo, GetDistanceHeading, _toMeters, _fromMeters } from './LocationUtils'
+import { moveLatLngTo, getDistanceHeading, _toMeters, _fromMeters } from './LocationUtils'
 
 describe('Distance', () => {
     const distanceTests = [
@@ -11,15 +11,15 @@ describe('Distance', () => {
         [1.0, 'ft', 0, { lat: 0, lng: 0 }, { lat: 0.0000027, lng: 0 }], // N
         [1.0, 'ft', 90, { lat: 0, lng: 0 }, { lat: 0, lng: 0.0000027 }], // E
     ];
-    test.each(distanceTests)('MoveTo: distance %s%s with a heading %d° from should end at %s',
+    test.each(distanceTests)('moveLatLngTo: distance %s%s with a heading %d° from should end at %s',
         (distance, unit, heading, latLng, expectedLatLng) => {
-            const actualLatLng = MoveTo(latLng, distance, unit, heading);
+            const actualLatLng = moveLatLngTo(latLng, distance, unit, heading);
             expect(actualLatLng.lat).toBeCloseTo(expectedLatLng.lat, 7);
             expect(actualLatLng.lng).toBeCloseTo(expectedLatLng.lng, 7);
         });
-    test.each(distanceTests)('GetDistanceHeading: expected distance of %s%s with a heading of %d° whet getting distance from %s to %s',
+    test.each(distanceTests)('getDistanceHeading: expected distance of %s%s with a heading of %d° whet getting distance from %s to %s',
         (expectedDistance, unit, expectedHeading, latLng1, latLng2) => {
-            const actualDistanceHeading = GetDistanceHeading(latLng1, latLng2, unit);
+            const actualDistanceHeading = getDistanceHeading(latLng1, latLng2, unit);
             expect(actualDistanceHeading.distance).toBeCloseTo(expectedDistance, 1);
             expect(actualDistanceHeading.heading).toBeCloseTo(expectedHeading, 1);
         });

@@ -1,0 +1,8 @@
+.Map {
+    height: 60%;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+}

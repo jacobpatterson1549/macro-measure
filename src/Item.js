@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import './Item.css'
 import { Map } from './Map'
-import { GetDistanceHeading, MoveTo, Heading } from './LocationUtils'
+import { getDistanceHeading, moveLatLngTo, Heading, roundLatLng } from './LocationUtils'
 import { useLocalStorage } from './LocalStorage';
 import { Geolocation } from './Geolocation';
 
@@ -137,7 +137,7 @@ export const Item = ({
 
     const updateLatLng = (event, heading) => {
         event.preventDefault();
-        const item2 = MoveTo(item, moveAmount, distanceUnit, heading);
+        const item2 = moveLatLngTo(item, moveAmount, distanceUnit, heading);
         const item3 = Object.assign({}, item, item2);
         setItem(item3);
     };
@@ -150,7 +150,7 @@ export const Item = ({
         return (<input type="button" value="cancel" onClick={onClick} />);
     };
 
-    const getAction = () => {
+    const getAction = (distanceHeading) => {
         switch (view) {
             case "item-no-geo":
                 return (
@@ -208,20 +208,39 @@ export const Item = ({
                 );
             default:
             case "item-read":
-                if (currentLatLng == null) {
+                if (currentLatLng === null) {
                     return (
                         <span>Getting location...</span>
                     )
                 }
-                const distanceHeading = GetDistanceHeading(item, currentLatLng, distanceUnit);
                 return (
                     <div className="distance">
-                        <span>{distanceHeading.distance}</span>
+                        <span>{distanceHeading ? distanceHeading.distance : '?'}</span>
                         <span> {distanceUnit}</span>
                     </div>
                 );
         }
-    }
+    };
+
+    const distanceHeading = (view === 'item-read' && currentLatLng !== null)
+        ? getDistanceHeading(item, currentLatLng, distanceUnit)
+        : null;
+
+    const map = useMemo(() => {
+        console.log(
+            "requesting map",
+            new Date().getTime(),
+            JSON.stringify(item),
+            JSON.stringify(currentLatLng),
+            JSON.stringify(distanceHeading),
+            distanceUnit);
+        return <Map
+            itemLatLng={item}
+            currentLatLng={currentLatLng}
+            distanceHeading={distanceHeading}
+            distanceUnit={distanceUnit}
+        />
+    }, [item, currentLatLng, distanceHeading, distanceUnit]);
 
     return (
         <div className="Item">
@@ -233,8 +252,8 @@ export const Item = ({
                 disable={disableGeolocation}
             />
             {getHeader()}
-            <Map />
-            {getAction()}
+            {map}
+            {getAction(distanceHeading)}
         </div>
     );
 };

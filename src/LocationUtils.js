@@ -1,28 +1,31 @@
 import { moveTo, headingDistanceTo } from 'geolocation-utils';
 
-export const MoveTo = (latLng, distance, unit, heading) => {
+export const moveLatLngTo = (latLng, distance, unit, heading) => {
     const amountMeters = _toMeters(distance, unit);
     const headingDistance = { heading: heading, distance: amountMeters };
-    const latLng2 = moveTo(latLng, headingDistance);
-    return {
-        lat: round(latLng2.lat, 7),
-        lng: round(latLng2.lng, 7),
-    };
+    return roundLatLng(moveTo(latLng, headingDistance));
 };
 
-export const GetDistanceHeading = (latLng1, latLng2, unit) => {
+export const getDistanceHeading = (latLng1, latLng2, unit) => {
     const distanceHeading = headingDistanceTo(latLng1, latLng2);
-    const distance = round(_fromMeters(distanceHeading.distance, unit), 1);
+    const distance = _round(_fromMeters(distanceHeading.distance, unit), 1);
     return {
-        distance: round(distance, 1),
-        heading: round(distanceHeading.heading, 1),
+        distance: _round(distance, 1),
+        heading: _round(distanceHeading.heading, 1),
     };
 };
 
-const round = (value, numDigits) => {
+const _round = (value, numDigits) => {
     const m = Math.pow(10, numDigits);
     return Math.round(value * m) / m;
 };
+
+export const roundLatLng = (latLng) => {
+    return {
+        lat: _round(latLng.lat, 7),
+        lng: _round(latLng.lng, 7),
+    };
+}
 
 export const _toMeters = (distance, unit, invertRatio) => {
     let ratio = unit === 'm' ? 1

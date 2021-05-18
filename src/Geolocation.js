@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
+import { roundLatLng } from './LocationUtils';
+
 const needsLocation = (view) => ['item-read', 'item-create'].includes(view);
 
 export const Geolocation = ({
@@ -24,7 +26,7 @@ export const Geolocation = ({
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         const latLng = { lat: latitude, lng: longitude };
-        setCurrentLatLng(latLng);
+        setCurrentLatLng(roundLatLng(latLng));
         if (view === 'item-create') {
             setItem(newItem(latLng));
         }

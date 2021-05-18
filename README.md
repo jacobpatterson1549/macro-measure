@@ -13,7 +13,7 @@ pnpm install
 pnpm start
 ```
 
-## HTTPS
+### HTTPS
 
 The app must be run with TLS so gps coordinates from devices can be read.  When running in in development mode, a fake TLS certificate can be use.  The certificate can be easily generated *and installed* using [mkcert](https://github.com/FiloSottile/mkcert).  Then create a `.env` file in root directory, next to `package.json` with contents below.
 
@@ -33,6 +33,9 @@ SSL_CRT_FILE=localhost.pem
 SSL_KEY_FILE=localhost-key.pem
 ```
 
+### Maps
+
+To use the maps, the app must specify a `REACT_APP_GOOGLE_MAPS_API_KEY` environment variable in the `.env` file.
 
 ### Test coverage 
 
