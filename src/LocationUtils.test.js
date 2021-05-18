@@ -1,4 +1,4 @@
-import { moveLatLngTo, getDistanceHeading, _toMeters, _fromMeters } from './LocationUtils'
+import { moveLatLngTo, getDistanceHeading, _toMeters, _fromMeters } from './LocationUtils';
 
 describe('Distance', () => {
     const distanceTests = [
@@ -52,5 +52,5 @@ describe('meters conversions', () => {
         const m = _toMeters(distance, unit);
         const distance2 = _fromMeters(m, unit);
         expect(distance2).toBeCloseTo(distance, decimalPrecisionDigits);
-    })
+    });
 });

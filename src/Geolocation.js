@@ -11,11 +11,11 @@ export const Geolocation = ({
     setCurrentLatLng, // func to set the current latLng
     disable, // function to indicate that the device does not support gps location
 }) => {
-    const [timerID, setTimerID] = useState(null)
+    const [timerID, setTimerID] = useState(null);
 
     const stopTimer = useCallback(() => {
         if (timerID !== null) {
-            clearInterval(timerID)
+            clearInterval(timerID);
         }
     }, [timerID]);
 

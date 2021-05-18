@@ -5,7 +5,7 @@ const distanceUnits = [
     'km',
     'ft',
     'yd',
-    'mi'
+    'mi',
 ];
 
 export const Settings = (props) => (

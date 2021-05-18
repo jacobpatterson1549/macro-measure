@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { Help } from './Help'
+import { Help } from './Help';
 
 describe('Help', () => {
     test('should render', () => {

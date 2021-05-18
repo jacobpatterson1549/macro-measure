@@ -1,7 +1,7 @@
 import { Loader } from "@googlemaps/js-api-loader"
 
-import './Map.css'
-import { moveLatLngTo } from './LocationUtils'
+import './Map.css';
+import { moveLatLngTo } from './LocationUtils';
 
 export const Map = ({
     itemLatLng, // the item position { name, lat, lng }
@@ -52,7 +52,7 @@ export const Map = ({
     const loader = new Loader({ // TODO: investigate normal js loading without dependency
         apiKey: key,
         version: 'weekly',
-    })
+    });
     // loader.load().then(initMap); // TODO: enable map
 
     const googleMapURL = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap&libraries=&v=weekly`;

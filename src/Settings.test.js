@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 
-import { Settings } from './Settings'
+import { Settings } from './Settings';
 
 describe('distance unit', () => {
     test('value', () => {
@@ -11,10 +11,10 @@ describe('distance unit', () => {
     });
     test('onClick', () => {
         const distanceUnit = 'ft';
-        const setDistanceUnitFn = jest.fn()
+        const setDistanceUnitFn = jest.fn();
         render(<Settings distanceUnit={distanceUnit} setDistanceUnit={setDistanceUnitFn} />);
         const selectElement = screen.getByLabelText(/distance unit/i);
-        fireEvent.change(selectElement)
+        fireEvent.change(selectElement);
         expect(setDistanceUnitFn).toBeCalledWith(distanceUnit);
     });
 });

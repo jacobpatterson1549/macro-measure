@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 
-import './Item.css'
-import { Map } from './Map'
-import { getDistanceHeading, moveLatLngTo, Heading, roundLatLng } from './LocationUtils'
+import './Item.css';
+import { Map } from './Map';
+import { getDistanceHeading, moveLatLngTo, Heading } from './LocationUtils';
 import { useLocalStorage } from './LocalStorage';
 import { Geolocation } from './Geolocation';
 
@@ -211,7 +211,7 @@ export const Item = ({
                 if (currentLatLng === null) {
                     return (
                         <span>Getting location...</span>
-                    )
+                    );
                 }
                 return (
                     <div className="distance">
