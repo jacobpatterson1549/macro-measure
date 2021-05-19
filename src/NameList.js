@@ -98,7 +98,7 @@ export const NameList = ({
                 values={values}
                 read={read}
                 update={_updateStart}
-                delete={_deleteStart}
+                deleteValue={_deleteStart}
                 moveUp={moveUp}
                 moveDown={moveDown}
             />

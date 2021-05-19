@@ -64,9 +64,12 @@ export const SubmitInput = ({
     />
 );
 
-export const Form = (props) => (
-    <form onSubmit={preventDefault(props.onSubmit)}>
-        {props.children}
+export const Form = ({
+    onSubmit, // function to submit the form, triggered by SubmitInput
+    children, // builtin property of the child components of the form 
+}) => (
+    <form onSubmit={preventDefault(onSubmit)}>
+        {children}
     </form>
 );
 
