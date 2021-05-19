@@ -24,7 +24,7 @@ export const NameTable = ({
             {
                 values.length === 0
                     ? (<tr><td colSpan="5">No values exist.  Create one.</td></tr>)
-                    : values.map((value, index, values) => (
+                    : values.map((value, index) => (
                         <tr key={value.name}>
                             <td>
                                 <button onClick={() => read(index)} title="select value">

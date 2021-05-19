@@ -65,6 +65,20 @@ export const Item = ({
         deleteEnd(index);
     };
 
+    const updateLatLng = (heading) => {
+        const item2 = moveLatLngTo(item, moveAmount, distanceUnit, heading);
+        const item3 = Object.assign({}, item, item2);
+        setItem(item3);
+    };
+    const updateMoveAmount = (event) => {
+        const value = event.target.value;
+        setMoveAmount(value);
+    };
+
+    const distanceHeading = (view === 'item-read' && currentLatLng !== null)
+        ? getDistanceHeading(item, currentLatLng, distanceUnit)
+        : null;
+
     const getHeader = () => {
         return (
             <div className="Item-Header">
@@ -115,17 +129,32 @@ export const Item = ({
         );
     };
 
-    const updateLatLng = (heading) => {
-        const item2 = moveLatLngTo(item, moveAmount, distanceUnit, heading);
-        const item3 = Object.assign({}, item, item2);
-        setItem(item3);
-    };
-    const updateMoveAmount = (event) => {
-        const moveAmount = event.target.value;
-        setMoveAmount(moveAmount);
+    const getMap = () => {
+        // const [showMap, setShowMap] = useLocalStorage('show-map', true); // TODO: allow this to be set
+        const showMap = true;
+        if (!showMap) {
+            return (<p>[Map disabled]</p>);
+        }
+        const heading = (distanceHeading)
+            ? distanceHeading.heading
+            : 0;
+        const centerLatLng = (distanceHeading)
+            ? moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading)
+            : item;
+        const currentLatLng2 = (distanceHeading)
+            ? currentLatLng
+            : null;
+        return (
+            <Map
+                heading={heading}
+                centerLatLng={centerLatLng}
+                itemLatLng={item}
+                currentLatLng={currentLatLng2}
+            />
+        );
     };
 
-    const getAction = (distanceHeading) => {
+    const getAction = () => {
         switch (view) {
             case "item-no-geo":
                 return (
@@ -186,8 +215,8 @@ export const Item = ({
                         </fieldset>
                     </Form>
                 );
-            default:
             case "item-read":
+            default:
                 if (currentLatLng === null) {
                     return (
                         <span>Getting location...</span>
@@ -202,35 +231,6 @@ export const Item = ({
         }
     };
 
-    const getMap = (distanceHeading) => {
-        // const [showMap, setShowMap] = useLocalStorage('show-map', true); // TODO: allow this to be set
-        const showMap = true;
-        if (!showMap) {
-            return (<p>[Map disabled]</p>);
-        }
-        const heading = (distanceHeading)
-            ? distanceHeading.heading
-            : 0;
-        const centerLatLng = (distanceHeading)
-            ? moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading)
-            : item;
-        const currentLatLng2 = (distanceHeading)
-            ? currentLatLng
-            : null;
-        return (
-            <Map
-                heading={heading}
-                centerLatLng={centerLatLng}
-                itemLatLng={item}
-                currentLatLng={currentLatLng2}
-            />
-        );
-    }
-
-    const distanceHeading = (view === 'item-read' && currentLatLng !== null)
-        ? getDistanceHeading(item, currentLatLng, distanceUnit)
-        : null;
-
     return (
         <div className="Item">
             <Geolocation
@@ -242,8 +242,8 @@ export const Item = ({
                 disable={disableGeolocation}
             />
             {getHeader()}
-            {getMap(distanceHeading)}
-            {getAction(distanceHeading)}
+            {getMap()}
+            {getAction()}
         </div>
     );
 };

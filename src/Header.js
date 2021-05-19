@@ -9,9 +9,9 @@ export const Header = ({
     const groupName = /^item(s|(-\w+))$/.test(view)
         ? groups[groupIndex].name
         : '[Groups]';
-    const headerItem = (name, title, view) => (
-        <button onClick={() => setView(view)} title={title}>
-            <span>{name}</span>
+    const headerItem = (itemName, itemTitle, itemView) => (
+        <button onClick={() => setView(itemView)} title={itemTitle}>
+            <span>{itemName}</span>
         </button>
     );
     return (

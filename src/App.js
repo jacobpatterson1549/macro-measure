@@ -106,44 +106,6 @@ export const App = () => {
           setHighAccuracyGPS={setHighAccuracyGPS}
           clearStorage={clearLocalStorage}
         />);
-      default:
-      case 'group-create':
-      case 'groups-read':
-      case 'group-update':
-      case 'group-delete':
-        return (
-          <NameList className="GroupList"
-            type="group"
-            values={groups}
-            index={groupIndex}
-            view={view}
-            createStart={createGroupStart}
-            createEnd={createGroupEnd}
-            read={readGroup}
-            updateStart={updateGroupStart}
-            updateEnd={updateGroupEnd}
-            deleteStart={deleteGroupStart}
-            deleteEnd={deleteGroupEnd}
-            moveUp={moveGroupUp}
-            moveDown={moveGroupDown}
-            cancel={() => setView('groups-read')}
-          />
-        );
-      case 'items-read':
-        return (
-          <NameList className="ItemList"
-            type="item"
-            values={groups[groupIndex].items}
-            index={itemIndex}
-            view={view}
-            createStart={createItemStart}
-            read={readItem}
-            updateStart={updateItemStart}
-            deleteStart={deleteItemStart}
-            moveUp={moveItemUp}
-            moveDown={moveItemDown}
-          />
-        );
       case 'item-create':
       case 'item-read':
       case 'item-update':
@@ -165,6 +127,44 @@ export const App = () => {
           deleteStart={deleteItemStart}
           deleteEnd={deleteItemEnd}
         />);
+      case 'items-read':
+        return (
+          <NameList className="ItemList"
+            type="item"
+            values={groups[groupIndex].items}
+            index={itemIndex}
+            view={view}
+            createStart={createItemStart}
+            read={readItem}
+            updateStart={updateItemStart}
+            deleteStart={deleteItemStart}
+            moveUp={moveItemUp}
+            moveDown={moveItemDown}
+          />
+        );
+      case 'group-create':
+      case 'groups-read':
+      case 'group-update':
+      case 'group-delete':
+      default:
+        return (
+          <NameList className="GroupList"
+            type="group"
+            values={groups}
+            index={groupIndex}
+            view={view}
+            createStart={createGroupStart}
+            createEnd={createGroupEnd}
+            read={readGroup}
+            updateStart={updateGroupStart}
+            updateEnd={updateGroupEnd}
+            deleteStart={deleteGroupStart}
+            deleteEnd={deleteGroupEnd}
+            moveUp={moveGroupUp}
+            moveDown={moveGroupDown}
+            cancel={() => setView('groups-read')}
+          />
+        );
     }
   }
 

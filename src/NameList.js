@@ -29,16 +29,16 @@ export const NameList = ({
     const _createEnd = () => {
         createEnd(name);
     };
-    const _updateStart = (index) => {
-        setName(values[index].name);
-        updateStart(index);
+    const _updateStart = (_index) => {
+        setName(values[_index].name);
+        updateStart(_index);
     };
     const _updateEnd = () => {
         updateEnd(index, name);
     };
-    const _deleteStart = (index) => {
-        setName(values[index].name);
-        deleteStart(index);
+    const _deleteStart = (_index) => {
+        setName(values[_index].name);
+        deleteStart(_index);
     };
     const _deleteEnd = () => {
         deleteEnd(index);
@@ -82,8 +82,8 @@ export const NameList = ({
                         </fieldset>
                     </Form>
                 );
-            default:
             case (type + '-read'):
+            default:
                 return (
                     <Form onSubmit={_createStart}>
                         <SubmitInput value={"Create " + type} />
@@ -91,6 +91,7 @@ export const NameList = ({
                 );
         }
     };
+
     return (
         <div>
             <NameTable
