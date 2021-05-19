@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 
 import { roundLatLng } from './LocationUtils';
+import { View } from './View';
 
-const needsLocation = (view) => ['item-read', 'item-create'].includes(view);
+const needsLocation = (view) => [View.Item_Read, View.Item_Create].includes(view);
 
 export const Geolocation = ({
     view, // the current page
@@ -21,14 +22,14 @@ export const Geolocation = ({
     }, [timerID]);
 
     const setPosition = useCallback((position) => {
-        if (view !== 'item-read') {
+        if (view !== View.Item_Read) {
             stopTimer();
         }
         const latitude = position.coords.latitude;
         const longitude = position.coords.longitude;
         const latLng = { lat: latitude, lng: longitude };
         setCurrentLatLng(roundLatLng(latLng));
-        if (view === 'item-create') {
+        if (view === View.Item_Create) {
             setItem(newItem(latLng));
         }
     }, [view, setItem, newItem, setCurrentLatLng, stopTimer]);

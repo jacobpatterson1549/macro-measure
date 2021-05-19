@@ -3,6 +3,11 @@ import { useState } from 'react';
 import { Form, SubmitInput, NameInput, ButtonInput } from './Form';
 import { NameTable } from './NameTable';
 
+const toCreateView = (type) => type + '-create';
+const toReadView = (type) => type + '-read';
+const toUpdateView = (type) => type + '-update';
+const toDeleteView = (type) => type + '-delete';
+
 export const NameList = ({
     view, // the action being performed
     type, // the display name of the type of value in the table
@@ -46,13 +51,13 @@ export const NameList = ({
 
     const getView = () => {
         switch (view) {
-            case (type + "-create"):
-            case (type + "-update"):
+            case toCreateView(type):
+            case toUpdateView(type):
                 return (
-                    <Form onSubmit={(view === (type + '-create') ? _createEnd : _updateEnd)}>
+                    <Form onSubmit={(view === toCreateView(type)) ? _createEnd : _updateEnd}>
                         <fieldset>
                             <legend>
-                                {(view === (type + '-create') ? 'Create ' + type : 'Update ' + values[index].name)}
+                                {(view === toCreateView(type)) ? ('Create ' + type) : ('Update ' + values[index].name)}
                             </legend>
                             <label>
                                 <span>Name:</span>
@@ -65,28 +70,28 @@ export const NameList = ({
                             </label>
                             <div>
                                 <ButtonInput value="Cancel" onClick={cancel} />
-                                <SubmitInput value={(view === (type + '-create') ? 'Create ' : 'Update ') + type} />
+                                <SubmitInput value={(view === toCreateView(type)) ? ('Create ' + type) : ('Update ' + type)} />
                             </div>
                         </fieldset>
                     </Form>
                 );
-            case (type + '-delete'):
+            case toDeleteView(type):
                 return (
                     <Form onSubmit={_deleteEnd}>
                         <fieldset>
                             <legend>Delete {values[index].name}?</legend>
                             <div>
                                 <ButtonInput value="Cancel" onClick={cancel} />
-                                <SubmitInput value={"Delete " + type} />
+                                <SubmitInput value={'Delete ' + type} />
                             </div>
                         </fieldset>
                     </Form>
                 );
-            case (type + '-read'):
+            case toReadView(type):
             default:
                 return (
                     <Form onSubmit={_createStart}>
-                        <SubmitInput value={"Create " + type} />
+                        <SubmitInput value={'Create ' + type} />
                     </Form>
                 );
         }

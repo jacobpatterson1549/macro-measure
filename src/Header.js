@@ -1,4 +1,14 @@
 import './Header.css';
+import { View } from './View';
+
+const showGroupNameViews = [
+    View.Item_Create,
+    View.Item_Read,
+    View.Item_Update,
+    View.Item_Delete,
+    View.Items_Read,
+    View.Item_No_Geolocation,
+];
 
 export const Header = ({
     view, // the page being viewed
@@ -6,7 +16,7 @@ export const Header = ({
     groups, // the groups with name properties
     groupIndex, // the group being vied
 }) => {
-    const groupName = /^item(s|(-\w+))$/.test(view)
+    const groupName = showGroupNameViews.includes(view)
         ? groups[groupIndex].name
         : '[Groups]';
     const headerItem = (itemName, itemTitle, itemView) => (
@@ -16,10 +26,10 @@ export const Header = ({
     );
     return (
         <header className="Header">
-            {headerItem(groupName, 'groups list', 'groups')}
-            {headerItem('ⓘ', 'about page', 'about')}
-            {headerItem('?', 'help page', 'help')}
-            {headerItem('⚙', 'edit settings', 'settings')}
+            {headerItem(groupName, 'groups list', View.Groups_Read)}
+            {headerItem('ⓘ', 'about page', View.About)}
+            {headerItem('?', 'help page', View.Help)}
+            {headerItem('⚙', 'edit settings', View.Settings)}
         </header>
     );
 };

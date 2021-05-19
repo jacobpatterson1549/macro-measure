@@ -1,5 +1,3 @@
-import React from 'react';
-
 export const NameTable = ({
     type, //: the display name of the type of value in the table
     values, //: array of objects, each of which should have a 'name' attribute.  The names should be unique.

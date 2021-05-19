@@ -7,6 +7,7 @@ import { Help } from './Help';
 import { NameList } from './NameList';
 import { Item } from './Item';
 import { useLocalStorage, clearLocalStorage } from './LocalStorage';
+import { View } from './View';
 
 const DefaultView = 'groups';
 
@@ -20,85 +21,85 @@ export const App = () => {
   const [groups, setGroups] = useLocalStorage('groups', []);
 
   const createGroupStart = () => {
-    setView('group-create');
+    setView(View.Group_Create);
   };
   const createGroupEnd = (name) => {
-    setView('groups-read');
+    setView(View.Groups_Read);
     setGroups(Groups.createGroup(groups, name));
   };
   const readGroup = (index) => {
-    setView('items-read');
+    setView(View.Items_Read);
     setGroupIndex(index);
   };
   const updateGroupStart = (index) => {
-    setView('group-update');
+    setView(View.Group_Update);
     setGroupIndex(index);
   };
   const updateGroupEnd = (index, name) => {
-    setView('groups-read');
+    setView(View.Groups_Read);
     setGroups(Groups.updateGroup(groups, index, name));
   };
   const deleteGroupStart = (index) => {
-    setView('group-delete');
+    setView(View.Group_Delete);
     setGroupIndex(index);
   };
   const deleteGroupEnd = (index) => {
-    setView('groups-read');
+    setView(View.Groups_Read);
     setGroups(Groups.deleteGroup(groups, index));
   };
   const moveGroupUp = (index) => {
-    setView('groups-read');
+    setView(View.Groups_Read);
     setGroups(Groups.moveGroupUp(groups, index));
   };
   const moveGroupDown = (index) => {
-    setView('groups-read');
+    setView(View.Groups_Read);
     setGroups(Groups.moveGroupDown(groups, index));
   };
 
   const createItemStart = () => {
-    setView('item-create');
+    setView(View.Item_Create);
     setItemIndex(groups[groupIndex].items.length);
   };
   const createItemEnd = (name, lat, lng) => {
-    setView('item-read');
+    setView(View.Item_Read);
     setGroups(Groups.createItem(groups, groupIndex, name, lat, lng));
   };
   const readItem = (index) => {
-    setView('item-read');
+    setView(View.Item_Read);
     setItemIndex(index);
   };
   const updateItemStart = (index) => {
-    setView('item-update');
+    setView(View.Item_Update);
     setItemIndex(index);
   };
   const updateItemEnd = (index, name, lat, lng) => {
-    setView('item-read');
+    setView(View.Item_Read);
     setGroups(Groups.updateItem(groups, groupIndex, index, name, lat, lng));
   };
   const deleteItemStart = (index) => {
-    setView('item-delete');
+    setView(View.Item_Delete);
     setItemIndex(index);
   };
   const deleteItemEnd = (index) => {
-    setView('items-read');
+    setView(View.Items_Read); // TODO: read to previous or next group
     setGroups(Groups.deleteItem(groups, groupIndex, index));
   };
   const moveItemUp = (index) => {
-    setView('items-read');
+    setView(View.Items_Read);
     setGroups(Groups.moveItemUp(groups, groupIndex, index));
   };
   const moveItemDown = (index) => {
-    setView('items-read');
+    setView(View.Items_Read);
     setGroups(Groups.moveItemDown(groups, groupIndex, index));
   };
 
   const main = () => {
     switch (view) {
-      case 'about':
+      case View.About:
         return (<About />);
-      case 'help':
+      case View.Help:
         return (<Help />);
-      case 'settings':
+      case View.Settings:
         return (<Settings
           distanceUnit={distanceUnit}
           setDistanceUnit={setDistanceUnit}
@@ -106,11 +107,11 @@ export const App = () => {
           setHighAccuracyGPS={setHighAccuracyGPS}
           clearStorage={clearLocalStorage}
         />);
-      case 'item-create':
-      case 'item-read':
-      case 'item-update':
-      case 'item-delete':
-      case 'item-no-geo':
+      case View.Item_Create:
+      case View.Item_Read:
+      case View.Item_Update:
+      case View.Item_Delete:
+      case View.Item_No_Geolocation:
         return (<Item
           view={view}
           items={groups[groupIndex].items}
@@ -120,14 +121,14 @@ export const App = () => {
           createStart={createItemStart}
           createEnd={createItemEnd}
           read={readItem}
-          readItems={() => setView('items-read')}
-          disableGeolocation={() => setView('item-no-geo')}
+          readItems={() => setView(View.Items_Read)}
+          disableGeolocation={() => setView(View.Item_No_Geolocation)}
           updateStart={updateItemStart}
           updateEnd={updateItemEnd}
           deleteStart={deleteItemStart}
           deleteEnd={deleteItemEnd}
         />);
-      case 'items-read':
+      case View.Items_Read:
         return (
           <NameList className="ItemList"
             type="item"
@@ -142,10 +143,10 @@ export const App = () => {
             moveDown={moveItemDown}
           />
         );
-      case 'group-create':
-      case 'groups-read':
-      case 'group-update':
-      case 'group-delete':
+      case View.Group_Create:
+      case View.Group_Update:
+      case View.Group_Delete:
+      case View.Groups_Read:
       default:
         return (
           <NameList className="GroupList"
@@ -162,7 +163,7 @@ export const App = () => {
             deleteEnd={deleteGroupEnd}
             moveUp={moveGroupUp}
             moveDown={moveGroupDown}
-            cancel={() => setView('groups-read')}
+            cancel={() => setView(View.Groups_Read)}
           />
         );
     }
