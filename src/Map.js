@@ -53,7 +53,9 @@ export const Map = ({
         apiKey: key,
         version: 'weekly',
     });
-    // loader.load().then(initMap); // TODO: enable map
+    if (false) {
+        loader.load().then(initMap); // TODO: enable map
+    }
 
     const googleMapURL = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap&libraries=&v=weekly`;
     return (
