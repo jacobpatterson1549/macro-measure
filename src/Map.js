@@ -1,5 +1,3 @@
-import { Loader } from "@googlemaps/js-api-loader"
-
 import './Map.css';
 import { moveLatLngTo } from './LocationUtils';
 
@@ -15,10 +13,6 @@ export const Map = ({
     if (!showMap) {
         return (<p>[Map disabled]</p>);
     }
-    const key = process.env.REACT_APP_GOOGLE_MAPS_JAVASCRIPT_API_KEY;
-    if (!key) {
-        return (<p>REACT_APP_GOOGLE_MAPS_JAVASCRIPT_API_KEY environment variable missing</p>);
-    }
     const heading = (distanceHeading)
         ? distanceHeading.heading
         : 0;
@@ -26,42 +20,16 @@ export const Map = ({
         ? moveLatLngTo(itemLatLng, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading)
         : itemLatLng;
 
-    const initMap = () => {
-        const google = window.google;
-        const mapDiv = document.getElementById("map");
-        const mapOptions = {
-            zoom: 16, // TODO: compute zoom relative to distance/distanceUnit/moveAmount
-            center: centerLatLng,
-            heading: heading,
-        };
-        const markers = [
-            new google.maps.Marker({
-                position: itemLatLng,
-                title: itemLatLng.name,
-            }),
-        ];
-        if (distanceHeading) {
-            markers.push(new google.maps.Marker({
-                position: currentLatLng,
-                title: 'you',
-            }));
-        }
-        const map = new google.maps.Map(mapDiv, mapOptions);
-        markers.map((marker) => marker.setMap(map));
-    };
-    const loader = new Loader({ // TODO: investigate normal js loading without dependency
-        apiKey: key,
-        version: 'weekly',
-    });
-    if (false) {
-        loader.load().then(initMap); // TODO: enable map
-    }
-
-    const googleMapURL = `https://maps.googleapis.com/maps/api/js?key=${key}&callback=initMap&libraries=&v=weekly`;
     return (
         <div className="Map">
-            <div id="map"></div>
-            <script async src={googleMapURL}></script>
+            <h3>TODO: map</h3>
+            <p>center map at [{centerLatLng.lat}, {centerLatLng.lng}]</p>
+            <p>heading: {heading}</p>
+            <p>{itemLatLng.name}: [{itemLatLng.lat}, {itemLatLng.lng}]</p>
+            {
+                distanceHeading &&
+                <p>you: [{currentLatLng.lat}, {currentLatLng.lng}]</p>
+            }
         </div>
     );
 };

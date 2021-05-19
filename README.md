@@ -33,10 +33,6 @@ SSL_CRT_FILE=localhost.pem
 SSL_KEY_FILE=localhost-key.pem
 ```
 
-### Maps
-
-To use the maps, the app must specify a `REACT_APP_GOOGLE_MAPS_API_KEY` environment variable in the `.env` file.
-
 ### Test coverage 
 
 Run the commands below to generate and view coverage for all files
