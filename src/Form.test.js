@@ -1,6 +1,6 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 
-import { Form, SubmitInput, Input, NameInput } from './Form';
+import { Form, SubmitInput, Input, NameInput, ButtonInput } from './Form';
 
 describe('Input', () => {
     test("type", () => {
@@ -86,6 +86,30 @@ describe('NameInput', () => {
     });
 });
 
+describe('ButtonInput', () => {
+    test('value', () => {
+        const expected = 'test4';
+        render(<ButtonInput value={expected} />);
+        const element = screen.getByRole('button');
+        expect(element.value).toBe(expected);
+    });
+    test('onClick', () => {
+        const onClick = jest.fn();
+        render(<ButtonInput onClick={onClick} />);
+        const element = screen.getByRole('button');
+        fireEvent.click(element);
+        expect(onClick).toBeCalled();
+    });
+    test('preventDefault', () => {
+        const onClick = jest.fn();
+        render(<ButtonInput onClick={onClick} />);
+        const element = screen.getByRole('button');
+        const event = createEvent.click(element);
+        fireEvent(element, event);
+        expect(event.defaultPrevented).toBeTruthy();
+    });
+});
+
 describe('SubmitInput', () => {
     test('value', () => {
         const expected = 'test3';
@@ -116,12 +140,12 @@ describe('Form', () => {
         expect(onSubmit).toBeCalled();
     });
     test('preventDefault', () => {
-        const preventDefault = jest.fn();
         const onSubmit = jest.fn();
         render(<Form onSubmit={onSubmit}><SubmitInput /></Form>);
         const element = screen.getByRole('button');
-        fireEvent.submit(element, { preventDefault: preventDefault });
-        expect(onSubmit).toBeCalled();
+        const event = createEvent.submit(element);
+        fireEvent(element, event);
+        expect(event.defaultPrevented).toBeTruthy();
     });
     test('children', () => {
         render(

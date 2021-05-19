@@ -5,7 +5,7 @@ import { Map } from './Map';
 import { getDistanceHeading, moveLatLngTo, Heading } from './LocationUtils';
 import { useLocalStorage } from './LocalStorage';
 import { Geolocation } from './Geolocation';
-import { Form, SubmitInput, Input, NameInput } from './Form';
+import { Form, SubmitInput, Input, NameInput, ButtonInput } from './Form';
 
 const newItem = (currentLatLng) => {
     const lat = currentLatLng ? currentLatLng.lat : 0;
@@ -22,7 +22,7 @@ export const Item = ({
     view, // the page being viewed
     index, // the index of the item being shown
     items, // the items in the group
-    distanceUnit, // the distance length
+    distanceUnit, // the distance length between positions
     createStart, // function called to create a new item
     createEnd, // (name, lat, lng): function called to create an item
     read, //(delta): function called to read the item at the offset from the index
@@ -114,8 +114,7 @@ export const Item = ({
         );
     };
 
-    const updateLatLng = (event, heading) => {
-        event.preventDefault(); // TODO: use an input from Input.js - also do this in Settings.js
+    const updateLatLng = (heading) => {
         const item2 = moveLatLngTo(item, moveAmount, distanceUnit, heading);
         const item3 = Object.assign({}, item, item2);
         setItem(item3);
@@ -123,10 +122,6 @@ export const Item = ({
     const updateMoveAmount = (event) => {
         const moveAmount = event.target.value;
         setMoveAmount(moveAmount);
-    };
-    const cancelButton = () => {
-        const onClick = (view === 'item-create') ? readItems : () => _read(0);
-        return (<input type="button" value="cancel" onClick={onClick} />);
     };
 
     const getAction = (distanceHeading) => {
@@ -154,14 +149,14 @@ export const Item = ({
                             </label>
                             <label>
                                 <span>Latitude</span>
-                                <button onClick={(event) => updateLatLng(event, Heading.N)}>+(N)</button>
-                                <button onClick={(event) => updateLatLng(event, Heading.S)}>-(S)</button>
+                                <ButtonInput onClick={() => updateLatLng(Heading.N)} value="+(N)" />
+                                <ButtonInput onClick={() => updateLatLng(Heading.S)} value="-(S)" />
                                 <input type="number" value={item ? item.lat : 0} disabled />
                             </label>
                             <label>
                                 <span>Longitude</span>
-                                <button onClick={(event) => updateLatLng(event, Heading.W)}>-(W)</button>
-                                <button onClick={(event) => updateLatLng(event, Heading.E)}>+(E)</button>
+                                <ButtonInput onClick={() => updateLatLng(Heading.W)} value="-(W)" />
+                                <ButtonInput onClick={() => updateLatLng(Heading.E)} value="+(E)" />
                                 <input type="number" value={item ? item.lng : 0} disabled />
                             </label>
                             <label>
@@ -169,7 +164,7 @@ export const Item = ({
                                 <Input type="number" value={moveAmount} onChange={updateMoveAmount} min="0" max="1000" />
                             </label>
                             <div>
-                                {cancelButton()}
+                                <ButtonInput value="cancel" onClick={(view === 'item-create') ? readItems : () => _read(0)} />
                                 <SubmitInput
                                     disabled={view === 'item-create' && currentLatLng === null}
                                     value={(view === 'item-create') ? 'Create Item' : 'Update Item'}
@@ -184,7 +179,7 @@ export const Item = ({
                         <fieldset>
                             <legend>Delete {item.name}</legend>
                             <div>
-                                {cancelButton()}
+                                <ButtonInput value="Cancel" onClick={() => _read(0)} />
                                 <SubmitInput value={"Delete item"} />
                             </div>
                         </fieldset>

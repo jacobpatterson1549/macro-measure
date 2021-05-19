@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Form, SubmitInput, NameInput } from './Form';
+import { Form, SubmitInput, NameInput, ButtonInput } from './Form';
 import { NameTable } from './NameTable';
 
 export const NameList = ({
@@ -44,13 +44,6 @@ export const NameList = ({
         deleteEnd(index);
     };
 
-    const cancelButton = () => {
-        return (
-            <button type="button" onClick={() => cancel()}>
-                <span>Cancel</span>
-            </button>
-        );
-    };
     const getView = () => {
         switch (view) {
             case (type + "-create"):
@@ -71,7 +64,7 @@ export const NameList = ({
                                 />
                             </label>
                             <div>
-                                {cancelButton()}
+                                <ButtonInput value="Cancel" onClick={cancel} />
                                 <SubmitInput value={(view === (type + '-create') ? 'Create ' : 'Update ') + type} />
                             </div>
                         </fieldset>
@@ -83,7 +76,7 @@ export const NameList = ({
                         <fieldset>
                             <legend>Delete {values[index].name}?</legend>
                             <div>
-                                {cancelButton()}
+                                <ButtonInput value="Cancel" onClick={cancel} />
                                 <SubmitInput value={"Delete " + type} />
                             </div>
                         </fieldset>

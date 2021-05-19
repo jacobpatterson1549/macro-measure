@@ -42,6 +42,17 @@ export const NameInput = ({
     );
 };
 
+export const ButtonInput = ({
+    value, // the text to display on the button
+    onClick, // the action to perform when clicked
+}) => (
+    <input
+        type="button"
+        value={value}
+        onClick={preventDefault(onClick)}
+    />
+);
+
 export const SubmitInput = ({
     value, // the value of the submit button
     disabled, // prevents interaction

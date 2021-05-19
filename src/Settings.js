@@ -1,3 +1,5 @@
+import { Form, ButtonInput } from './Form'
+
 export const DefaultDistanceUnit = 'm';
 
 const distanceUnits = [
@@ -8,20 +10,24 @@ const distanceUnits = [
     'mi',
 ];
 
-export const Settings = (props) => (
+export const Settings = ({
+    distanceUnit, // the distance length between positions
+    setDistanceUnit, // function to set the distance unit
+    clearStorage, // function to clear all state
+}) => (
     <div>
         <h1>Macro Measure Settings</h1>
-        <form>
+        <Form>
             <label>
                 <span>Distance Unit:</span>
-                <select value={props.distanceUnit} onChange={(event) => props.setDistanceUnit(event.target.value)}>
+                <select value={distanceUnit} onChange={(event) => setDistanceUnit(event.target.value)}>
                     {distanceUnits.map((unit) => (<option key={unit}>{unit}</option>))}
                 </select>
             </label>
             <label>
                 <span>Clear ALL Saved Data:</span>
-                <input type="button" value="Clear" onClick={props.clearStorage} />
+                <ButtonInput value="Clear" onClick={clearStorage} />
             </label>
-        </form>
+        </Form>
     </div>
 );
