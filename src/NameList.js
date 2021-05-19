@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { NameInput } from './Input';
+import { Form, SubmitInput, NameInput } from './Input';
 import { NameTable } from './NameTable';
 
 export const NameList = ({
@@ -22,29 +22,25 @@ export const NameList = ({
 
     const [name, setName] = useState('?');
 
-    const _createStart = (event) => {
-        event.preventDefault();
+    const _createStart = () => {
         createStart();
         setName('[New Value Name]');
     };
-    const _createEnd = (event) => {
-        event.preventDefault();
+    const _createEnd = () => {
         createEnd(name);
     };
     const _updateStart = (index) => {
         setName(values[index].name);
         updateStart(index);
     };
-    const _updateEnd = (event) => {
-        event.preventDefault();
+    const _updateEnd = () => {
         updateEnd(index, name);
     };
     const _deleteStart = (index) => {
         setName(values[index].name);
         deleteStart(index);
     };
-    const _deleteEnd = (event) => {
-        event.preventDefault();
+    const _deleteEnd = () => {
         deleteEnd(index);
     };
 
@@ -60,7 +56,7 @@ export const NameList = ({
             case (type + "-create"):
             case (type + "-update"):
                 return (
-                    <form onSubmit={(view === (type + '-create') ? _createEnd : _updateEnd)}>
+                    <Form onSubmit={(view === (type + '-create') ? _createEnd : _updateEnd)}>
                         <fieldset>
                             <legend>
                                 {(view === (type + '-create') ? 'Create ' + type : 'Update ' + values[index].name)}
@@ -76,29 +72,29 @@ export const NameList = ({
                             </label>
                             <div>
                                 {cancelButton()}
-                                <input type="submit" value={(view === (type + '-create') ? 'Create ' : 'Update ') + type} />
+                                <SubmitInput value={(view === (type + '-create') ? 'Create ' : 'Update ') + type} />
                             </div>
                         </fieldset>
-                    </form>
+                    </Form>
                 );
             case (type + '-delete'):
                 return (
-                    <form onSubmit={_deleteEnd}>
+                    <Form onSubmit={_deleteEnd}>
                         <fieldset>
                             <legend>Delete {values[index].name}?</legend>
                             <div>
                                 {cancelButton()}
-                                <input type="submit" value={"Delete " + type} />
+                                <SubmitInput value={"Delete " + type} />
                             </div>
                         </fieldset>
-                    </form>
+                    </Form>
                 );
             default:
             case (type + '-read'):
                 return (
-                    <form onSubmit={_createStart}>
-                        <input type="submit" value={"Create " + type} />
-                    </form>
+                    <Form onSubmit={_createStart}>
+                        <SubmitInput value={"Create " + type} />
+                    </Form>
                 );
         }
     };

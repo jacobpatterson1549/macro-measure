@@ -5,7 +5,7 @@ import { Map } from './Map';
 import { getDistanceHeading, moveLatLngTo, Heading } from './LocationUtils';
 import { useLocalStorage } from './LocalStorage';
 import { Geolocation } from './Geolocation';
-import { Input, NameInput } from './Input';
+import { Form, SubmitInput, Input, NameInput } from './Input';
 
 const newItem = (currentLatLng) => {
     const lat = currentLatLng ? currentLatLng.lat : 0;
@@ -42,8 +42,7 @@ export const Item = ({
         setItem(newItem(currentLatLng));
         createStart();
     };
-    const _createEnd = (event) => {
-        event.preventDefault();
+    const _createEnd = () => {
         createEnd(item.name, item.lat, item.lng);
     };
     const _read = (delta) => {
@@ -54,16 +53,14 @@ export const Item = ({
         setItem(items[index]);
         updateStart(index);
     };
-    const _updateEnd = (event) => {
-        event.preventDefault();
+    const _updateEnd = () => {
         updateEnd(index, item.name, item.lat, item.lng);
     };
     const _deleteStart = () => {
         setItem(items[index]);
         deleteStart(index);
     };
-    const _deleteEnd = (event) => {
-        event.preventDefault();
+    const _deleteEnd = () => {
         deleteEnd(index);
     };
 
@@ -118,7 +115,7 @@ export const Item = ({
     };
 
     const updateLatLng = (event, heading) => {
-        event.preventDefault();
+        event.preventDefault(); // TODO: use an input from Input.js - also do this in Settings.js
         const item2 = moveLatLngTo(item, moveAmount, distanceUnit, heading);
         const item3 = Object.assign({}, item, item2);
         setItem(item3);
@@ -141,7 +138,7 @@ export const Item = ({
             case "item-create":
             case "item-update":
                 return (
-                    <form onSubmit={(view === 'item-create') ? _createEnd : _updateEnd}>
+                    <Form onSubmit={(view === 'item-create') ? _createEnd : _updateEnd}>
                         <fieldset>
                             <legend>
                                 {(view === 'item-create') ? 'Create Item' : ('Update ' + items[index].name)}
@@ -173,25 +170,25 @@ export const Item = ({
                             </label>
                             <div>
                                 {cancelButton()}
-                                <input type="submit"
+                                <SubmitInput
                                     disabled={view === 'item-create' && currentLatLng === null}
                                     value={(view === 'item-create') ? 'Create Item' : 'Update Item'}
                                 />
                             </div>
                         </fieldset>
-                    </form>
+                    </Form>
                 );
             case "item-delete":
                 return (
-                    <form onSubmit={_deleteEnd}>
+                    <Form onSubmit={_deleteEnd}>
                         <fieldset>
                             <legend>Delete {item.name}</legend>
                             <div>
                                 {cancelButton()}
-                                <input type="submit" value={"Delete item"} />
+                                <SubmitInput value={"Delete item"} />
                             </div>
                         </fieldset>
-                    </form>
+                    </Form>
                 );
             default:
             case "item-read":

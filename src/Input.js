@@ -41,3 +41,27 @@ export const NameInput = ({
         />
     );
 };
+
+export const SubmitInput = ({
+    value, // the value of the submit button
+    disabled, // prevents interaction
+}) => (
+    <input
+        type="submit"
+        value={value || 'Submit'}
+        disabled={disabled}
+    />
+);
+
+export const Form = (props) => (
+    <form onSubmit={preventDefault(props.onSubmit)}>
+        {props.children}
+    </form>
+);
+
+const preventDefault = (fn) => {
+    return (event) => {
+        event.preventDefault();
+        fn();
+    };
+};

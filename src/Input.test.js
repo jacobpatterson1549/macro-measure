@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 
-import { Input, NameInput } from './Input';
+import { Form, SubmitInput, Input, NameInput } from './Input';
 
 describe('Input', () => {
     test("type", () => {
@@ -31,7 +31,7 @@ describe('Input', () => {
         const selectFn = jest.fn();
         render(<Input onChange={() => { }} />);
         const element = screen.getByRole('textbox');
-        fireEvent.focus(element,  { target: { select: selectFn } });
+        fireEvent.focus(element, { target: { select: selectFn } });
         expect(selectFn).toBeCalled();
     });
 });
@@ -83,5 +83,57 @@ describe('NameInput', () => {
         fireEvent.change(element, { target: { value: name, setCustomValidity: setCustomValidityFn } });
         expect(value).toBe(name);
         expect(setCustomValidityFn).toHaveBeenCalledWith(expectedMatcher);
+    });
+});
+
+describe('SubmitInput', () => {
+    test('value', () => {
+        const expected = 'test3';
+        render(<SubmitInput value={expected} />);
+        const element = screen.getByRole('button');
+        expect(element.value).toBe(expected);
+    });
+    test('default value', () => {
+        const expected = 'Submit';
+        render(<SubmitInput />);
+        const element = screen.getByRole('button');
+        expect(element.value).toBe(expected);
+    });
+    test('disabled', () => {
+        const expected = true;
+        render(<SubmitInput disabled={expected} />);
+        const element = screen.getByRole('button');
+        expect(element.disabled).toBe(expected);
+    });
+});
+
+describe('Form', () => {
+    test('onSubmit', () => {
+        const onSubmit = jest.fn();
+        render(<Form onSubmit={onSubmit}><SubmitInput /></Form>);
+        const element = screen.getByRole('button');
+        fireEvent.submit(element);
+        expect(onSubmit).toBeCalled();
+    });
+    test('preventDefault', () => {
+        const preventDefault = jest.fn();
+        const onSubmit = jest.fn();
+        render(<Form onSubmit={onSubmit}><SubmitInput /></Form>);
+        const element = screen.getByRole('button');
+        fireEvent.submit(element, { preventDefault: preventDefault });
+        expect(onSubmit).toBeCalled();
+    });
+    test('children', () => {
+        render(
+            <Form>
+                <label>a<Input /></label>
+                <label>b<Input /></label>
+                <label>c<Input /></label>
+                <SubmitInput />
+            </Form>
+        );
+        expect(screen.getByLabelText('a')).toBeInTheDocument();
+        expect(screen.getByLabelText('b')).toBeInTheDocument();
+        expect(screen.getByLabelText('c')).toBeInTheDocument();
     });
 });
