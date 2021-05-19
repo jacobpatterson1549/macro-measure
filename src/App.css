@@ -6,11 +6,6 @@
   color: red;
 }
 
-/* TODO: put this somewhere else */
-form > *, fieldset > * {
-  display: block;
-}
-
 .App > .Main {
   height: 100%;
   display: flex;
