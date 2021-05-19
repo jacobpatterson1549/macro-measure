@@ -5,6 +5,7 @@ import { Map } from './Map';
 import { getDistanceHeading, moveLatLngTo, Heading } from './LocationUtils';
 import { useLocalStorage } from './LocalStorage';
 import { Geolocation } from './Geolocation';
+import { Input, NameInput } from './Input';
 
 const newItem = (currentLatLng) => {
     const lat = currentLatLng ? currentLatLng.lat : 0;
@@ -116,25 +117,6 @@ export const Item = ({
         );
     };
 
-    // TODO: much of this is duplicated in NameTable.js
-    const uniqueName = (name) => {
-        for (let i = 0; i < items.length; i++) {
-            const otherItem = items[i]
-            if (name === otherItem.name && (view !== 'item-update' || i === index)) {
-                return false;
-            }
-        }
-        return true;
-    };
-    const updateName = (event) => {
-        const name = event.target.value;
-        const isUniqueName = uniqueName(name);
-        const nameInput = event.target;
-        const item2 = Object.assign({}, item, { name: name });
-        nameInput.setCustomValidity(isUniqueName ? '' : 'duplicate name');
-        setItem(item2);
-    }
-
     const updateLatLng = (event, heading) => {
         event.preventDefault();
         const item2 = moveLatLngTo(item, moveAmount, distanceUnit, heading);
@@ -166,7 +148,12 @@ export const Item = ({
                             </legend>
                             <label>
                                 <span>Name</span>
-                                <input type="text" value={item ? item.name : '?'} onChange={updateName} onFocus={(event) => event.target.select()} />
+                                <NameInput
+                                    value={item ? item.name : '?'}
+                                    values={items}
+                                    onChange={(name) => setItem(Object.assign({}, item, { name: name }))}
+                                    isUniqueName={(view === 'item-update') ? index : -1}
+                                />
                             </label>
                             <label>
                                 <span>Latitude</span>
@@ -182,7 +169,7 @@ export const Item = ({
                             </label>
                             <label>
                                 <span>Move Amount ({distanceUnit})</span>
-                                <input type="number" value={moveAmount} onChange={updateMoveAmount} min="0" max="1000" onFocus={(event) => event.target.select()} />
+                                <Input type="number" value={moveAmount} onChange={updateMoveAmount} min="0" max="1000" />
                             </label>
                             <div>
                                 {cancelButton()}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { NameInput } from './Input';
 import { NameTable } from './NameTable';
 
 export const NameList = ({
@@ -47,23 +48,6 @@ export const NameList = ({
         deleteEnd(index);
     };
 
-    const updateName = (event) => {
-        const nameInput = event.target;
-        const name = nameInput.value;
-        const isUniqueName = uniqueName(name);
-        nameInput.setCustomValidity(isUniqueName ? '' : 'duplicate name');
-        setName(name);
-    };
-    const uniqueName = (name) => {
-        for (let i = 0; i < values.length; i++) {
-            const value = values[i]
-            if (name === value.name && (view !== (type + '-update') || i === index)) {
-                return false;
-            }
-        }
-        return true;
-    };
-
     const cancelButton = () => {
         return (
             <button type="button" onClick={() => cancel()}>
@@ -83,7 +67,12 @@ export const NameList = ({
                             </legend>
                             <label>
                                 <span>Name:</span>
-                                <input type="text" value={name} required onChange={updateName} onFocus={(event) => event.target.select()} />
+                                <NameInput
+                                    value={name}
+                                    values={values}
+                                    onChange={setName}
+                                    isUniqueName={(view === (type + '-update')) ? index : -1}
+                                />
                             </label>
                             <div>
                                 {cancelButton()}
