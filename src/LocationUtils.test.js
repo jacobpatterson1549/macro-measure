@@ -42,15 +42,24 @@ describe('meters conversions', () => {
         [1, 'mi', 1609.344],
         [125, 'mi', 201168],
         [3.14159, 'km', 3141.59], // not exact
+        [1, 'cubit', NaN],
     ];
     const decimalPrecisionDigits = 10;
     test.each(conversions)('toMeters(%d, %s) should be %d meters', (distance, unit, expected) => {
         const m = _toMeters(distance, unit);
-        expect(m).toBeCloseTo(expected, decimalPrecisionDigits);
+        if (expected === expected) {
+            expect(m).toBeCloseTo(expected, decimalPrecisionDigits);
+        } else {
+            expect(m).toBeNaN();
+        }
     });
-    test.each(conversions)('fromMeters() of toMeters(%d, %s) should be the same', (distance, unit) => {
+    test.each(conversions)('fromMeters() of toMeters(%d, %s) should be the same', (distance, unit, expected) => {
         const m = _toMeters(distance, unit);
-        const distance2 = _fromMeters(m, unit);
-        expect(distance2).toBeCloseTo(distance, decimalPrecisionDigits);
+        const actual = _fromMeters(m, unit);
+        if (expected === expected) {
+            expect(actual).toBeCloseTo(distance, decimalPrecisionDigits);
+        } else {
+            expect(actual).toBeNaN();
+        }
     });
 });
