@@ -233,16 +233,10 @@ describe('group items', () => {
                 const actual = Groups.moveItemDown(groups, 0, 0);
                 expect(actual).toStrictEqual(expected);
             });
-            test('it should return groups when moving an item down', () => {
-                const groups = [{ "name": "groupA", "items": [{ "name": "item1" }, { "name": "item2" }] }];
-                const expected = [{ "name": "groupA", "items": [{ "name": "item2" }, { "name": "item1" }] }];
-                const actual = Groups.moveItemDown(groups, 0, 0);
-                expect(actual).toStrictEqual(expected);
-            });
             test('it should not move down if at bottom', () => {
                 const groups = [{ "name": "groupA", "items": [{ "name": "item1" }, { "name": "item2" }] }];
                 const expected = [{ "name": "groupA", "items": [{ "name": "item1" }, { "name": "item2" }] }];
-                const actual = Groups.moveItemDown(groups, 0, 1);
+                const actual = Groups.moveItemDown(groups, 0, `2`);
                 expect(actual).toStrictEqual(expected);
             });
         });
