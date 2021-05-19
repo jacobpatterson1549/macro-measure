@@ -14,6 +14,7 @@ export const App = () => {
 
   const [view, setView] = useLocalStorage('view', DefaultView);
   const [distanceUnit, setDistanceUnit] = useLocalStorage('distanceUnit', DefaultDistanceUnit);
+  const [highAccuracyGPS, setHighAccuracyGPS] = useLocalStorage('highAccuracyGPS', false);
   const [groupIndex, setGroupIndex] = useLocalStorage('groupIndex', 0);
   const [itemIndex, setItemIndex] = useLocalStorage('itemIndex', 0);
   const [groups, setGroups] = useLocalStorage('groups', []);
@@ -101,6 +102,8 @@ export const App = () => {
         return (<Settings
           distanceUnit={distanceUnit}
           setDistanceUnit={setDistanceUnit}
+          highAccuracyGPS={highAccuracyGPS}
+          setHighAccuracyGPS={setHighAccuracyGPS}
           clearStorage={clearLocalStorage}
         />);
       default:
@@ -151,6 +154,7 @@ export const App = () => {
           items={groups[groupIndex].items}
           index={itemIndex}
           distanceUnit={distanceUnit}
+          highAccuracyGPS={highAccuracyGPS}
           createStart={createItemStart}
           createEnd={createItemEnd}
           read={readItem}

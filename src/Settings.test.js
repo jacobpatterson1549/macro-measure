@@ -19,6 +19,22 @@ describe('distance unit', () => {
     });
 });
 
+describe('gps', () => {
+    const values = [true, false];
+    test.each(values)('should have value of %s', (value) => {
+        render(<Settings highAccuracyGPS={value} />)
+        const checkboxElement = screen.getByLabelText(/GPS/i);
+        expect(checkboxElement.checked).toBe(value);
+    });
+    test.each(values)('should flip value when clicked checkbox was %s', (value) => {
+        const setHighAccuracyGPSFn = jest.fn();
+        render(<Settings highAccuracyGPS={value} setHighAccuracyGPS={setHighAccuracyGPSFn} />)
+        const checkboxElement = screen.getByLabelText(/GPS/i);
+        fireEvent.click(checkboxElement);
+        expect(setHighAccuracyGPSFn).toBeCalledWith(!value);
+    });
+});
+
 describe('clear storage', () => {
     test('onClick', () => {
         const clearStorageFn = jest.fn();

@@ -23,6 +23,7 @@ export const Item = ({
     index, // the index of the item being shown
     items, // the items in the group
     distanceUnit, // the distance length between positions
+    highAccuracyGPS, // enables the GPS to be more precise
     createStart, // function called to create a new item
     createEnd, // (name, lat, lng): function called to create an item
     read, //(delta): function called to read the item at the offset from the index
@@ -234,6 +235,7 @@ export const Item = ({
         <div className="Item">
             <Geolocation
                 view={view}
+                highAccuracyGPS={highAccuracyGPS}
                 newItem={newItem}
                 setItem={setItem}
                 setCurrentLatLng={setCurrentLatLng}

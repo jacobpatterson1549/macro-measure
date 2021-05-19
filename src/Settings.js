@@ -13,6 +13,8 @@ const distanceUnits = [
 export const Settings = ({
     distanceUnit, // the distance length between positions
     setDistanceUnit, // function to set the distance unit
+    highAccuracyGPS, // enables the GPS to be more precise
+    setHighAccuracyGPS, // function to toggle using high GPS accuracy
     clearStorage, // function to clear all state
 }) => (
     <div>
@@ -23,6 +25,10 @@ export const Settings = ({
                 <select value={distanceUnit} onChange={(event) => setDistanceUnit(event.target.value)}>
                     {distanceUnits.map((unit) => (<option key={unit}>{unit}</option>))}
                 </select>
+            </label>
+            <label>
+                <span>High Accuracy GPS</span>
+                <input type="checkbox" checked={highAccuracyGPS} onChange={(event) => setHighAccuracyGPS(event.target.checked)} />
             </label>
             <label>
                 <span>Clear ALL Saved Data:</span>

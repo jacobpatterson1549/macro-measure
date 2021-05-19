@@ -6,6 +6,7 @@ const needsLocation = (view) => ['item-read', 'item-create'].includes(view);
 
 export const Geolocation = ({
     view, // the current page
+    highAccuracyGPS, // enables the GPS to be more precise
     newItem, // func to create a new item from a latLng
     setItem, // func to set the item
     setCurrentLatLng, // func to set the current latLng
@@ -36,11 +37,11 @@ export const Geolocation = ({
         const success = setPosition;
         const error = disable;
         const options = {
-            enableHighAccuracy: false, // TODO: allow this to be a setting
+            enableHighAccuracy: highAccuracyGPS,
         };
         stopTimer();
         setTimerID(navigator.geolocation.watchPosition(success, error, options));
-    }, [disable, setPosition, stopTimer, setTimerID]);
+    }, [highAccuracyGPS, disable, setPosition, stopTimer, setTimerID]);
 
     useEffect(() => {
         if (needsLocation(view) && timerID === null) {
