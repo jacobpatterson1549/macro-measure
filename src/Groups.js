@@ -1,4 +1,5 @@
-// groups performs actions on groups, returning new references when modified
+const deepCopy = (groups) => JSON.parse(JSON.stringify(groups));
+
 export const Groups = {
   createGroup: (groups, name) => {
     groups = deepCopy(groups);
@@ -99,6 +100,3 @@ export const Groups = {
     return groups;
   },
 };
-
-// TODO: use better deep copy
-const deepCopy = (groups) => JSON.parse(JSON.stringify(groups));
