@@ -201,6 +201,31 @@ export const Item = ({
         }
     };
 
+    const getMap = (distanceHeading) => {
+        // const [showMap, setShowMap] = useLocalStorage('show-map', true); // TODO: allow this to be set
+        const showMap = true;
+        if (!showMap) {
+            return (<p>[Map disabled]</p>);
+        }
+        const heading = (distanceHeading)
+            ? distanceHeading.heading
+            : 0;
+        const centerLatLng = (distanceHeading)
+            ? moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading)
+            : item;
+        const currentLatLng2 = (distanceHeading)
+            ? currentLatLng
+            : null;
+        return (
+            <Map
+                heading={heading}
+                centerLatLng={centerLatLng}
+                itemLatLng={item}
+                currentLatLng={currentLatLng2}
+            />
+        );
+    }
+
     const distanceHeading = (view === 'item-read' && currentLatLng !== null)
         ? getDistanceHeading(item, currentLatLng, distanceUnit)
         : null;
@@ -215,12 +240,7 @@ export const Item = ({
                 disable={disableGeolocation}
             />
             {getHeader()}
-            <Map
-                itemLatLng={item}
-                currentLatLng={currentLatLng}
-                distanceHeading={distanceHeading}
-                distanceUnit={distanceUnit}
-            />
+            {getMap(distanceHeading)}
             {getAction(distanceHeading)}
         </div>
     );
