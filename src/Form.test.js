@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 
-import { Form, SubmitInput, Input, NameInput } from './Input';
+import { Form, SubmitInput, Input, NameInput } from './Form';
 
 describe('Input', () => {
     test("type", () => {

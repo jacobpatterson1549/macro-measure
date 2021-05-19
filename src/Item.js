@@ -5,7 +5,7 @@ import { Map } from './Map';
 import { getDistanceHeading, moveLatLngTo, Heading } from './LocationUtils';
 import { useLocalStorage } from './LocalStorage';
 import { Geolocation } from './Geolocation';
-import { Form, SubmitInput, Input, NameInput } from './Input';
+import { Form, SubmitInput, Input, NameInput } from './Form';
 
 const newItem = (currentLatLng) => {
     const lat = currentLatLng ? currentLatLng.lat : 0;

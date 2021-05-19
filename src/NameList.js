@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Form, SubmitInput, NameInput } from './Input';
+import { Form, SubmitInput, NameInput } from './Form';
 import { NameTable } from './NameTable';
 
 export const NameList = ({
