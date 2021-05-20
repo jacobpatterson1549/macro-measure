@@ -1,12 +1,12 @@
-import { useState } from 'react';
-
 import { Form, SubmitInput, NameInput, ButtonInput } from './Form';
 import { NameTable } from './NameTable';
+import { useLocalStorage } from './LocalStorage';
 
 const toCreateView = (type) => type + '-create';
 const toReadView = (type) => type + '-read';
 const toUpdateView = (type) => type + '-update';
 const toDeleteView = (type) => type + '-delete';
+const getLocalStorageNameKey = (type) => type + '-name';
 
 export const NameList = ({
     view, // the action being performed
@@ -25,11 +25,11 @@ export const NameList = ({
     cancel, // function to cancel the current action
 }) => {
 
-    const [name, setName] = useState('?');
+    const [name, setName] = useLocalStorage(getLocalStorageNameKey(type), '?');
 
     const _createStart = () => {
-        createStart();
         setName('[New Value Name]');
+        createStart();
     };
     const _createEnd = () => {
         createEnd(name);

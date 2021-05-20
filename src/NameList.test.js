@@ -30,6 +30,7 @@ describe('handlers', () => {
             const element = document.querySelector('input[type="submit"]');
             fireEvent.submit(element);
             expect(createStart).toBeCalled();
+            expect(localStorage.setItem.mock.calls[1][1]).toMatch(/new/i);
         });
         test('update', () => {
             const updateStart = jest.fn();
@@ -37,13 +38,15 @@ describe('handlers', () => {
             const element = screen.getAllByTitle(/edit/i)[1];
             fireEvent.click(element);
             expect(updateStart).toBeCalled();
+            expect(localStorage.setItem.mock.calls[1][1]).toBe('"b"');
         });
         test('delete', () => {
             const deleteStart = jest.fn();
             render(<NameList type={'test'} view={'test-read'} values={values} index={1} deleteStart={deleteStart} />);
-            const element = screen.getAllByTitle(/delete/i)[1];
+            const element = screen.getAllByTitle(/delete/)[2];
             fireEvent.click(element);
             expect(deleteStart).toBeCalled();
+            expect(localStorage.setItem.mock.calls[1][1]).toBe('"c"');
         });
     });
     describe('end', () => {
