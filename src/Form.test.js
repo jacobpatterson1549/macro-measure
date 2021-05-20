@@ -123,12 +123,6 @@ describe('SubmitInput', () => {
         const element = screen.getByRole('button');
         expect(element.value).toBe(expected);
     });
-    test('disabled', () => {
-        const expected = true;
-        render(<SubmitInput disabled={expected} />);
-        const element = screen.getByRole('button');
-        expect(element.disabled).toBe(expected);
-    });
 });
 
 describe('Form', () => {

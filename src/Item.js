@@ -8,7 +8,7 @@ import { Geolocation } from './Geolocation';
 import { Form, SubmitInput, Input, NameInput, ButtonInput } from './Form';
 import { View } from './View';
 
-const newItem = (currentLatLng) => {
+export const newItem = (currentLatLng) => {
     const lat = currentLatLng ? currentLatLng.lat : 0;
     const lng = currentLatLng ? currentLatLng.lng : 0;
     const item = {
@@ -21,8 +21,9 @@ const newItem = (currentLatLng) => {
 
 export const Item = ({
     view, // the page being viewed
-    index, // the index of the item being shown
     items, // the items in the group
+    index, // the index of the item being shown
+    defaultItem, // the item at the index
     distanceUnit, // the distance length between positions
     highAccuracyGPS, // enables the GPS to be more precise
     createStart, // function called to create a new item
@@ -36,9 +37,9 @@ export const Item = ({
     deleteEnd, // function to finish deleting the item
 }) => {
 
-    const [currentLatLng, setCurrentLatLng] = useLocalStorage('currentLatLng', null);
     const [moveAmount, setMoveAmount] = useLocalStorage('move-amount', 1);
-    const [item, setItem] = useState((view === View.Item_Create) ? newItem(currentLatLng) : items[index]);
+    const [currentLatLng, setCurrentLatLng] = useState(null);
+    const [item, setItem] = useState(defaultItem);
 
     const _createStart = () => {
         setItem(newItem(currentLatLng));
@@ -92,7 +93,7 @@ export const Item = ({
                         <span>◀</span>
                     </button>
                     <button onClick={() => readItems()} title="items list" className="name">
-                        <span>{item.name}</span>
+                        <span>{(view === View.Item_Create) ? '[Add Item]' : items[index].name}</span>
                     </button>
                     <button className="right arrow"
                         disabled={index + 1 >= items.length}
@@ -157,7 +158,7 @@ export const Item = ({
             case View.Item_Update:
                 return (
                     <Form onSubmit={(view === View.Item_Create) ? _createEnd : _updateEnd}>
-                        <fieldset>
+                        <fieldset disabled={view === View.Item_Create && !currentLatLng}>
                             <legend>
                                 {(view === View.Item_Create) ? 'Create Item' : ('Update ' + items[index].name)}
                             </legend>
@@ -189,7 +190,6 @@ export const Item = ({
                             <div>
                                 <ButtonInput value="cancel" onClick={(view === View.Item_Create) ? readItems : () => _read(0)} />
                                 <SubmitInput
-                                    disabled={(view === View.Item_Create) && currentLatLng === null}
                                     value={((view === View.Item_Create) ? 'Create' : 'Update') + ' Item'}
                                 />
                             </div>

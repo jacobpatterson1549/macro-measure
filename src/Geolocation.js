@@ -58,7 +58,7 @@ export const Geolocation = ({
                 disable();
             }
         }
-        return stopTimer;
+        return () => clearInterval(timerID);
     }, [view, disable, timerID, startTimer, stopTimer]);
 
     return null;

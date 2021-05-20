@@ -5,7 +5,7 @@ import { Settings, DefaultDistanceUnit } from './Settings';
 import { About } from './About';
 import { Help } from './Help';
 import { NameList } from './NameList';
-import { Item } from './Item';
+import { Item, newItem } from './Item';
 import { useLocalStorage, clearLocalStorage } from './LocalStorage';
 import { View } from './View';
 
@@ -81,7 +81,16 @@ export const App = () => {
     setItemIndex(index);
   };
   const deleteItemEnd = (index) => {
-    setView(View.Items_Read); // TODO: read to previous or next group
+    const numItems = groups[groupIndex].items.length;
+    if (numItems === 1) {
+      setView(View.Items_Read);
+    } else {
+      if (index + 1 === numItems) {
+        // read previous item if currently reading last item
+        setItemIndex(index - 1);
+      }
+      setView(View.Item_Read);
+    }
     setGroups(Groups.deleteItem(groups, groupIndex, index));
   };
   const moveItemUp = (index) => {
@@ -116,6 +125,7 @@ export const App = () => {
           view={view}
           items={groups[groupIndex].items}
           index={itemIndex}
+          defaultItem={Object.assign({}, (view === View.Item_Create) ? newItem(null) : groups[groupIndex].items[itemIndex])}
           distanceUnit={distanceUnit}
           highAccuracyGPS={highAccuracyGPS}
           createStart={createItemStart}

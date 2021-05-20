@@ -2,14 +2,22 @@ import './Form.css';
 
 const onFocus = (event) => event.target.select();
 
-export const Input = ({ type, value, onChange, min, max }) => (
+export const Input = ({
+    type, // the type of input
+    value, // the initial value of the input
+    onChange, // the function to executed when the value changes
+    min, // the minimum value for the input (type=number only)
+    max, // the maximum value for the input (type=number only)
+}) => (
+
     <input
         type={type}
         value={value}
         min={min}
         max={max}
         onChange={onChange}
-        onFocus={onFocus} />
+        onFocus={onFocus}
+    />
 );
 
 const uniqueName = (name, nameObjects, updateIndex) => {
@@ -27,6 +35,7 @@ export const NameInput = ({
     values, // the array of existing objects with name properties
     onChange, // the function to change the value of the name
     updateIndex, // the index of the item being updated - provide a negative number if not updating any index
+    disabled, // the prevents input when true
 }) => {
     const updateName = (event) => {
         const nameInput = event.target;
@@ -40,6 +49,7 @@ export const NameInput = ({
             type="text"
             value={value}
             onChange={updateName}
+            disabled={disabled}
         />
     );
 };
@@ -57,12 +67,10 @@ export const ButtonInput = ({
 
 export const SubmitInput = ({
     value, // the value of the submit button
-    disabled, // prevents interaction
 }) => (
     <input
         type="submit"
         value={value || 'Submit'}
-        disabled={disabled}
     />
 );
 
