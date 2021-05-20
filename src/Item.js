@@ -92,7 +92,7 @@ export const Item = ({
                         <span>◀</span>
                     </button>
                     <button onClick={() => readItems()} title="items list" className="name">
-                        <span>{(view === View.Item_Create) ? '[Add Item]' : items[index].name}</span>
+                        <span>{item.name}</span>
                     </button>
                     <button className="right arrow"
                         disabled={index + 1 >= items.length}
@@ -131,26 +131,18 @@ export const Item = ({
     };
 
     const getMap = () => {
-        // const [showMap, setShowMap] = useLocalStorage('show-map', true); // TODO: allow this to be set
-        const showMap = true;
-        if (!showMap) {
+        if (view === View.Item_No_Geolocation) {
             return (<p>[Map disabled]</p>);
         }
-        const heading = (distanceHeading)
-            ? distanceHeading.heading
-            : 0;
-        const centerLatLng = (distanceHeading)
-            ? moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading)
-            : item;
-        const currentLatLng2 = (distanceHeading)
-            ? currentLatLng
-            : null;
+        const [heading, centerLatLng, deviceLatLng] = (distanceHeading)
+            ? [distanceHeading.heading, moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading), currentLatLng]
+            : [0, item, null];
         return (
             <Map
                 heading={heading}
                 centerLatLng={centerLatLng}
                 itemLatLng={item}
-                currentLatLng={currentLatLng2}
+                deviceLatLng={deviceLatLng}
             />
         );
     };
@@ -172,7 +164,7 @@ export const Item = ({
                             <label>
                                 <span>Name</span>
                                 <NameInput
-                                    value={item ? item.name : '?'}
+                                    value={item.name}
                                     values={items}
                                     onChange={(name) => setItem(Object.assign({}, item, { name: name }))}
                                     isUniqueName={(view === View.Item_Create) ? -1 : index}
@@ -182,13 +174,13 @@ export const Item = ({
                                 <span>Latitude</span>
                                 <ButtonInput onClick={() => updateLatLng(Heading.N)} value="+(N)" />
                                 <ButtonInput onClick={() => updateLatLng(Heading.S)} value="-(S)" />
-                                <input type="number" value={item ? item.lat : 0} disabled />
+                                <input type="number" value={item.lat} disabled />
                             </label>
                             <label>
                                 <span>Longitude</span>
                                 <ButtonInput onClick={() => updateLatLng(Heading.W)} value="-(W)" />
                                 <ButtonInput onClick={() => updateLatLng(Heading.E)} value="+(E)" />
-                                <input type="number" value={item ? item.lng : 0} disabled />
+                                <input type="number" value={item.lng} disabled />
                             </label>
                             <label>
                                 <span>Move Amount ({distanceUnit})</span>
@@ -198,7 +190,7 @@ export const Item = ({
                                 <ButtonInput value="cancel" onClick={(view === View.Item_Create) ? readItems : () => _read(0)} />
                                 <SubmitInput
                                     disabled={(view === View.Item_Create) && currentLatLng === null}
-                                    value={(view === View.Item_Create) ? 'Create Item' : 'Update Item'}
+                                    value={((view === View.Item_Create) ? 'Create' : 'Update') + ' Item'}
                                 />
                             </div>
                         </fieldset>
