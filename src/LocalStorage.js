@@ -6,9 +6,9 @@ export const useLocalStorage = (key, defaultValue) => {
 
     const [state, setState] = useState(() => {
         const storageValue = storage.getItem(key);
-        return storageValue === null
-            ? defaultValue
-            : JSON.parse(storageValue);
+        return (storageValue)
+            ? JSON.parse(storageValue)
+            : defaultValue;
     });
 
     useEffect(() => {

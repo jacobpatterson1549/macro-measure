@@ -10,4 +10,12 @@ const localStorageMock = {
     removeItem: jest.fn(),
     clear: jest.fn(),
 };
-window.localStorage = localStorageMock;
+const locationMock = {
+    reload: jest.fn(),
+};
+const geolocationMock = {
+    watchPosition: jest.fn(),
+};
+Object.defineProperty(global, 'localStorage', { value: localStorageMock });
+Object.defineProperty(global, 'location', { value: locationMock });
+Object.defineProperty(global.navigator, 'geolocation', { value: geolocationMock });
