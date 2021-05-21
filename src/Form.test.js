@@ -84,6 +84,11 @@ describe('NameInput', () => {
         expect(value).toBe(name);
         expect(setCustomValidityFn).toHaveBeenCalledWith(expectedMatcher);
     });
+    test('required', () => {
+        render(<NameInput />);
+        const element = screen.getByRole('textbox');
+        expect(element).toHaveAttribute('required');
+    });
 });
 
 describe('ButtonInput', () => {

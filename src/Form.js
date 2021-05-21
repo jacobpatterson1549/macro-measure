@@ -8,6 +8,7 @@ export const Input = ({
     onChange, // the function to executed when the value changes
     min, // the minimum value for the input (type=number only)
     max, // the maximum value for the input (type=number only)
+    required, // a boolean indicating if the input is required to submit the form
 }) => (
 
     <input
@@ -17,6 +18,7 @@ export const Input = ({
         max={max}
         onChange={onChange}
         onFocus={onFocus}
+        required={required}
     />
 );
 
@@ -50,6 +52,7 @@ export const NameInput = ({
             value={value}
             onChange={updateName}
             disabled={disabled}
+            required={true}
         />
     );
 };
