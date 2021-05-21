@@ -3,58 +3,73 @@ import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 import { Form, SubmitInput, Input, NameInput, ButtonInput } from './Form';
 
 describe('Input', () => {
-    test("type", () => {
+    it("should have text type", () => {
         render(<Input type="text" onChange={() => { }} />);
         const element = screen.getByRole('textbox');
         expect(element.type).toBe('text');
     });
-    test("value", () => {
+    it("should have number type", () => {
+        render(<Input type="number" onChange={() => { }} />);
+        const element = document.querySelector('input');
+        expect(element.type).toBe('number');
+    });
+    it("should have value", () => {
         render(<Input value="test2" onChange={() => { }} />);
         const element = screen.getByRole('textbox');
         expect(element.value).toBe('test2');
     });
-    test("min/max", () => {
+    it("should set min/max", () => {
         render(<Input min={7} max={9} onChange={() => { }} />);
         const element = screen.getByRole('textbox');
         expect(element).toBeInTheDocument();
         expect(element.min).toBe("7");
         expect(element.max).toBe("9");
     });
-    test("onChange", () => {
+    it("should change value when changed", () => {
         let value = 'before';
         render(<Input value={value} onChange={(event) => { value = event.target.value }} />);
         const element = screen.getByRole('textbox');
         fireEvent.change(element, { target: { value: 'after' } });
         expect(value).toBe('after');
     });
-    test("onFocus", () => {
+    it("should select when focused", () => {
         const selectFn = jest.fn();
         render(<Input onChange={() => { }} />);
         const element = screen.getByRole('textbox');
         fireEvent.focus(element, { target: { select: selectFn } });
         expect(selectFn).toBeCalled();
     });
+    it('should be not required when not specified', () => {
+        render(<Input />);
+        const element = screen.getByRole('textbox');
+        expect(element).not.toHaveAttribute('required');
+    });
+    it('should be required when desired', () => {
+        render(<Input required={true} />);
+        const element = screen.getByRole('textbox');
+        expect(element).toHaveAttribute('required');
+    });
 });
 
 describe('NameInput', () => {
-    test('type', () => {
-        render(<NameInput type="text" onChange={() => { }} />);
+    it('should always have text type', () => {
+        render(<NameInput onChange={() => { }} />);
         const element = screen.getByRole('textbox');
         expect(element.type).toBe('text');
     });
-    test('value', () => {
+    it('should have value', () => {
         render(<NameInput value="test2" onChange={() => { }} />);
         const element = screen.getByRole('textbox');
         expect(element.value).toBe('test2');
     });
-    test('min/max should not flow through', () => {
+    it('should not set min/max', () => {
         render(<NameInput min={7} max={9} onChange={() => { }} />);
         const element = screen.getByRole('textbox');
         expect(element).toBeInTheDocument();
         expect(element.min).toBe('');
         expect(element.max).toBe('');
     });
-    test("onChange", () => {
+    it("should change value when changed", () => {
         const values = [];
         let value = 'before';
         render(<NameInput values={values} value={value} onChange={(name) => { value = name }} />);
@@ -62,7 +77,7 @@ describe('NameInput', () => {
         fireEvent.change(element, { target: { value: 'after' } });
         expect(value).toBe('after');
     });
-    test('onFocus', () => {
+    it("should select when focused", () => {
         const selectFn = jest.fn();
         render(<NameInput onChange={() => { }} />);
         const element = screen.getByRole('textbox');
@@ -70,11 +85,11 @@ describe('NameInput', () => {
         expect(selectFn).toBeCalled();
     });
     const uniqueNameTests = [
-        [[{ name: 'a' }, { name: 'c' }], -1, 'b', true],
-        [[{ name: 'a' }, { name: 'c' }], -1, 'c', false],
-        [[{ name: 'a' }, { name: 'c' }], 1, 'c', true],
+        [true, [{ name: 'a' }, { name: 'c' }], -1, 'b'],
+        [false, [{ name: 'a' }, { name: 'c' }], -1, 'c'],
+        [true, [{ name: 'a' }, { name: 'c' }], 1, 'c'],
     ];
-    test.each(uniqueNameTests)('when values are %s, expect updating value at index %s with name of %s to be valid: %s', (values, updateIndex, name, expectedValid) => {
+    test.each(uniqueNameTests)('should have valid = %s when values are %s, the update index is %d, and the new name is %s', (expectedValid, values, updateIndex, name) => {
         const setCustomValidityFn = jest.fn();
         const expectedMatcher = expectedValid ? '' : expect.stringMatching(/./);
         let value = 'before';
@@ -84,7 +99,7 @@ describe('NameInput', () => {
         expect(value).toBe(name);
         expect(setCustomValidityFn).toHaveBeenCalledWith(expectedMatcher);
     });
-    test('required', () => {
+    it('should always be required', () => {
         render(<NameInput />);
         const element = screen.getByRole('textbox');
         expect(element).toHaveAttribute('required');
@@ -92,20 +107,20 @@ describe('NameInput', () => {
 });
 
 describe('ButtonInput', () => {
-    test('value', () => {
+    it('should have value', () => {
         const expected = 'test4';
         render(<ButtonInput value={expected} />);
         const element = screen.getByRole('button');
         expect(element.value).toBe(expected);
     });
-    test('onClick', () => {
+    it("should call onChange when clicked", () => {
         const onClick = jest.fn();
         render(<ButtonInput onClick={onClick} />);
         const element = screen.getByRole('button');
         fireEvent.click(element);
         expect(onClick).toBeCalled();
     });
-    test('preventDefault', () => {
+    it('should preventDefault when clicked', () => {
         const onClick = jest.fn();
         render(<ButtonInput onClick={onClick} />);
         const element = screen.getByRole('button');
@@ -116,13 +131,13 @@ describe('ButtonInput', () => {
 });
 
 describe('SubmitInput', () => {
-    test('value', () => {
+    it('should have value', () => {
         const expected = 'test3';
         render(<SubmitInput value={expected} />);
         const element = screen.getByRole('button');
         expect(element.value).toBe(expected);
     });
-    test('default value', () => {
+    it('should have default value', () => {
         const expected = 'Submit';
         render(<SubmitInput />);
         const element = screen.getByRole('button');
@@ -131,14 +146,14 @@ describe('SubmitInput', () => {
 });
 
 describe('Form', () => {
-    test('onSubmit', () => {
+    it('should call onSubmit when submitted', () => {
         const onSubmit = jest.fn();
         render(<Form onSubmit={onSubmit}><SubmitInput /></Form>);
         const element = screen.getByRole('button');
         fireEvent.submit(element);
         expect(onSubmit).toBeCalled();
     });
-    test('preventDefault', () => {
+    it('should preventDefault when submitted', () => {
         const onSubmit = jest.fn();
         render(<Form onSubmit={onSubmit}><SubmitInput /></Form>);
         const element = screen.getByRole('button');
@@ -146,7 +161,7 @@ describe('Form', () => {
         fireEvent(element, event);
         expect(event.defaultPrevented).toBeTruthy();
     });
-    test('children', () => {
+    it('should preserve children', () => {
         render(
             <Form>
                 <label>a<Input /></label>

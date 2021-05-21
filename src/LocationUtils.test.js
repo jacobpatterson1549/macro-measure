@@ -1,6 +1,6 @@
 import { moveLatLngTo, getDistanceHeading, _toMeters, _fromMeters } from './LocationUtils';
 
-describe('Distance', () => {
+describe('LatLng calculations', () => {
     const distanceTests = [
         [0.0, 'm', 0, { lat: 51.4934, lng: 0.0098 }, { lat: 51.4934, lng: 0.0098 }],
         [131.5, 'm', 32.1, { lat: 51, lng: 4 }, { lat: 51.00100069207888, lng: 4.000997477543457 }], // from doc
@@ -11,13 +11,13 @@ describe('Distance', () => {
         [1.0, 'ft', 0, { lat: 0, lng: 0 }, { lat: 0.0000027, lng: 0 }], // N
         [1.0, 'ft', 90, { lat: 0, lng: 0 }, { lat: 0, lng: 0.0000027 }], // E
     ];
-    test.each(distanceTests)('moveLatLngTo: distance %s%s with a heading %d° from should end at %s',
+    test.each(distanceTests)('should move LatLng distance %s%s with a heading %d° from %s to %s',
         (distance, unit, heading, latLng, expectedLatLng) => {
             const actualLatLng = moveLatLngTo(latLng, distance, unit, heading);
             expect(actualLatLng.lat).toBeCloseTo(expectedLatLng.lat, 7);
             expect(actualLatLng.lng).toBeCloseTo(expectedLatLng.lng, 7);
         });
-    test.each(distanceTests)('getDistanceHeading: expected distance of %s%s with a heading of %d° whet getting distance from %s to %s',
+    test.each(distanceTests)('should get distance %s%s with a heading of %d° between %s and %s',
         (expectedDistance, unit, expectedHeading, latLng1, latLng2) => {
             const actualDistanceHeading = getDistanceHeading(latLng1, latLng2, unit);
             expect(actualDistanceHeading.distance).toBeCloseTo(expectedDistance, 1);
@@ -45,7 +45,7 @@ describe('meters conversions', () => {
         [1, 'cubit', NaN],
     ];
     const decimalPrecisionDigits = 10;
-    test.each(conversions)('toMeters(%d, %s) should be %d meters', (distance, unit, expected) => {
+    test.each(conversions)('should convert %d %s %d meters', (distance, unit, expected) => {
         const m = _toMeters(distance, unit);
         if (expected === expected) {
             expect(m).toBeCloseTo(expected, decimalPrecisionDigits);
@@ -53,7 +53,7 @@ describe('meters conversions', () => {
             expect(m).toBeNaN();
         }
     });
-    test.each(conversions)('fromMeters() of toMeters(%d, %s) should be the same', (distance, unit, expected) => {
+    test.each(conversions)('should convert back to %d %s when at %d meters', (distance, unit, expected) => {
         const m = _toMeters(distance, unit);
         const actual = _fromMeters(m, unit);
         if (expected === expected) {

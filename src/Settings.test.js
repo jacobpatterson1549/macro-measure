@@ -3,13 +3,13 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Settings } from './Settings';
 
 describe('distance unit', () => {
-    test('value', () => {
+    it('should render value', () => {
         const distanceUnit = 'yd';
         render(<Settings distanceUnit={distanceUnit} />);
         const selectElement = screen.getByLabelText(/distance unit/i);
         expect(selectElement.value).toBe(distanceUnit);
     });
-    test('onClick', () => {
+    it('should set value when changed', () => {
         const distanceUnit = 'ft';
         const setDistanceUnitFn = jest.fn();
         render(<Settings distanceUnit={distanceUnit} setDistanceUnit={setDistanceUnitFn} />);
@@ -21,12 +21,12 @@ describe('distance unit', () => {
 
 describe('gps', () => {
     const values = [true, false];
-    test.each(values)('should have value of %s', (value) => {
+    test.each(values)('should have checked state of %s', (value) => {
         render(<Settings highAccuracyGPS={value} />)
         const checkboxElement = screen.getByLabelText(/GPS/i);
         expect(checkboxElement.checked).toBe(value);
     });
-    test.each(values)('should flip value when clicked checkbox was %s', (value) => {
+    test.each(values)('should flip value when checked was %s', (value) => {
         const setHighAccuracyGPSFn = jest.fn();
         render(<Settings highAccuracyGPS={value} setHighAccuracyGPS={setHighAccuracyGPSFn} />)
         const checkboxElement = screen.getByLabelText(/GPS/i);
@@ -36,7 +36,7 @@ describe('gps', () => {
 });
 
 describe('clear storage', () => {
-    test('onClick', () => {
+    it('should clear storage when clicked', () => {
         const clearStorageFn = jest.fn();
         render(<Settings clearStorage={clearStorageFn} />);
         const clearStorageElement = screen.getByLabelText(/clear/i);
@@ -48,7 +48,7 @@ describe('clear storage', () => {
 
 describe('import/export', () => {
     const allJSON = '{"groups":[{"name":"backup","items":[]}]}';
-    test('export storage', () => {
+    it('should export storage when clicked', () => {
         const getStorageFn = jest.fn().mockReturnValue(allJSON);
         const createObjectURLMock = jest.fn();
         Object.defineProperty(global.URL, 'createObjectURL', { value: createObjectURLMock });
@@ -58,7 +58,7 @@ describe('import/export', () => {
         expect(getStorageFn).toBeCalled();
         expect(createObjectURLMock).toBeCalled();
     });
-    test('import storage', async () => {
+    it('should import storage when changed', async () => {
         const clearStorageFn = jest.fn();
         const setStorageFn = jest.fn();
         const textFn = jest.fn().mockResolvedValue(allJSON);
