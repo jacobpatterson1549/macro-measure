@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 
-import { useLocalStorage, clearLocalStorage, getAllLocalStorage, setAllLocalStorage } from './LocalStorage';
+import { useLocalStorage, clearLocalStorage, getLocalStorage, setLocalStorage } from './LocalStorage';
 
 describe('useLocalStorage in a mock component', () => {
     // these tests use the mock defined in setupTests.js
@@ -49,15 +49,15 @@ describe('clearLocalStorage', () => {
 });
 
 describe('import/export', () => {
-    const allJSON = '{"key1":"text","key2":42,"key3":{"obj":"prop"}}';
+    const localStorageJSON = '{"key1":"text","key2":42,"key3":{"obj":"prop"}}';
     it('should getAllLocalStorage', () => {
         window.localStorage.length = 3;
         window.localStorage.key.mockReturnValueOnce('key1').mockReturnValueOnce('key2').mockReturnValueOnce('key3');
         window.localStorage.getItem.mockReturnValueOnce('"text"').mockReturnValueOnce('42').mockReturnValueOnce('{"obj":"prop"}');
-        const actual = getAllLocalStorage();
+        const actual = getLocalStorage();
         expect(window.localStorage.key.mock.calls).toEqual([[0],[1],[2]]);
         expect(window.localStorage.getItem.mock.calls).toEqual([['key1'],['key2'],['key3']]);
-        expect(actual).toEqual(allJSON);
+        expect(actual).toEqual(localStorageJSON);
     });
     it('should setAllLocalStorage', () => {
         const expected = [
@@ -65,7 +65,7 @@ describe('import/export', () => {
             ['key2', '42'],
             ['key3', '{"obj":"prop"}'],
         ];
-        setAllLocalStorage(allJSON);
+        setLocalStorage(localStorageJSON);
         expect(window.localStorage.setItem.mock.calls).toEqual(expected);
     });
 });

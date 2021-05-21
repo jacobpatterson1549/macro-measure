@@ -23,7 +23,7 @@ export const clearLocalStorage = () => {
     storage.clear();
 }
 
-export const getAllLocalStorage = () => {
+export const getLocalStorage = () => {
     const all = {};
     for (let i = 0; i < storage.length; i++) {
         const key = localStorage.key(i);
@@ -31,12 +31,12 @@ export const getAllLocalStorage = () => {
         const valueJSON = JSON.parse(value);
         all[key] = valueJSON;
     }
-    const allJSON = JSON.stringify(all);
-    return allJSON;
+    const localStorageJSON = JSON.stringify(all);
+    return localStorageJSON;
 };
 
-export const setAllLocalStorage = (allJSON) => {
-    const all = JSON.parse(allJSON);
+export const setLocalStorage = (localStorageJSON) => {
+    const all = JSON.parse(localStorageJSON);
     const allEntries = Object.entries(all);
     allEntries.forEach(([key, value]) => {
         const valueJSON = JSON.stringify(value);

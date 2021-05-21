@@ -6,7 +6,7 @@ import { About } from './About';
 import { Help } from './Help';
 import { NameList } from './NameList';
 import { Item, newItem } from './Item';
-import { useLocalStorage, clearLocalStorage, getAllLocalStorage, setAllLocalStorage } from './LocalStorage';
+import { useLocalStorage } from './LocalStorage';
 import { View } from './View';
 
 const DefaultView = 'groups';
@@ -114,9 +114,6 @@ export const App = () => {
           setDistanceUnit={setDistanceUnit}
           highAccuracyGPS={highAccuracyGPS}
           setHighAccuracyGPS={setHighAccuracyGPS}
-          clearStorage={clearLocalStorage}
-          getStorage={getAllLocalStorage}
-          setStorage={setAllLocalStorage}
         />);
       case View.Item_Create:
       case View.Item_Read:
