@@ -8,8 +8,8 @@ const jsonMimeType = "application/json";
 const dateDigits = () => {
     const date = new Date();
     const isoDate = date.toISOString();
-    const dateDigits = isoDate.replace(/\D/g, '');
-    return dateDigits;
+    const isoDateDigits = isoDate.replace(/\D/g, '');
+    return isoDateDigits;
 };
 
 export const LocalStorageSettings = () => {
