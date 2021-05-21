@@ -9,11 +9,9 @@ import { Item, newItem } from './Item';
 import { useLocalStorage } from './LocalStorage';
 import { View } from './View';
 
-const DefaultView = 'groups';
-
 export const App = () => {
 
-  const [view, setView] = useLocalStorage('view', DefaultView);
+  const [view, setView] = useLocalStorage('view', View.Groups_Read);
   const [distanceUnit, setDistanceUnit] = useLocalStorage('distanceUnit', DefaultDistanceUnit);
   const [highAccuracyGPS, setHighAccuracyGPS] = useLocalStorage('highAccuracyGPS', false);
   const [groupIndex, setGroupIndex] = useLocalStorage('groupIndex', 0);
