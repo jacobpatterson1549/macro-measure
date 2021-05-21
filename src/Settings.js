@@ -16,24 +16,29 @@ export const Settings = ({
     setDistanceUnit, // function to set the distance unit
     highAccuracyGPS, // enables the GPS to be more precise
     setHighAccuracyGPS, // function to toggle using high GPS accuracy
-}) => (
-    <div>
-        <h1>Macro Measure Settings</h1>
-        <Form>
-            <fieldset>
-                <legend>GPS</legend>
-            <label>
-                <span>Distance Unit:</span>
-                <select value={distanceUnit} onChange={(event) => setDistanceUnit(event.target.value)}>
-                    {distanceUnits.map((unit) => (<option key={unit}>{unit}</option>))}
-                </select>
-            </label>
-            <label>
-                <span>High Accuracy GPS</span>
-                <input type="checkbox" checked={highAccuracyGPS} onChange={(event) => setHighAccuracyGPS(event.target.checked)} />
-            </label>
-            </fieldset>
-        <LocalStorageSettings />
-        </Form>
-    </div>
-);
+}) => {
+    const _distanceUnits = distanceUnits.map((unit) => (<option key={unit}>{unit}</option>));
+    const _setDistanceUnit = (event) => setDistanceUnit(event.target.value);
+    const _setHighAccuracyGPS = (event) => setHighAccuracyGPS(event.target.checked);
+    return (
+        <div>
+            <h1>Macro Measure Settings</h1>
+            <Form>
+                <fieldset>
+                    <legend>GPS</legend>
+                    <label>
+                        <span>Distance Unit:</span>
+                        <select value={distanceUnit} onChange={_setDistanceUnit}>
+                            {_distanceUnits}
+                        </select>
+                    </label>
+                    <label>
+                        <span>High Accuracy GPS</span>
+                        <input type="checkbox" checked={highAccuracyGPS} onChange={_setHighAccuracyGPS} />
+                    </label>
+                </fieldset>
+                <LocalStorageSettings />
+            </Form>
+        </div>
+    );
+};

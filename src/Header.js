@@ -19,11 +19,14 @@ export const Header = ({
     const groupName = showGroupNameViews.includes(view)
         ? groups[groupIndex].name
         : '[Groups]';
-    const headerItem = (itemName, itemTitle, itemView) => (
-        <button onClick={() => setView(itemView)} title={itemTitle}>
+    const headerItem = (itemName, itemTitle, itemView) => {
+        const viewItem = () => setView(itemView);
+        return (
+        <button onClick={viewItem} title={itemTitle}>
             <span>{itemName}</span>
         </button>
-    );
+        );
+    };
     return (
         <header className="Header">
             {headerItem(groupName, 'groups list', View.Groups_Read)}

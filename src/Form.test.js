@@ -4,22 +4,23 @@ import { Form, SubmitInput, Input, NameInput, ButtonInput } from './Form';
 
 describe('Input', () => {
     it("should have text type", () => {
-        render(<Input type="text" onChange={() => { }} />);
+        render(<Input type="text" />);
         const element = screen.getByRole('textbox');
         expect(element.type).toBe('text');
     });
     it("should have number type", () => {
-        render(<Input type="number" onChange={() => { }} />);
+        render(<Input type="number" />);
         const element = document.querySelector('input');
         expect(element.type).toBe('number');
     });
     it("should have value", () => {
-        render(<Input value="test2" onChange={() => { }} />);
+        const emptyHandler = () => { };
+        render(<Input value="test2" onChange={emptyHandler} />);
         const element = screen.getByRole('textbox');
         expect(element.value).toBe('test2');
     });
     it("should set min/max", () => {
-        render(<Input min={7} max={9} onChange={() => { }} />);
+        render(<Input min={7} max={9} />);
         const element = screen.getByRole('textbox');
         expect(element).toBeInTheDocument();
         expect(element.min).toBe("7");
@@ -34,7 +35,7 @@ describe('Input', () => {
     });
     it("should select when focused", () => {
         const selectFn = jest.fn();
-        render(<Input onChange={() => { }} />);
+        render(<Input />);
         const element = screen.getByRole('textbox');
         fireEvent.focus(element, { target: { select: selectFn } });
         expect(selectFn).toBeCalled();
@@ -53,17 +54,17 @@ describe('Input', () => {
 
 describe('NameInput', () => {
     it('should always have text type', () => {
-        render(<NameInput onChange={() => { }} />);
+        render(<NameInput />);
         const element = screen.getByRole('textbox');
         expect(element.type).toBe('text');
     });
     it('should have value', () => {
-        render(<NameInput value="test2" onChange={() => { }} />);
+        render(<NameInput value="test2" />);
         const element = screen.getByRole('textbox');
         expect(element.value).toBe('test2');
     });
     it('should not set min/max', () => {
-        render(<NameInput min={7} max={9} onChange={() => { }} />);
+        render(<NameInput min={7} max={9} />);
         const element = screen.getByRole('textbox');
         expect(element).toBeInTheDocument();
         expect(element.min).toBe('');
@@ -79,7 +80,7 @@ describe('NameInput', () => {
     });
     it("should select when focused", () => {
         const selectFn = jest.fn();
-        render(<NameInput onChange={() => { }} />);
+        render(<NameInput />);
         const element = screen.getByRole('textbox');
         fireEvent.focus(element, { target: { select: selectFn } });
         expect(selectFn).toBeCalled();

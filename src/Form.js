@@ -37,7 +37,6 @@ export const NameInput = ({
     values, // the array of existing objects with name properties
     onChange, // the function to change the value of the name
     updateIndex, // the index of the item being updated - provide a negative number if not updating any index
-    disabled, // the prevents input when true
 }) => {
     const updateName = (event) => {
         const nameInput = event.target;
@@ -51,7 +50,6 @@ export const NameInput = ({
             type="text"
             value={value}
             onChange={updateName}
-            disabled={disabled}
             required={true}
         />
     );

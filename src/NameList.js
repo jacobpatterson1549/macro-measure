@@ -53,33 +53,35 @@ export const NameList = ({
         switch (view) {
             case toCreateView(type):
             case toUpdateView(type):
+                const [_onSubmit, _caption, _submitValue, _updateIndex] = (view === toCreateView(type))
+                    ? [_createEnd, ('Create ' + type), ('Create ' + type), -1]
+                    : [_updateEnd, ('Update ' + values[index].name), ('Update ' + type), index];
                 return (
-                    <Form onSubmit={(view === toCreateView(type)) ? _createEnd : _updateEnd}>
+                    <Form onSubmit={_onSubmit}>
                         <fieldset>
-                            <legend>
-                                {(view === toCreateView(type)) ? ('Create ' + type) : ('Update ' + values[index].name)}
-                            </legend>
+                            <legend>{_caption}</legend>
                             <label>
                                 <span>Name:</span>
                                 <NameInput
                                     value={name}
                                     values={values}
                                     onChange={setName}
-                                    isUniqueName={(view === (type + '-update')) ? index : -1}
+                                    isUniqueName={_updateIndex}
                                 />
                             </label>
                             <div>
                                 <ButtonInput value="Cancel" onClick={cancel} />
-                                <SubmitInput value={(view === toCreateView(type)) ? ('Create ' + type) : ('Update ' + type)} />
+                                <SubmitInput value={_submitValue} />
                             </div>
                         </fieldset>
                     </Form>
                 );
             case toDeleteView(type):
+                const deleteName = values[index].name;
                 return (
                     <Form onSubmit={_deleteEnd}>
                         <fieldset>
-                            <legend>Delete {values[index].name}?</legend>
+                            <legend>Delete {deleteName}?</legend>
                             <div>
                                 <ButtonInput value="Cancel" onClick={cancel} />
                                 <SubmitInput value={'Delete ' + type} />

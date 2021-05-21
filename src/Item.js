@@ -67,12 +67,12 @@ export const Item = ({
         deleteEnd(index);
     };
 
-    const updateLatLng = (heading) => {
+    const _updateLatLng = (heading) => () => {
         const item2 = moveLatLngTo(item, moveAmount, distanceUnit, heading);
         const item3 = Object.assign({}, item, item2);
         setItem(item3);
     };
-    const updateMoveAmount = (event) => {
+    const _updateMoveAmount = (event) => {
         const value = event.target.value;
         setMoveAmount(value || 1);
     };
@@ -82,29 +82,36 @@ export const Item = ({
         : null;
 
     const getHeader = () => {
+        const _prevDisabled = index <= 0;
+        const _prevClick = () => _read(-1);
+        const _caption = (view === View.Item_Create) ? '[Add Item]' : items[index].name;
+        const _nextDisabled = index + 1 >= items.length
+        const _nextClick = () => _read(+1);
+        const _showEdit = (view === View.Item_Read);
+        const _addDisabled = (currentLatLng === null);
         return (
             <div className="Item-Header">
                 <div className="row">
                     <button className="left arrow"
-                        disabled={index <= 0}
-                        onClick={() => _read(-1)}
+                        disabled={_prevDisabled}
+                        onClick={_prevClick}
                         title="previous item"
                     >
                         <span>◀</span>
                     </button>
-                    <button onClick={() => readItems()} title="items list" className="name">
-                        <span>{(view === View.Item_Create) ? '[Add Item]' : items[index].name}</span>
+                    <button onClick={readItems} title="items list" className="name">
+                        <span>{_caption}</span>
                     </button>
                     <button className="right arrow"
-                        disabled={index + 1 >= items.length}
-                        onClick={() => _read(+1)}
+                        disabled={_nextDisabled}
+                        onClick={_nextClick}
                         title="next item"
                     >
                         <span>▶</span>
                     </button>
                 </div>
                 {
-                    (view === View.Item_Read) &&
+                    _showEdit &&
                     <div className="row">
                         <button
                             onClick={_updateStart}
@@ -119,7 +126,7 @@ export const Item = ({
                             <span>Delete...</span>
                         </button>
                         <button
-                            disabled={currentLatLng === null}
+                            disabled={_addDisabled}
                             onClick={_createStart}
                             title="create item"
                         >
@@ -156,53 +163,55 @@ export const Item = ({
                 );
             case View.Item_Create:
             case View.Item_Update:
+                const _setName = (name) => setItem(Object.assign({}, item, { name: name }));
+                const [_onSubmit, _disabled, _caption, _updateIndex, _cancel, _submitValue] = (view === View.Item_Create)
+                    // TODO: cancel for View.Item_Create should be similar to when delete is successful
+                    ? [_createEnd, !currentLatLng, 'Create Item', -1, readItems, 'Create Item']
+                    : [_updateEnd, false, ('Update ' + items[index].name), index, () => _read(0), 'Update Item'];
                 return (
-                    <Form onSubmit={(view === View.Item_Create) ? _createEnd : _updateEnd}>
-                        <fieldset disabled={view === View.Item_Create && !currentLatLng}>
-                            <legend>
-                                {(view === View.Item_Create) ? 'Create Item' : ('Update ' + items[index].name)}
-                            </legend>
+                    <Form onSubmit={_onSubmit}>
+                        <fieldset disabled={_disabled}>
+                            <legend>{_caption}</legend>
                             <label>
                                 <span>Name</span>
                                 <NameInput
                                     value={item.name}
                                     values={items}
-                                    onChange={(name) => setItem(Object.assign({}, item, { name: name }))}
-                                    isUniqueName={(view === View.Item_Create) ? -1 : index}
+                                    onChange={_setName}
+                                    updateIndex={_updateIndex}
                                 />
                             </label>
                             <label>
                                 <span>Latitude</span>
-                                <ButtonInput onClick={() => updateLatLng(Heading.N)} value="+(N)" />
-                                <ButtonInput onClick={() => updateLatLng(Heading.S)} value="-(S)" />
+                                <ButtonInput onClick={_updateLatLng(Heading.N)} value="+(N)" />
+                                <ButtonInput onClick={_updateLatLng(Heading.S)} value="-(S)" />
                                 <input type="number" value={item.lat} disabled />
                             </label>
                             <label>
                                 <span>Longitude</span>
-                                <ButtonInput onClick={() => updateLatLng(Heading.W)} value="-(W)" />
-                                <ButtonInput onClick={() => updateLatLng(Heading.E)} value="+(E)" />
+                                <ButtonInput onClick={_updateLatLng(Heading.W)} value="-(W)" />
+                                <ButtonInput onClick={_updateLatLng(Heading.E)} value="+(E)" />
                                 <input type="number" value={item.lng} disabled />
                             </label>
                             <label>
                                 <span>Move Amount ({distanceUnit})</span>
-                                <Input type="number" value={moveAmount} onChange={updateMoveAmount} min="0" max="1000" required={true} />
+                                <Input type="number" value={moveAmount} onChange={_updateMoveAmount} min="0" max="1000" required={true} />
                             </label>
                             <div>
-                                <ButtonInput value="cancel" onClick={(view === View.Item_Create) ? readItems : () => _read(0)} />
-                                <SubmitInput
-                                    value={((view === View.Item_Create) ? 'Create' : 'Update') + ' Item'}
-                                />
+                                <ButtonInput value="cancel" onClick={_cancel} />
+                                <SubmitInput value={_submitValue} />
                             </div>
                         </fieldset>
                     </Form>
                 );
             case View.Item_Delete:
+                const _cancelDelete = () => _read(0);
                 return (
                     <Form onSubmit={_deleteEnd}>
                         <fieldset>
                             <legend>Delete {item.name}</legend>
                             <div>
-                                <ButtonInput value="Cancel" onClick={() => _read(0)} />
+                                <ButtonInput value="Cancel" onClick={_cancelDelete} />
                                 <SubmitInput value={"Delete item"} />
                             </div>
                         </fieldset>
@@ -210,15 +219,15 @@ export const Item = ({
                 );
             case View.Item_Read:
             default:
-                if (currentLatLng === null) {
+                if (!currentLatLng) {
                     return (
                         <span>Getting location...</span>
                     );
                 }
+                const _distance = (distanceHeading) ? distanceHeading.distance : '?';
                 return (
                     <div className="distance">
-                        <span>{distanceHeading ? distanceHeading.distance : '?'}</span>
-                        <span> {distanceUnit}</span>
+                        <span>{_distance} {distanceUnit}</span>
                     </div>
                 );
         }

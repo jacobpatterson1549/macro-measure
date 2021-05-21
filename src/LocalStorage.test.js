@@ -10,8 +10,9 @@ describe('useLocalStorage in a mock component', () => {
         clickValue,
     }) => {
         const [value, setValue] = useLocalStorage(key, defaultValue);
+        const _setValue = () => setValue(clickValue)
         return (
-            <p onClick={() => setValue(clickValue)}>{value}</p>
+            <p onClick={_setValue}>{value}</p>
         );
     };
     it('should get defaultValue', () => {
