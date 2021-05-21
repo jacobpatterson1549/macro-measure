@@ -10,7 +10,7 @@ describe('Input', () => {
     });
     it("should have number type", () => {
         render(<Input type="number" />);
-        const element = document.querySelector('input');
+        const element = screen.getByRole('spinbutton');
         expect(element.type).toBe('number');
     });
     it("should have value", () => {

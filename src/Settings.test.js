@@ -28,7 +28,7 @@ describe('gps', () => {
     });
     test.each(values)('should flip value when checked was %s', (value) => {
         const setHighAccuracyGPSFn = jest.fn();
-        render(<Settings highAccuracyGPS={value} setHighAccuracyGPS={setHighAccuracyGPSFn} />)
+        render(<Settings highAccuracyGPS={value} setHighAccuracyGPS={setHighAccuracyGPSFn} />);
         const checkboxElement = screen.getByLabelText(/GPS/i);
         fireEvent.click(checkboxElement);
         expect(setHighAccuracyGPSFn).toBeCalledWith(!value);
@@ -37,7 +37,6 @@ describe('gps', () => {
 
 it('should have local storage settings', () => {
     render(<Settings />)
-    // const element = screen.getByRole('*', { name: 'LocalStorage Settings' });
     const element = screen.getByRole('group', { name: 'LocalStorage Settings' });
     expect(element).toBeInTheDocument()
 });

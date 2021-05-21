@@ -7,7 +7,7 @@ describe('caption', () => {
     it('should include type', () => {
         const type = 'my custom type'
         render(<NameTable type={type} values={[]} />);
-        const element = document.querySelector('caption');
+        const element = screen.getByRole('table');
         expect(element.textContent).toContain(type);
     });
 });
@@ -15,7 +15,7 @@ describe('caption', () => {
 describe('table', () => {
     it('should report that it is empty', () => {
         render(<NameTable values={[]} />);
-        const element = document.querySelector('td');
+        const element = screen.getByRole('cell');
         expect(element.textContent).toMatch(/no values exist/i);
     });
 });
