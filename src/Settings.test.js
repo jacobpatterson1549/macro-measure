@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 import { Settings } from './Settings';
 
@@ -42,5 +42,36 @@ describe('clear storage', () => {
         const clearStorageElement = screen.getByLabelText(/clear/i);
         fireEvent.click(clearStorageElement);
         expect(clearStorageFn).toBeCalled();
+        expect(window.location.reload).toBeCalled();
+    });
+});
+
+describe('import/export', () => {
+    const allJSON = '{"groups":[{"name":"backup","items":[]}]}';
+    test('export storage', () => {
+        const getStorageFn = jest.fn().mockReturnValue(allJSON);
+        const createObjectURLMock = jest.fn();
+        Object.defineProperty(global.URL, 'createObjectURL', { value: createObjectURLMock });
+        render(<Settings getStorage={getStorageFn} />);
+        const exportElement = screen.getByLabelText(/export/i);
+        fireEvent.click(exportElement);
+        expect(getStorageFn).toBeCalled();
+        expect(createObjectURLMock).toBeCalled();
+    });
+    test('import storage', async () => {
+        const clearStorageFn = jest.fn();
+        const setStorageFn = jest.fn();
+        const textFn = jest.fn().mockResolvedValue(allJSON);
+        render(<Settings clearStorage={clearStorageFn} setStorage={setStorageFn} />);
+        const importElement = screen.getByLabelText(/import/i);
+        fireEvent.change(importElement, {
+            target: {
+                files: [{text: textFn}],
+            }
+        });
+        await waitFor(expect(textFn).toBeCalled);
+        expect(clearStorageFn).toBeCalled();
+        expect(setStorageFn).toBeCalledWith(allJSON);
+        expect(window.location.reload).toBeCalled();
     });
 });
