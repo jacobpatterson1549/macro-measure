@@ -74,7 +74,7 @@ export const Item = ({
     };
     const updateMoveAmount = (event) => {
         const value = event.target.value;
-        setMoveAmount(value);
+        setMoveAmount(value || 1);
     };
 
     const distanceHeading = (view === View.Item_Read && currentLatLng !== null)
@@ -185,7 +185,7 @@ export const Item = ({
                             </label>
                             <label>
                                 <span>Move Amount ({distanceUnit})</span>
-                                <Input type="number" value={moveAmount} onChange={updateMoveAmount} min="0" max="1000" />
+                                <Input type="number" value={moveAmount} onChange={updateMoveAmount} min="0" max="1000" required={true} />
                             </label>
                             <div>
                                 <ButtonInput value="cancel" onClick={(view === View.Item_Create) ? readItems : () => _read(0)} />
