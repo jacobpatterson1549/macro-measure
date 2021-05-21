@@ -41,7 +41,7 @@ describe('Header', () => {
         const groups = [{ name: groupName }];
         const groupIndex = 0;
         render(<Header view={view} groups={groups} groupIndex={groupIndex} />);
-        const groupElement = screen.getByTitle(/group/);
+        const groupElement = screen.getByRole('button', { name: 'groups list' });
         expect(groupElement).toHaveTextContent(expected);
     });
 });
