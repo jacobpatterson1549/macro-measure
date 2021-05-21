@@ -120,28 +120,33 @@ export const App = () => {
       case View.Item_Update:
       case View.Item_Delete:
       case View.Item_No_Geolocation:
+        const items = groups ? groups[groupIndex].items : [];
+        const defaultItem = Object.assign({}, (view === View.Item_Create) ? newItem(null) : items[itemIndex]);
+        const readItems = () => setView(View.Items_Read);
+        const disableGeolocation = () => setView(View.Item_No_Geolocation);
         return (<Item
           view={view}
-          items={groups[groupIndex].items}
+          items={items}
           index={itemIndex}
-          defaultItem={Object.assign({}, (view === View.Item_Create) ? newItem(null) : groups[groupIndex].items[itemIndex])}
+          defaultItem={defaultItem}
           distanceUnit={distanceUnit}
           highAccuracyGPS={highAccuracyGPS}
           createStart={createItemStart}
           createEnd={createItemEnd}
           read={readItem}
-          readItems={() => setView(View.Items_Read)}
-          disableGeolocation={() => setView(View.Item_No_Geolocation)}
+          readItems={readItems}
+          disableGeolocation={disableGeolocation}
           updateStart={updateItemStart}
           updateEnd={updateItemEnd}
           deleteStart={deleteItemStart}
           deleteEnd={deleteItemEnd}
         />);
       case View.Items_Read:
+        const values = groups ? groups[groupIndex].items : [];
         return (
           <NameList className="ItemList"
             type="item"
-            values={groups[groupIndex].items}
+            values={values}
             index={itemIndex}
             view={view}
             createStart={createItemStart}
@@ -157,6 +162,7 @@ export const App = () => {
       case View.Group_Delete:
       case View.Groups_Read:
       default:
+        const cancel = () => setView(View.Groups_Read);
         return (
           <NameList className="GroupList"
             type="group"
@@ -172,7 +178,7 @@ export const App = () => {
             deleteEnd={deleteGroupEnd}
             moveUp={moveGroupUp}
             moveDown={moveGroupDown}
-            cancel={() => setView(View.Groups_Read)}
+            cancel={cancel}
           />
         );
     }
