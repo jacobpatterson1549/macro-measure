@@ -1,7 +1,8 @@
 import './App.css';
 import { Groups } from './Groups';
 import { Header } from './Header';
-import { Settings, DefaultDistanceUnit } from './Settings';
+import { Settings } from './Settings';
+import { DefaultDistanceUnit } from './GPSSettings';
 import { About } from './About';
 import { Help } from './Help';
 import { NameList } from './NameList';
