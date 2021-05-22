@@ -14,6 +14,7 @@ const localStorageMock = {
 };
 const locationMock = {
     reload: jest.fn(),
+    protocol: 'https:',
 };
 const geolocationMock = {
     watchPosition: jest.fn(),

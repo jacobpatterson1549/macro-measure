@@ -5,6 +5,10 @@ import './index.css';
 import { ErrorBoundary } from './ErrorBoundary';
 import { App } from './App';
 
+if (window.location.protocol !== 'https:') {
+  window.location.protocol = 'https:';
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <ErrorBoundary>
