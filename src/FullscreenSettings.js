@@ -8,9 +8,9 @@ const reloadRoot = () => {
 export const FullscreenSettings = () => {
 
     const [fullScreen, setFullScreen] = useState(!!document.fullscreenElement);
-    const requestFullscreen = () => {
-        document.body.requestFullscreen()
-            .then(() => setFullScreen(true));
+    const requestFullscreen = async () => {
+        await document.body.requestFullscreen();
+        setFullScreen(true);
     };
     const exitFullscreen = () => {
         document.exitFullscreen();
@@ -50,7 +50,7 @@ export const FullscreenSettings = () => {
         <fieldset>
             <legend>Fullscreen Settings</legend>
             <label>
-                <span>FullScreen:</span>
+                <span>Fullscreen:</span>
                 <input type="checkbox" checked={fullScreen} onChange={_toggleFullscreen} />
             </label>
             {a2hs}

@@ -1,21 +1,47 @@
-import { render, screen, fireEvent, createEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent, createEvent, waitFor, act } from '@testing-library/react';
 
 import { FullscreenSettings } from './FullscreenSettings';
 
 describe('fullscreen', () => {
-    it('should be available if not currently active', () => {
-        document.fullscreenEnabled = false;
-        render(<FullscreenSettings />);
-        const element = screen.getByLabelText(/Fullscreen/i);
-        expect(element.checked).toBeFalsy();
+    describe('state', () => {
+        it('should be available if not currently active', () => {
+            const root = (<FullscreenSettings />);
+            document.fullscreenElement = null;
+            render(root);
+            const element = screen.getByRole('checkbox', { name: 'Fullscreen:' });
+            expect(element.checked).toBeFalsy();
+        });
+        it('should be exit-able if currently active', () => {
+            const root = (<FullscreenSettings />);
+            document.fullscreenElement = root;
+            render(root);
+            const element = screen.getByRole('checkbox', { name: 'Fullscreen:' });
+            expect(element.checked).toBeTruthy();
+        });
     });
-    it('should be exit-able if currently active', () => {
-        document.fullscreenEnabled = true;
-        render(<FullscreenSettings />);
-        const element = screen.getByLabelText(/Fullscreen/i);
-        expect(element.checked).toBeTruthy
+    describe('click handlers', () => {
+        it('should request fullscreen when clicked', async () => {
+            const root = (<FullscreenSettings />);
+            document.fullscreenElement = null;
+            document.body.requestFullscreen = jest.fn().mockReturnValue(() => { });
+            render(root);
+            const element = screen.getByRole('checkbox', { name: 'Fullscreen:' });
+            fireEvent.click(element);
+            expect(element.checked).toBeFalsy(); // should not set checked until resolved
+            await waitFor(expect(document.body.requestFullscreen).toBeCalled);
+            expect(element.checked).toBeTruthy();
+        });
+        it('should cancel fullscreen when clicked', () => {
+            const root = (<FullscreenSettings />);
+            document.fullscreenElement = root;
+            document.exitFullscreen = jest.fn();
+            render(root);
+            const element = screen.getByRole('checkbox', { name: 'Fullscreen:' });
+            fireEvent.click(element);
+            expect(document.exitFullscreen).toBeCalled();
+            expect(element.checked).toBeFalsy();
+        });
     });
-    // TODO: test clicking buttons
 });
 
 describe('add to home screen (a2hs)', () => {
