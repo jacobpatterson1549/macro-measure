@@ -26,7 +26,7 @@ describe('gps', () => {
         const checkboxElement = screen.getByLabelText(/GPS/i);
         expect(checkboxElement.checked).toBe(value);
     });
-    test.each(values)('should flip value when checked was %s', (value) => {
+    it.each(values)('should flip value when checked was %s', (value) => {
         const setHighAccuracyGPSFn = jest.fn();
         render(<Settings highAccuracyGPS={value} setHighAccuracyGPS={setHighAccuracyGPSFn} />);
         const checkboxElement = screen.getByLabelText(/GPS/i);
@@ -34,6 +34,21 @@ describe('gps', () => {
         expect(setHighAccuracyGPSFn).toBeCalledWith(!value);
     });
 });
+
+describe('fullscreen', () => {
+    it('should be available if not currently active', () => {
+        document.fullscreenEnabled = false;
+        render(<Settings />);
+        const element = screen.getByLabelText(/Fullscreen/i);
+        expect(element.checked).toBeFalsy();
+    });
+    it('should be exit-able if currently active', () => {
+        document.fullscreenEnabled = true;
+        render(<Settings />);
+        const element = screen.getByLabelText(/Fullscreen/i);
+        expect(element.checked).toBeTruthy
+    });
+})
 
 it('should have local storage settings', () => {
     render(<Settings />)
