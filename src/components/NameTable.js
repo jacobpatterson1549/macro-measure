@@ -30,7 +30,7 @@ export const NameTable = ({
                 {tableCell('Delete', 'delete value', true, deleteValue, index)}
             </tr>
         )));
-    const _tbody = (values.length === 0)
+    const _tbody = (!values || values.length === 0)
         ? (<tr><td colSpan="5">No values exist.  Create one.</td></tr>)
         : _mapValues();
     return (
