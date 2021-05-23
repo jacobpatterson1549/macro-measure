@@ -45,12 +45,13 @@ describe('fullscreen', () => {
 });
 
 describe('add to home screen (a2hs)', () => {
-    const asyncMockOnbeforeinstallprompt = async () => {
+    const asyncMockOnbeforeinstallprompt = async (accepted) => {
         // test procedure from https://github.com/testing-library/testing-library-docs/issues/798
         const event = createEvent('beforeinstallprompt', window);
         await act(async () => {
             Object.defineProperties(event, {
                 preventDefault: { value: jest.fn() },
+                userChoice: { value: jest.fn().mockResolvedValue({ outcome: accepted }) },
                 prompt: { value: jest.fn() },
             });
             fireEvent(window, event);
@@ -88,6 +89,23 @@ describe('add to home screen (a2hs)', () => {
             const element = screen.getByRole('button', { name: 'Install' });
             element.click();
             expect(event.prompt).toBeCalled();
+        });
+        it('should show reload button when user accepts install request', async () => {
+            window.navigator.onLine = true;
+            render(<FullscreenSettings />);
+            await asyncMockOnbeforeinstallprompt('accepted');
+            const element = screen.getByRole('button', { name: 'Install' });
+            await waitFor(() => fireEvent.click(element));
+            expect(screen.queryByRole('button', { name: 'Install' })).not.toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: 'Reload' })).toBeInTheDocument();
+        });
+        it('should not change state when user rejects install request', async () => {
+            render(<FullscreenSettings />);
+            await asyncMockOnbeforeinstallprompt('anything other than "accepted", normally "dismissed"');
+            const element = screen.getByRole('button', { name: 'Install' });
+            await waitFor(() => fireEvent.click(element));
+            expect(screen.queryByRole('button', { name: 'Install' })).toBeInTheDocument();
+            expect(screen.queryByRole('button', { name: 'Reload' })).not.toBeInTheDocument();
         });
         it('should redirect to root when reload app is clicked', () => {
             window.navigator.onLine = true;

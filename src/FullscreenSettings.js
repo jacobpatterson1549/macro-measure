@@ -5,7 +5,9 @@ const reloadRoot = () => {
     window.location = '/';
 };
 
-export const FullscreenSettings = () => {
+export const FullscreenSettings = (
+    installPromptPromise, // a promise, when defined prompts the user to install the app and resolves when the user accepts it
+) => {
 
     const [fullScreen, setFullScreen] = useState(!!document.fullscreenElement);
     const requestFullscreen = async () => {
@@ -18,24 +20,32 @@ export const FullscreenSettings = () => {
     }
     const _toggleFullscreen = (event) => (event.target.checked) ? requestFullscreen() : exitFullscreen();
 
-    const [installPrompt, setInstallPrompt] = useState(null);
+    const [installPromptEvent, setInstallPromptEvent] = useState(null);
+    // TODO: move to app, pass as installPrompt as property
     useEffect(() => {
-        const handler = (beforeInstallPromptEvent) => {
-            beforeInstallPromptEvent.preventDefault();
-            setInstallPrompt(beforeInstallPromptEvent);
+        const handler = (event) => {
+            event.preventDefault();
+            setInstallPromptEvent(event);
         };
         window.addEventListener('beforeinstallprompt', handler);
         return () => window.removeEventListener('beforeinstallprompt', handler);
     });
+    const _installPrompt = async () => {
+        installPromptEvent.prompt();
+        const choiceResult = await installPromptEvent.userChoice();
+        if (choiceResult.outcome === 'accepted') {
+            setInstallPromptEvent(null); // TODO: do if promise created by app resolves
+        }
+    };
     const [onLine, setOnLine] = useState(true);
     useEffect(() => {
         setOnLine(window.navigator.onLine);
     }, [setOnLine]);
-    const a2hs = installPrompt
+    const a2hs = installPromptEvent
         ? (
             <label>
                 <span>Add to Home Screen:</span>
-                <ButtonInput value="Install" onClick={installPrompt.prompt} />
+                <ButtonInput value="Install" onClick={_installPrompt} />
             </label>
         )
         : onLine ? (
