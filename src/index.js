@@ -2,8 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import './index.css';
-import { ErrorBoundary } from './ErrorBoundary';
-import { App } from './App';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { App } from './components/App';
 
 if (window.location.protocol !== 'https:') {
   window.location.protocol = 'https:';

@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 import { LocalStorageSettings } from './LocalStorageSettings';
-import { getLocalStorage, setLocalStorage, clearLocalStorage } from './LocalStorage';
+import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 
-jest.mock('./LocalStorage', () => ({
+jest.mock('../utils/LocalStorage', () => ({
     clearLocalStorage: jest.fn(),
     getLocalStorage: jest.fn(),
     setLocalStorage: jest.fn(),

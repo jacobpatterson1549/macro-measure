@@ -1,5 +1,5 @@
 import './App.css';
-import { Groups } from './Groups';
+import { Groups } from '../utils/Groups';
 import { Header } from './Header';
 import { Settings } from './Settings';
 import { DefaultDistanceUnit } from './GPSSettings';
@@ -7,8 +7,8 @@ import { About } from './About';
 import { Help } from './Help';
 import { NameList } from './NameList';
 import { Item, newItem } from './Item';
-import { useLocalStorage } from './LocalStorage';
-import { View } from './View';
+import { useLocalStorage } from '../utils/LocalStorage';
+import { View } from '../utils/View';
 
 export const App = () => {
 

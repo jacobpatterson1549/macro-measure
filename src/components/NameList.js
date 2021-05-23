@@ -1,6 +1,6 @@
 import { Form, SubmitInput, NameInput, ButtonInput } from './Form';
 import { NameTable } from './NameTable';
-import { useLocalStorage } from './LocalStorage';
+import { useLocalStorage } from '../utils/LocalStorage';
 
 const toCreateView = (type) => type + '-create';
 const toReadView = (type) => type + '-read';

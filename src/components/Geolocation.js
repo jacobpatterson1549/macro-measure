@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import { roundLatLng } from './LocationUtils';
-import { View } from './View';
+import { roundLatLng } from '../utils/LocationUtils';
+import { View } from '../utils/View';
 
 const locationViews = [View.Item_Read, View.Item_Create];
 
 const geolocation = window.navigator.geolocation;
 
+// TODO: make HOC, move to src/utils/Geolocation, name withGeolocation
 export const Geolocation = ({
     view, // the current page
     highAccuracyGPS, // enables the GPS to be more precise
