@@ -8,20 +8,25 @@ export const Settings = ({
     setDistanceUnit, // function to set the distance unit
     highAccuracyGPS, // enables the GPS to be more precise
     setHighAccuracyGPS, // function to toggle using high GPS accuracy
-}) => {
-    return (
-        <div>
-            <h1>Macro Measure Settings</h1>
-            <Form>
-                <GPSSettings
-                    distanceUnit={distanceUnit}
-                    setDistanceUnit={setDistanceUnit}
-                    highAccuracyGPS={highAccuracyGPS}
-                    setHighAccuracyGPS={setHighAccuracyGPS}
-                    />
-                <FullscreenSettings />
-                <LocalStorageSettings />
-            </Form>
-        </div>
-    );
-};
+    fullscreen, // a boolean indicating if the window is fullscreen
+    onLine, // a boolean indicating if the app is online
+    promptInstall, // a promise to install the app, null if the app is installed
+}) => (
+    <div>
+        <h1>Macro Measure Settings</h1>
+        <Form>
+            <GPSSettings
+                distanceUnit={distanceUnit}
+                setDistanceUnit={setDistanceUnit}
+                highAccuracyGPS={highAccuracyGPS}
+                setHighAccuracyGPS={setHighAccuracyGPS}
+            />
+            <FullscreenSettings
+                fullscreen={fullscreen}
+                onLine={onLine}
+                promptInstall={promptInstall}
+            />
+            <LocalStorageSettings />
+        </Form>
+    </div>
+);

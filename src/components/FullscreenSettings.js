@@ -1,47 +1,25 @@
-import { useEffect, useState } from 'react';
 import { ButtonInput } from './Form';
 
 const reloadRoot = () => {
     window.location = '/';
 };
 
-export const FullscreenSettings = (
-    installPromptPromise, // a promise, when defined prompts the user to install the app and resolves when the user accepts it
-) => {
+export const FullscreenSettings = ({
+    fullscreen, // a boolean indicating if the window is fullscreen
+    onLine, // a boolean indicating if the app is online
+    promptInstall, // a promise to install the app, null if the app is installed
+}) => {
 
-    const [fullScreen, setFullScreen] = useState(!!document.fullscreenElement);
     const requestFullscreen = async () => {
         await document.body.requestFullscreen();
-        setFullScreen(true);
     };
     const exitFullscreen = () => {
         document.exitFullscreen();
-        setFullScreen(false);
     }
     const _toggleFullscreen = (event) => (event.target.checked) ? requestFullscreen() : exitFullscreen();
 
-    const [installPromptEvent, setInstallPromptEvent] = useState(null);
-    // TODO: move to app, pass as installPrompt as property
-    useEffect(() => {
-        const handler = (event) => {
-            event.preventDefault();
-            setInstallPromptEvent(event);
-        };
-        window.addEventListener('beforeinstallprompt', handler);
-        return () => window.removeEventListener('beforeinstallprompt', handler);
-    });
-    const _installPrompt = async () => {
-        installPromptEvent.prompt();
-        const choiceResult = await installPromptEvent.userChoice();
-        if (choiceResult.outcome === 'accepted') {
-            setInstallPromptEvent(null); // TODO: do if promise created by app resolves
-        }
-    };
-    const [onLine, setOnLine] = useState(true);
-    useEffect(() => {
-        setOnLine(window.navigator.onLine);
-    }, [setOnLine]);
-    const a2hs = installPromptEvent
+    const _installPrompt = async () => await promptInstall();
+    const a2hs = promptInstall
         ? (
             <label>
                 <span>Add to Home Screen:</span>
@@ -61,7 +39,7 @@ export const FullscreenSettings = (
             <legend>Fullscreen Settings</legend>
             <label>
                 <span>Fullscreen:</span>
-                <input type="checkbox" checked={fullScreen} onChange={_toggleFullscreen} />
+                <input type="checkbox" checked={fullscreen} onChange={_toggleFullscreen} />
             </label>
             {a2hs}
         </fieldset>
