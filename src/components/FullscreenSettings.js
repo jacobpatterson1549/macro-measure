@@ -1,9 +1,5 @@
 import { ButtonInput } from './Form';
 
-const reloadRoot = () => {
-    window.location.assign('/');
-};
-
 export const FullscreenSettings = ({
     fullscreen, // a boolean indicating if the window is fullscreen
     onLine, // a boolean indicating if the app is online
@@ -20,11 +16,6 @@ export const FullscreenSettings = ({
 
     const _promptInstall = async () => {
         installPromptEvent.prompt();
-        const choiceResult = await installPromptEvent.userChoice;
-        if (choiceResult.outcome === 'accepted') {
-            // force the event to be removed, as it will no longer be triggered, this will remove the button
-            window.location.reload();
-        }
     };
     const a2hs = installPromptEvent
         ? (
@@ -33,13 +24,9 @@ export const FullscreenSettings = ({
                 <ButtonInput value="Install" onClick={_promptInstall} />
             </label>
         )
-        : onLine ? (
-            <label>
-                <span>Reload App:</span>
-                <ButtonInput value="Reload" onClick={reloadRoot} />
-            </label>
-        )
-            : (<span>Go online to reload from server to get app updates</span>);
+        : (
+            <span>{onLine ? 'Online:' : 'OFFLINE:'} App updates automatically after online reload.</span>
+        );
 
     return (
         <fieldset>

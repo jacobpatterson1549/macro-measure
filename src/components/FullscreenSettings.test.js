@@ -42,45 +42,31 @@ describe('add to home screen (a2hs)', () => {
         it('should show install button when is truthy', () => {
             render(<FullscreenSettings installPromptEvent={{}} />);
             expect(screen.queryByRole('button', { name: 'Install' })).toBeInTheDocument();
-            expect(screen.queryByText(/go online/i)).not.toBeInTheDocument();
-            expect(screen.queryByRole('button', { name: 'Reload' })).not.toBeInTheDocument();
+            expect(screen.queryByText(/^online/i)).not.toBeInTheDocument();
+            expect(screen.queryByText(/^offline/i)).not.toBeInTheDocument();
         });
         it('should show reload root button when is installed and online', () => {
             render(<FullscreenSettings onLine={true} />);
             expect(screen.queryByRole('button', { name: 'Install' })).not.toBeInTheDocument();
-            expect(screen.queryByText(/go online/i)).not.toBeInTheDocument();
-            expect(screen.queryByRole('button', { name: 'Reload' })).toBeInTheDocument();
+            expect(screen.queryByText(/^online/i)).toBeInTheDocument();
+            expect(screen.queryByText(/^offline/i)).not.toBeInTheDocument();
         });
         it('should show prompt to go online when is installed and is not online', () => {
             render(<FullscreenSettings onLine={false} />);
             expect(screen.queryByRole('button', { name: 'Install' })).not.toBeInTheDocument();
-            expect(screen.queryByText(/go online/i)).toBeInTheDocument();
-            expect(screen.queryByRole('button', { name: 'Reload' })).not.toBeInTheDocument();
+            expect(screen.queryByText(/^online/i)).not.toBeInTheDocument();
+            expect(screen.queryByText(/^offline/i)).toBeInTheDocument();
         });
     });
     describe('click handlers', () => {
-        it('should redirect to root when reload app is clicked', () => {
-            render(<FullscreenSettings onLine={true} />);
-            const element = screen.getByLabelText(/reload/i);
-            fireEvent.click(element);
-            expect(window.location.assign).toBeCalledWith('/');
-        });
-        const acceptedTests = [
-            ['accepted', true],
-            ['dismissed', false],
-            ['not accepted', false],
-            [null, false],
-        ]
-        it.each(acceptedTests)('should NOT reload to when "%s" is the choiceResult of the prompt', async (accepted, expected) => {
+        it('should show install prompt when clicked', async () => {
             const installPromptEvent = {
                 prompt: jest.fn(),
-                userChoice: { outcome: accepted },
             };
             render(<FullscreenSettings installPromptEvent={installPromptEvent} />);
             const element = screen.queryByRole('button');
             fireEvent.click(element);
             await waitFor(expect(installPromptEvent.prompt).toBeCalled);
-            expect(window.location.reload).toBeCalledTimes(expected ? 1 : 0);
         });
     });
 });
