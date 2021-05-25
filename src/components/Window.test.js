@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, createEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 
 import { Window } from './Window';
 
