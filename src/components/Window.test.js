@@ -9,8 +9,8 @@ describe('Window', () => {
                 <p title="fullscreen">{String(win.fullscreen)}</p>
                 <p title="onLine">{String(win.onLine)}</p>
                 {
-                    win.promptInstall &&
-                    <button onClick={async () => await win.promptInstall}>INSTALL</button>
+                    win.installPromptEvent &&
+                    <button>INSTALL</button>
                 }
             </div>
         );
@@ -48,11 +48,7 @@ describe('Window', () => {
         const mockOnbeforeinstallprompt = (accepted) => {
             // test procedure from https://github.com/testing-library/testing-library-docs/issues/798
             const event = createEvent('beforeinstallprompt', window);
-            Object.defineProperties(event, {
-                preventDefault: { value: jest.fn() },
-                userChoice: { value: { outcome: accepted } },
-                prompt: { value: jest.fn() },
-            });
+            Object.defineProperty(event, 'preventDefault', { value: jest.fn() });
             fireEvent(window, event);
             return event
         };
@@ -71,27 +67,6 @@ describe('Window', () => {
             render(<Window render={win => (<MockApp win={win} />)} />);
             const event = await mockOnbeforeinstallprompt();
             expect(event.preventDefault).toBeCalled();
-        });
-        it('should call prompt when the install button is clicked', async () => {
-            render(<Window render={win => (<MockApp win={win} />)} />);
-            const event = mockOnbeforeinstallprompt();
-            const element = screen.queryByRole('button');
-            await waitFor(() => fireEvent.click(element));
-            expect(event.prompt).toBeCalled();
-        });
-        it('should remove install button from the document when "accepted" is the choiceResult of the prompt', async () => {
-            render(<Window render={win => (<MockApp win={win} />)} />);
-            mockOnbeforeinstallprompt('accepted');
-            const element = screen.queryByRole('button');
-            await waitFor(() => fireEvent.click(element));
-            expect(element).not.toBeInTheDocument();
-        });
-        it.each(['dismissed', 'not accepted', null])('should keep install button in the document when "%s" is the choiceResult of the prompt', async (accepted) => {
-            render(<Window render={win => (<MockApp win={win} />)} />);
-            mockOnbeforeinstallprompt(accepted);
-            const element = screen.queryByRole('button');
-            await waitFor(() => fireEvent.click(element));
-            expect(element).toBeInTheDocument();
         });
     });
 });

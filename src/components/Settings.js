@@ -10,7 +10,7 @@ export const Settings = ({
     setHighAccuracyGPS, // function to toggle using high GPS accuracy
     fullscreen, // a boolean indicating if the window is fullscreen
     onLine, // a boolean indicating if the app is online
-    promptInstall, // a promise to install the app, null if the app is installed
+    installPromptEvent, // an event to install the app, null if the app is installed
 }) => (
     <div>
         <h1>Macro Measure Settings</h1>
@@ -24,7 +24,7 @@ export const Settings = ({
             <FullscreenSettings
                 fullscreen={fullscreen}
                 onLine={onLine}
-                promptInstall={promptInstall}
+                installPromptEvent={installPromptEvent}
             />
             <LocalStorageSettings />
         </Form>

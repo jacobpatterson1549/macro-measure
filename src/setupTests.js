@@ -13,6 +13,7 @@ const localStorageMock = {
     length: 0,
 };
 const locationMock = {
+    assign: jest.fn(),
     reload: jest.fn(),
     protocol: 'https:',
 };

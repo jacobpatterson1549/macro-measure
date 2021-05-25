@@ -1,13 +1,13 @@
 import { ButtonInput } from './Form';
 
 const reloadRoot = () => {
-    window.location = '/';
+    window.location.assign('/');
 };
 
 export const FullscreenSettings = ({
     fullscreen, // a boolean indicating if the window is fullscreen
     onLine, // a boolean indicating if the app is online
-    promptInstall, // a promise to install the app, null if the app is installed
+    installPromptEvent, // an event to install the app, null if the app is installed
 }) => {
 
     const requestFullscreen = async () => {
@@ -18,12 +18,19 @@ export const FullscreenSettings = ({
     }
     const _toggleFullscreen = (event) => (event.target.checked) ? requestFullscreen() : exitFullscreen();
 
-    const _installPrompt = async () => await promptInstall();
-    const a2hs = promptInstall
+    const _promptInstall = async () => {
+        installPromptEvent.prompt();
+        const choiceResult = await installPromptEvent.userChoice;
+        if (choiceResult.outcome === 'accepted') {
+            // force the event to be removed, as it will no longer be triggered, this will remove the button
+            window.location.reload();
+        }
+    };
+    const a2hs = installPromptEvent
         ? (
             <label>
                 <span>Add to Home Screen:</span>
-                <ButtonInput value="Install" onClick={_installPrompt} />
+                <ButtonInput value="Install" onClick={_promptInstall} />
             </label>
         )
         : onLine ? (

@@ -40,7 +40,7 @@ describe('fullscreen', () => {
 describe('add to home screen (a2hs)', () => {
     describe('state', () => {
         it('should show install button when is truthy', () => {
-            render(<FullscreenSettings promptInstall={{}} />);
+            render(<FullscreenSettings installPromptEvent={{}} />);
             expect(screen.queryByRole('button', { name: 'Install' })).toBeInTheDocument();
             expect(screen.queryByText(/go online/i)).not.toBeInTheDocument();
             expect(screen.queryByRole('button', { name: 'Reload' })).not.toBeInTheDocument();
@@ -59,20 +59,28 @@ describe('add to home screen (a2hs)', () => {
         });
     });
     describe('click handlers', () => {
-        it('should prompt install when button is clicked', async () => {
-            const promptInstall = jest.fn();
-            render(<FullscreenSettings promptInstall={promptInstall} />);
-            const element = screen.getByRole('button', { name: 'Install' });
-            await waitFor(() => fireEvent.click(element));
-            expect(promptInstall).toBeCalled();
-        });
         it('should redirect to root when reload app is clicked', () => {
-            window.location = '/?pwa=true';
             render(<FullscreenSettings onLine={true} />);
-            expect(window.location).not.toBe('/');
             const element = screen.getByLabelText(/reload/i);
             fireEvent.click(element);
-            expect(window.location).toBe('/');
+            expect(window.location.assign).toBeCalledWith('/');
+        });
+        const acceptedTests = [
+            ['accepted', true],
+            ['dismissed', false],
+            ['not accepted', false],
+            [null, false],
+        ]
+        it.each(acceptedTests)('should NOT reload to when "%s" is the choiceResult of the prompt', async (accepted, expected) => {
+            const installPromptEvent = {
+                prompt: jest.fn(),
+                userChoice: { outcome: accepted },
+            };
+            render(<FullscreenSettings installPromptEvent={installPromptEvent} />);
+            const element = screen.queryByRole('button');
+            fireEvent.click(element);
+            await waitFor(expect(installPromptEvent.prompt).toBeCalled);
+            expect(window.location.reload).toBeCalledTimes(expected ? 1 : 0);
         });
     });
 });

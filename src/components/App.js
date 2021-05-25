@@ -102,7 +102,7 @@ export const App = () => {
     setGroups(Groups.moveItemDown(groups, groupIndex, index));
   };
 
-  const main = ({fullscreen, onLine, promptInstall}) => {
+  const main = ({fullscreen, onLine, installPromptEvent}) => {
     switch (view) {
       case View.About:
         return (<About />);
@@ -116,7 +116,7 @@ export const App = () => {
           setHighAccuracyGPS={setHighAccuracyGPS}
           fullscreen={fullscreen}
           onLine={onLine}
-          promptInstall={promptInstall}
+          installPromptEvent={installPromptEvent}
         />);
       case View.Item_Create:
       case View.Item_Read:

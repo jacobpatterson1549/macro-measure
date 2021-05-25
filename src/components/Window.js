@@ -26,11 +26,10 @@ export const Window = ({ render }) => {
         };
     }, []);
 
-    const [promptInstall, setPromptInstall] = useState(null);
+    const [installPromptEvent, setInstallPromptEvent] = useState(null);
     const handler = (event) => {
         event.preventDefault();
-        const fn = promptInstallFn(event);
-        setPromptInstall(fn);
+        setInstallPromptEvent(event);
     };
     useEffect(() => {
         window.addEventListener('beforeinstallprompt', handler);
@@ -38,20 +37,13 @@ export const Window = ({ render }) => {
             window.removeEventListener('beforeinstallprompt', handler);
         };
     });
-    const promptInstallFn = (installPromptEvent) => async () => {
-        installPromptEvent.prompt();
-        const choiceResult = await installPromptEvent.userChoice;
-        if (choiceResult.outcome === 'accepted') {
-            setPromptInstall(null);
-        }
-    };
 
     return (
         <>
             {render({
                 fullscreen: fullscreen,
                 onLine: onLine,
-                promptInstall: promptInstall,
+                installPromptEvent: installPromptEvent,
             })}
         </>
     );
