@@ -1,13 +1,15 @@
 import './App.css';
-import { Groups } from './Groups';
+import { Window } from './Window';
+import { Groups } from '../utils/Groups';
 import { Header } from './Header';
-import { Settings, DefaultDistanceUnit } from './Settings';
+import { Settings } from './Settings';
+import { DefaultDistanceUnit } from './GPSSettings';
 import { About } from './About';
 import { Help } from './Help';
 import { NameList } from './NameList';
 import { Item, newItem } from './Item';
-import { useLocalStorage } from './LocalStorage';
-import { View } from './View';
+import { useLocalStorage } from '../utils/LocalStorage';
+import { View } from '../utils/View';
 
 export const App = () => {
 
@@ -100,7 +102,7 @@ export const App = () => {
     setGroups(Groups.moveItemDown(groups, groupIndex, index));
   };
 
-  const main = () => {
+  const main = ({fullscreen, onLine, installPromptEvent}) => {
     switch (view) {
       case View.About:
         return (<About />);
@@ -112,6 +114,9 @@ export const App = () => {
           setDistanceUnit={setDistanceUnit}
           highAccuracyGPS={highAccuracyGPS}
           setHighAccuracyGPS={setHighAccuracyGPS}
+          fullscreen={fullscreen}
+          onLine={onLine}
+          installPromptEvent={installPromptEvent}
         />);
       case View.Item_Create:
       case View.Item_Read:
@@ -183,16 +188,18 @@ export const App = () => {
   }
 
   return (
-    <div className="App">
-      <Header
-        view={view}
-        groups={groups}
-        groupIndex={groupIndex}
-        setView={setView}
-      />
-      <main className="Main">
-        {main()}
-      </main>
-    </div>
+    <Window render={win => (
+      <div className="App">
+        <Header
+          view={view}
+          groups={groups}
+          groupIndex={groupIndex}
+          setView={setView}
+        />
+        <main className="Main">
+          {main({...win})}
+        </main>
+      </div>
+    )} />
   );
 };

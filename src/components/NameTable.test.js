@@ -18,6 +18,11 @@ describe('table', () => {
         const element = screen.getByRole('cell');
         expect(element.textContent).toMatch(/no values exist/i);
     });
+    it('should report that it is empty when there are no values', () => {
+        render(<NameTable />);
+        const element = screen.getByRole('cell');
+        expect(element.textContent).toMatch(/no values exist/i);
+    });
 });
 
 describe('handlers', () => {

@@ -1,5 +1,5 @@
 import './Header.css';
-import { View } from './View';
+import { View } from '../utils/View';
 
 const showGroupNameViews = [
     View.Item_Create,

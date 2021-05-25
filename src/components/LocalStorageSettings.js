@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { ButtonInput } from './Form'
-import { getLocalStorage, setLocalStorage, clearLocalStorage } from './LocalStorage';
+import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 
 const jsonMimeType = "application/json";
 

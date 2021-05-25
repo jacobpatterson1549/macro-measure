@@ -1,5 +1,6 @@
 import { moveTo, headingDistanceTo } from 'geolocation-utils';
 
+// TODO: Rename to Location.js
 export const moveLatLngTo = (latLng, distance, unit, heading) => {
     const amountMeters = _toMeters(distance, unit);
     const headingDistance = { heading: heading, distance: amountMeters };
