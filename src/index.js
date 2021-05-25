@@ -6,10 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { App } from './components/App';
 import * as serviceWorker from './serviceWorkerRegistration';
 
-if (window.location.protocol !== 'https:') {
-  window.location.protocol = 'https:';
-}
-
+serviceWorker.checkProtocol();
 serviceWorker.register();
 
 ReactDOM.render(
