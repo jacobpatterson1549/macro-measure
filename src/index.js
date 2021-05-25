@@ -6,12 +6,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { App } from './components/App';
 import * as serviceWorker from './serviceWorkerRegistration';
 
-serviceWorker.checkProtocol();
 serviceWorker.register();
-
-if (window.location.protocol !== 'https:') {
-  window.location.protocol = 'https:';
-}
 
 ReactDOM.render(
   <React.StrictMode>

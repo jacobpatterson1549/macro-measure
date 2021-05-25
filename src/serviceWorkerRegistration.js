@@ -10,7 +10,7 @@
 // To learn more about the benefits of this model and instructions on how to
 // opt-in, read https://cra.link/PWA
 
-const isLocalhost = () => (
+const isLocalhost = Boolean(
     window.location.hostname === 'localhost' ||
     // [::1] is the IPv6 localhost address.
     window.location.hostname === '[::1]' ||
@@ -18,18 +18,8 @@ const isLocalhost = () => (
     window.location.hostname.match(/^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/)
 );
 
-const isProduction = () => (
-    process.env.NODE_ENV === 'production'
-);
-
-export function checkProtocol() {
-    if (window.location.protocol !== 'https:' && isProduction() && !isLocalhost()) {
-        window.location.protocol = 'https:';
-    }
-};
-
 export function register(config) {
-    if (isProduction() && 'serviceWorker' in navigator) {
+    if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
         // The URL constructor is available in all browsers that support SW.
         const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
         if (publicUrl.origin !== window.location.origin) {
@@ -42,7 +32,7 @@ export function register(config) {
         window.addEventListener('load', () => {
             const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
 
-            if (isLocalhost()) {
+            if (isLocalhost) {
                 // This is running on localhost. Let's check if a service worker still exists or not.
                 checkValidServiceWorker(swUrl, config);
 
