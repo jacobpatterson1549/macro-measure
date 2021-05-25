@@ -16,6 +16,7 @@ const locationMock = {
     assign: jest.fn(),
     reload: jest.fn(),
     protocol: 'https:',
+    hostname: 'macro-measure.herokuapp.com',
 };
 const geolocationMock = {
     watchPosition: jest.fn(),
