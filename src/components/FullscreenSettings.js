@@ -16,6 +16,11 @@ export const FullscreenSettings = ({
 
     const _promptInstall = async () => {
         installPromptEvent.prompt();
+        const choiceResult = await installPromptEvent.userChoice;
+        if (choiceResult.outcome === 'accepted') {
+            // reload force the event to be removed, as it will no longer be triggered
+            window.location.reload();
+        }
     };
     const a2hs = installPromptEvent
         ? (

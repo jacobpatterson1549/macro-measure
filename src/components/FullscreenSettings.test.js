@@ -59,14 +59,22 @@ describe('add to home screen (a2hs)', () => {
         });
     });
     describe('click handlers', () => {
-        it('should show install prompt when clicked', async () => {
+        const acceptedTests = [
+            ['accepted', true],
+            ['dismissed', false],
+            ['not accepted', false],
+            [null, false],
+        ]
+        it.each(acceptedTests)('should handle install prompt when "%s" is the choiceResult of the prompt: reload expected: %s', async (accepted, expected) => {
             const installPromptEvent = {
                 prompt: jest.fn(),
+                userChoice: { outcome: accepted },
             };
             render(<FullscreenSettings installPromptEvent={installPromptEvent} />);
             const element = screen.queryByRole('button');
             fireEvent.click(element);
             await waitFor(expect(installPromptEvent.prompt).toBeCalled);
+            expect(window.location.reload).toBeCalledTimes(expected ? 1 : 0);
         });
     });
 });
