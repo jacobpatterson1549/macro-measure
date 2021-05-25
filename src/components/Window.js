@@ -40,7 +40,7 @@ export const Window = ({ render }) => {
     });
     const promptInstallFn = (installPromptEvent) => async () => {
         installPromptEvent.prompt();
-        const choiceResult = await installPromptEvent.userChoice();
+        const choiceResult = await installPromptEvent.userChoice;
         if (choiceResult.outcome === 'accepted') {
             setPromptInstall(null);
         }
