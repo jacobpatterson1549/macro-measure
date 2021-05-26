@@ -244,11 +244,11 @@ export const Item = ({
                     : null;
 
                 return (
-                    <>
+                    <div className="Item">
                         {getHeader(geolocation.latLng)}
                         {getMap(distanceHeading, geolocation.latLng, geolocation.valid)}
                         {getAction(distanceHeading, geolocation.latLng, geolocation.valid)}
-                    </>
+                    </div>
                 );
             }} />
     );
