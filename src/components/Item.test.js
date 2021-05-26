@@ -39,19 +39,22 @@ describe('Item', () => {
                 render(<Item
                     view={View.Item_Read}
                     distanceUnit={null}
-                    currentLatLng={null}
                 />);
                 const re = new RegExp('getting location', 'i');
                 const element = screen.queryByText(re);
                 expect(element).toBeInTheDocument();
             });
-            it('should show distance when reading item with currentLatLng', () => {
+            it('should show distance when reading item with currentLatLng', async () => {
+                navigator.geolocation.watchPosition = jest.fn();
                 const expected = 'DISTANCE_UNIT'
                 render(<Item
                     view={View.Item_Read}
                     distanceUnit={expected}
-                    currentLatLng={{}}
+                    lat={7}
+                    lng={9}
                 />);
+                const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
+                await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
                 const re = new RegExp(expected);
                 const element = screen.queryByText(re);
                 expect(element).toBeInTheDocument();

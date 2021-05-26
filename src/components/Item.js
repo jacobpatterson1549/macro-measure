@@ -20,7 +20,6 @@ export const newItem = (latLng) => {
 };
 
 export const Item = ({
-    currentLatLng, // that current latitude and longitude of the device
     view, // the page being viewed
     items, // the items in the group
     index, // the index of the item being shown
@@ -42,8 +41,8 @@ export const Item = ({
     const [moveAmount, setMoveAmount] = useLocalStorage('move-amount', 1);
     const [item, setItem] = useState({ name: name, lat: lat, lng: lng }); // TODO: use better naming: formItem ?
 
-    const _createStart = (currentLatLng) => {
-        setItem(newItem(currentLatLng));
+    const _createStart = (latLng) => {
+        setItem(newItem(latLng));
         createStart();
     };
     const _createEnd = () => {
@@ -81,14 +80,14 @@ export const Item = ({
         setMoveAmount(value || 1);
     };
 
-    const getHeader = (currentLatLng) => {
+    const getHeader = (latLng) => {
         const _prevDisabled = index <= 0;
         const _prevClick = () => _read(-1);
         const _caption = (view === View.Item_Create) ? '[Add Item]' : name;
         const _nextDisabled = !items || index + 1 >= items.length
         const _nextClick = () => _read(+1);
         const _showEdit = (view === View.Item_Read);
-        const _addDisabled = (currentLatLng === null);
+        const _addDisabled = (latLng === null);
         return (
             <div className="Item-Header">
                 <div className="row">
@@ -127,7 +126,7 @@ export const Item = ({
                         </button>
                         <button
                             disabled={_addDisabled}
-                            onClick={() => _createStart(currentLatLng)}
+                            onClick={() => _createStart(latLng)}
                             title="create item"
                         >
                             <span>Add...</span>
@@ -220,7 +219,7 @@ export const Item = ({
                 );
             case View.Item_Read:
             default:
-                if (!currentLatLng) {
+                if (!latLng) {
                     return (
                         <span>Getting location...</span>
                     );
