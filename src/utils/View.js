@@ -6,7 +6,6 @@ export const View = {
     Item_Read: 'item-read',
     Item_Update: 'item-update',
     Item_Delete: 'item-delete',
-    Item_No_Geolocation: 'item-no-geolocation',
     Items_Read: 'items-read',
     Group_Create: 'group-create',
     Group_Update: 'group-update',

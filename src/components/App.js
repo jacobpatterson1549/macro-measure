@@ -122,11 +122,9 @@ export const App = () => {
       case View.Item_Read:
       case View.Item_Update:
       case View.Item_Delete:
-      case View.Item_No_Geolocation:
         const items = groups ? groups[groupIndex].items : [];
         const defaultItem = Object.assign({}, (view === View.Item_Create) ? newItem(null) : items[itemIndex]);
         const readItems = () => setView(View.Items_Read);
-        const disableGeolocation = () => setView(View.Item_No_Geolocation);
         return (<Item
           view={view}
           items={items}
@@ -138,7 +136,6 @@ export const App = () => {
           createEnd={createItemEnd}
           read={readItem}
           readItems={readItems}
-          disableGeolocation={disableGeolocation}
           updateStart={updateItemStart}
           updateEnd={updateItemEnd}
           deleteStart={deleteItemStart}

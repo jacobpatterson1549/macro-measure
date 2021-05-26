@@ -1,66 +1,65 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { roundLatLng } from '../utils/LocationUtils';
 import { View } from '../utils/View';
 
 const locationViews = [View.Item_Read, View.Item_Create];
 
-const geolocation = window.navigator.geolocation;
+const geolocation = () => window.navigator.geolocation;
 
-// TODO: make HOC, move to src/utils/Geolocation, name withGeolocation
+// Geolocation watches the position, rendering it when it changes.
 export const Geolocation = ({
+    render,
     view, // the current page
-    highAccuracyGPS, // enables the GPS to be more precise
-    newItem, // func to create a new item from a latLng
-    setItem, // func to set the item
-    setCurrentLatLng, // func to set the current latLng
-    disable, // function to indicate that the device does not support gps location
+    highAccuracyGPS, // enables the GPS to be more precise // TODO: rename all these fields to enableHighAccuracy
 }) => {
-    const [timerID, setTimerID] = useState(null);
 
-    const stopTimer = useCallback(() => {
-        if (timerID !== null) {
-            clearInterval(timerID);
-            setTimerID(null);
-        }
-    }, [timerID]);
+    const watchID = useRef(null);
+    const [latLng, setLatLng] = useState(null);
 
-    const setPosition = useCallback((position) => {
-        if (view !== View.Item_Read) {
-            stopTimer();
-        }
-        if (!locationViews.includes(view)) {
-            return;
-        }
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        const latLng = { lat: latitude, lng: longitude };
-        setCurrentLatLng(roundLatLng(latLng));
-        if (view === View.Item_Create) {
-            setItem(newItem(latLng));
-        }
-    }, [view, setItem, newItem, setCurrentLatLng, stopTimer]);
-
-    const startTimer = useCallback(() => {
-        const success = setPosition;
-        const error = disable;
+    useEffect(() => {
+        const stopWatch = (() => {
+            geolocation().clearWatch(watchID.current);
+            watchID.current = null
+        });
+        const success = async (geolocationPosition) => {
+            if (view !== View.Item_Read) {
+                stopWatch();
+            }
+            const position = {
+                lat: geolocationPosition.coords.latitude,
+                lng: geolocationPosition.coords.longitude,
+            };
+            const roundedPosition = roundLatLng(position);
+            setLatLng(roundedPosition);
+        };
+        const error = (error) => {
+            setLatLng(null);
+        };
         const options = {
             enableHighAccuracy: highAccuracyGPS,
         };
-        stopTimer();
-        setTimerID(geolocation.watchPosition(success, error, options));
-    }, [highAccuracyGPS, disable, setPosition, stopTimer, setTimerID]);
+        const startWatch = () => {
+            stopWatch();
+            watchID.current = geolocation().watchPosition(success, error, options);
+        };
 
-    useEffect(() => {
-        if (timerID === null && locationViews.includes(view)) {
-            if (geolocation) {
-                startTimer();
-            } else {
-                disable();
-            }
+        if (!watchID.current && locationViews.includes(view) && geolocation()) {
+            startWatch();
         }
-        return () => clearInterval(timerID);
-    }, [view, disable, timerID, startTimer, stopTimer]);
+        return () => {
+            if (geolocation()) {
+                stopWatch();
+            }
+        };
+    }, [view, highAccuracyGPS]);
 
-    return null;
+    return (
+        <>
+            {render({
+                valid: !!geolocation(),
+                latLng: latLng,
+            })}
+        </>
+    );
 };

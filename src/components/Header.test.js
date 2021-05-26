@@ -35,7 +35,6 @@ describe('Header', () => {
         ['groupC', View.Item_Read, 'groupC'],
         ['groupD', View.Item_Update, 'groupD'],
         ['groupE', View.Item_Delete, 'groupE'],
-        ['groupF', View.Item_No_Geolocation, 'groupF'],
     ];
     test.each(groupNames)('should have groups link %s when view is %s and groupName is %s', (expected, view, groupName) => {
         const groups = [{ name: groupName }];

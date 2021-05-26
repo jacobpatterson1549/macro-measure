@@ -20,8 +20,9 @@ const locationMock = {
 };
 const geolocationMock = {
     watchPosition: jest.fn(),
+    clearWatch: jest.fn(),
 };
 Object.defineProperty(global, 'localStorage', { value: localStorageMock });
 Object.defineProperty(global, 'location', { value: locationMock, writable: true });
-Object.defineProperty(global.navigator, 'geolocation', { value: geolocationMock });
+Object.defineProperty(global.navigator, 'geolocation', { value: geolocationMock, writable: true });
 Object.defineProperty(global.navigator, 'onLine', { value: true, writable: true });

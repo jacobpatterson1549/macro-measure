@@ -20,6 +20,7 @@ export const newItem = (currentLatLng) => {
 };
 
 export const Item = ({
+    currentLatLng, // that current latitude and longitude of the device
     view, // the page being viewed
     items, // the items in the group
     index, // the index of the item being shown
@@ -30,7 +31,6 @@ export const Item = ({
     createEnd, // (name, lat, lng): function called to create an item
     read, //(delta): function called to read the item at the offset from the index
     readItems, // function called to go back to the item list
-    disableGeolocation, // function to indicate that the device does not support gps location
     updateStart, // function to begin updating the item
     updateEnd, // function to finish updating the item
     deleteStart, // function to begin deleting the item
@@ -38,10 +38,9 @@ export const Item = ({
 }) => {
 
     const [moveAmount, setMoveAmount] = useLocalStorage('move-amount', 1);
-    const [currentLatLng, setCurrentLatLng] = useState(null);
     const [item, setItem] = useState(defaultItem);
 
-    const _createStart = () => {
+    const _createStart = (currentLatLng) => {
         setItem(newItem(currentLatLng));
         createStart();
     };
@@ -77,11 +76,7 @@ export const Item = ({
         setMoveAmount(value || 1);
     };
 
-    const distanceHeading = (view === View.Item_Read && currentLatLng !== null)
-        ? getDistanceHeading(item, currentLatLng, distanceUnit)
-        : null;
-
-    const getHeader = () => {
+    const getHeader = (currentLatLng) => {
         const _prevDisabled = index <= 0;
         const _prevClick = () => _read(-1);
         const _caption = (view === View.Item_Create) ? '[Add Item]' : items[index].name;
@@ -127,7 +122,7 @@ export const Item = ({
                         </button>
                         <button
                             disabled={_addDisabled}
-                            onClick={_createStart}
+                            onClick={() => _createStart(currentLatLng)}
                             title="create item"
                         >
                             <span>Add...</span>
@@ -138,8 +133,8 @@ export const Item = ({
         );
     };
 
-    const getMap = () => {
-        if (view === View.Item_No_Geolocation) {
+    const getMap = (distanceHeading, currentLatLng, hasGeolocation) => {
+        if (!hasGeolocation) {
             return (<p>[Map disabled]</p>);
         }
         const [heading, centerLatLng, deviceLatLng] = (distanceHeading)
@@ -155,12 +150,11 @@ export const Item = ({
         );
     };
 
-    const getAction = () => {
+    const getAction = (distanceHeading, hasGeolocation) => {
+        if (!hasGeolocation) {
+            return (<span>Cannot get location</span>);
+        }
         switch (view) {
-            case View.Item_No_Geolocation:
-                return (
-                    <span>Cannot get location</span>
-                );
             case View.Item_Create:
             case View.Item_Update:
                 const _setName = (name) => setItem(Object.assign({}, item, { name: name }));
@@ -234,18 +228,22 @@ export const Item = ({
     };
 
     return (
-        <div className="Item">
-            <Geolocation
-                view={view}
-                highAccuracyGPS={highAccuracyGPS}
-                newItem={newItem}
-                setItem={setItem}
-                setCurrentLatLng={setCurrentLatLng}
-                disable={disableGeolocation}
-            />
-            {getHeader()}
-            {getMap()}
-            {getAction()}
-        </div>
+        <Geolocation
+            view={view}
+            highAccuracyGPS={highAccuracyGPS}
+            render={geolocation => {
+
+                const distanceHeading = (view === View.Item_Read && geolocation.latLng !== null)
+                    ? getDistanceHeading(item, geolocation, distanceUnit)
+                    : null;
+
+                return (
+                    <>
+                        {getHeader(geolocation.latLng)}
+                        {getMap(distanceHeading, geolocation.latLng, geolocation.valid)}
+                        {getAction(distanceHeading, geolocation.valid)}
+                    </>
+                );
+            }} />
     );
 };
