@@ -6,6 +6,11 @@
   width: 90%;
 }
 
+.Item > *:not(:first-child):not(:last-child) {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
 .Item-Header {
   display: flex;
   flex-direction: column;

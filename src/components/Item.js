@@ -89,7 +89,7 @@ export const Item = ({
         const _showEdit = (view === View.Item_Read);
         const _addDisabled = (latLng === null);
         return (
-            <div className="Item-Header">
+            <>
                 <div className="row">
                     <button className="left arrow"
                         disabled={_prevDisabled}
@@ -133,7 +133,7 @@ export const Item = ({
                         </button>
                     </div>
                 }
-            </div>
+            </>
         );
     };
 
@@ -145,15 +145,13 @@ export const Item = ({
             ? [distanceHeading.heading, moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading), latLng]
             : [0, item, null];
         return (
-            <div role="img">
-                <Map
-                    heading={heading}
-                    centerLatLng={centerLatLng}
-                    itemName={name}
-                    itemLatLng={item}
-                    deviceLatLng={deviceLatLng}
-                />
-            </div>
+            <Map
+                heading={heading}
+                centerLatLng={centerLatLng}
+                itemName={name}
+                itemLatLng={item}
+                deviceLatLng={deviceLatLng}
+            />
         );
     };
 
@@ -227,7 +225,8 @@ export const Item = ({
                 const _distance = (distanceHeading) ? distanceHeading.distance : '?';
                 return (
                     <div className="distance">
-                        <span>{_distance} {distanceUnit}</span>
+                        <span>{_distance}</span>
+                        <span> {distanceUnit}</span>
                     </div>
                 );
         }
@@ -245,9 +244,15 @@ export const Item = ({
 
                 return (
                     <div className="Item">
-                        {getHeader(geolocation.latLng)}
-                        {getMap(distanceHeading, geolocation.latLng, geolocation.valid)}
-                        {getAction(distanceHeading, geolocation.latLng, geolocation.valid)}
+                        <div className="Item-Header">
+                            {getHeader(geolocation.latLng)}
+                        </div>
+                        <div role="img">
+                            {getMap(distanceHeading, geolocation.latLng, geolocation.valid)}
+                        </div>
+                        <div>
+                            {getAction(distanceHeading, geolocation.latLng, geolocation.valid)}
+                        </div>
                     </div>
                 );
             }} />
