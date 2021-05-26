@@ -4,9 +4,14 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { App } from './components/App';
-import * as serviceWorker from './serviceWorkerRegistration';
 
-serviceWorker.register();
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then((swr) => console.log('service worker registered:', swr.scope))
+      .catch((err) => console.log('service worker did not register:', err.message ? err.message : null));
+  });
+}
 
 ReactDOM.render(
   <React.StrictMode>

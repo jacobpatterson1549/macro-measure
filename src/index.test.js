@@ -1,11 +1,6 @@
 import ReactDOM from 'react-dom';
 
-import * as serviceWorker from './serviceWorkerRegistration';
-
 jest.mock('react-dom', () => ({ render: jest.fn() }));
-jest.mock('./serviceWorkerRegistration', () => ({
-    register: jest.fn(),
-}));
 
 describe('index', () => {
     afterEach(() => {
@@ -16,7 +11,6 @@ describe('index', () => {
         rootElement.setAttribute('id', 'root');
         document.body.appendChild(rootElement);
         require('./index.js');
-        expect(serviceWorker.register).toBeCalled();
         expect(ReactDOM.render).toHaveBeenCalledWith(expect.anything(), rootElement);
     });
 });
