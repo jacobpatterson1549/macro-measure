@@ -31,6 +31,9 @@ export const App = () => {
     setView(View.Items_Read);
     setGroupIndex(index);
   };
+  const readGroups = () => {
+    setView(View.Groups_Read);
+  };
   const updateGroupStart = (index) => {
     setView(View.Group_Update);
     setGroupIndex(index);
@@ -68,6 +71,9 @@ export const App = () => {
     setView(View.Item_Read);
     setItemIndex(index);
   };
+  const readItems = () => {
+    setView(View.Items_Read);
+  };
   const updateItemStart = (index) => {
     setView(View.Item_Update);
     setItemIndex(index);
@@ -102,7 +108,7 @@ export const App = () => {
     setGroups(Groups.moveItemDown(groups, groupIndex, index));
   };
 
-  const main = ({fullscreen, onLine, installPromptEvent}) => {
+  const main = ({ fullscreen, onLine, installPromptEvent }) => {
     switch (view) {
       case View.About:
         return (<About />);
@@ -123,8 +129,7 @@ export const App = () => {
       case View.Item_Update:
       case View.Item_Delete:
         const items = groups ? groups[groupIndex].items : [];
-        const defaultItem =(view === View.Item_Create) ? newItem(null) : items[itemIndex];
-        const readItems = () => setView(View.Items_Read);
+        const defaultItem = (view === View.Item_Create) ? newItem(null) : items[itemIndex];
         return (<Item
           view={view}
           items={items}
@@ -164,7 +169,6 @@ export const App = () => {
       case View.Group_Delete:
       case View.Groups_Read:
       default:
-        const cancel = () => setView(View.Groups_Read);
         return (
           <NameList className="GroupList"
             type="group"
@@ -180,7 +184,7 @@ export const App = () => {
             deleteEnd={deleteGroupEnd}
             moveUp={moveGroupUp}
             moveDown={moveGroupDown}
-            cancel={cancel}
+            cancel={readGroups}
           />
         );
     }
@@ -196,7 +200,7 @@ export const App = () => {
           setView={setView}
         />
         <main className="Main">
-          {main({...win})}
+          {main({ ...win })}
         </main>
       </div>
     )} />
