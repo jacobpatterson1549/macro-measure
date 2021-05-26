@@ -56,7 +56,7 @@ describe('Item', () => {
                 const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
                 await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
                 expect(screen.queryByText('1988.7')).toBeInTheDocument(); // REAL test (lng diff = 18)
-                expect(screen.queryByText(new RegExp(expected))).toBeInTheDocument();
+                expect(screen.queryByText(expected)).toBeInTheDocument();
             });
             it('should show NaN distance when reading item with currentLatLng and invalid distance unit', async () => {
                 navigator.geolocation.watchPosition = jest.fn();
@@ -70,7 +70,7 @@ describe('Item', () => {
                 const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
                 await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
                 expect(screen.queryByText('NaN')).toBeInTheDocument();
-                expect(screen.queryByText(new RegExp(expected))).toBeInTheDocument();
+                expect(screen.queryByText(expected)).toBeInTheDocument();
             });
         });
     });
