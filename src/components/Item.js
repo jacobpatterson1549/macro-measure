@@ -222,7 +222,7 @@ export const Item = ({
                         <span>Getting location...</span>
                     );
                 }
-                const _distance = (distanceHeading) ? distanceHeading.distance : '?';
+                const _distance = (distanceHeading) ? String(distanceHeading.distance) : '?';
                 return (
                     <div className="distance">
                         <span>{_distance}</span>
