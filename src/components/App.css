@@ -6,8 +6,12 @@
   color: red;
 }
 
-.App > .Main {
-  height: 100%;
+.App > *:first-child {
+  height: 10vh;
+}
+
+.App > *:not(:first-child) {
+  height: 85vh;
   display: flex;
   flex-direction: column;
   align-items: center;
