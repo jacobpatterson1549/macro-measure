@@ -11,13 +11,13 @@ describe('Header', () => {
             ['help', View.Help],
             ['settings', View.Settings],
         ];
-        test.each(titleParts)('should have item with title containing %s', (expected) => {
+        it.each(titleParts)('should have item with title containing %s', (expected) => {
             render(<Header />);
             const re = new RegExp(expected);
             const headerElement = screen.getByTitle(re);
             expect(headerElement).toBeInTheDocument();
         });
-        test.each(titleParts)(' should have %s header element that is clickable', (titlePart, expected) => {
+        it.each(titleParts)(' should have %s header element that is clickable', (titlePart, expected) => {
             const handleClick = jest.fn();
             render(<Header setView={handleClick} />);
             const re = new RegExp(titlePart);
@@ -36,7 +36,7 @@ describe('Header', () => {
         ['groupD', View.Item_Update, 'groupD'],
         ['groupE', View.Item_Delete, 'groupE'],
     ];
-    test.each(groupNames)('should have groups link %s when view is %s and groupName is %s', (expected, view, groupName) => {
+    it.each(groupNames)('should have groups link %s when view is %s and groupName is %s', (expected, view, groupName) => {
         const groups = [{ name: groupName }];
         const groupIndex = 0;
         render(<Header view={view} groups={groups} groupIndex={groupIndex} />);

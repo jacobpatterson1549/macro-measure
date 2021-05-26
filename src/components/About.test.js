@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { About } from './About';
 
 describe('About page', () => {
-    test.each(['linkedin', 'github'])('should have %s link', (link) => {
+    it.each(['linkedin', 'github'])('should have %s link', (link) => {
         render(<About />);
         const re = new RegExp(link, 'i');
         const linkElement = screen.getByText(re);

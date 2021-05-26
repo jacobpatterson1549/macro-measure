@@ -11,13 +11,13 @@ describe('LatLng calculations', () => {
         [1.0, 'ft', 0, { lat: 0, lng: 0 }, { lat: 0.0000027, lng: 0 }], // N
         [1.0, 'ft', 90, { lat: 0, lng: 0 }, { lat: 0, lng: 0.0000027 }], // E
     ];
-    test.each(distanceTests)('should move LatLng distance %s%s with a heading %d° from %s to %s',
+    it.each(distanceTests)('should move LatLng distance %s%s with a heading %d° from %s to %s',
         (distance, unit, heading, latLng, expectedLatLng) => {
             const actualLatLng = moveLatLngTo(latLng, distance, unit, heading);
             expect(actualLatLng.lat).toBeCloseTo(expectedLatLng.lat, 7);
             expect(actualLatLng.lng).toBeCloseTo(expectedLatLng.lng, 7);
         });
-    test.each(distanceTests)('should get distance %s%s with a heading of %d° between %s and %s',
+    it.each(distanceTests)('should get distance %s%s with a heading of %d° between %s and %s',
         (expectedDistance, unit, expectedHeading, latLng1, latLng2) => {
             const actualDistanceHeading = getDistanceHeading(latLng1, latLng2, unit);
             expect(actualDistanceHeading.distance).toBeCloseTo(expectedDistance, 1);
@@ -45,7 +45,7 @@ describe('meters conversions', () => {
         [1, 'cubit', NaN],
     ];
     const decimalPrecisionDigits = 10;
-    test.each(conversions)('should convert %d %s %d meters', (distance, unit, expected) => {
+    it.each(conversions)('should convert %d %s %d meters', (distance, unit, expected) => {
         const m = _toMeters(distance, unit);
         if (expected === expected) {
             expect(m).toBeCloseTo(expected, decimalPrecisionDigits);
@@ -53,7 +53,7 @@ describe('meters conversions', () => {
             expect(m).toBeNaN();
         }
     });
-    test.each(conversions)('should convert back to %d %s when at %d meters', (distance, unit, expected) => {
+    it.each(conversions)('should convert back to %d %s when at %d meters', (distance, unit, expected) => {
         const m = _toMeters(distance, unit);
         const actual = _fromMeters(m, unit);
         if (expected === expected) {

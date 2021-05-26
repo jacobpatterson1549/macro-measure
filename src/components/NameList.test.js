@@ -9,7 +9,7 @@ describe('View', () => {
         ['Delete', 'test-delete'],
         ['Create', 'test-read'],
     ];
-    test.each(viewTests)('should have only button of %s when view is %s', (expected, view) => {
+    it.each(viewTests)('should have only button of %s when view is %s', (expected, view) => {
         render(<NameList
             type={'test'}
             view={view}

@@ -21,12 +21,12 @@ describe('distance unit', () => {
 
 describe('gps', () => {
     const values = [true, false];
-    test.each(values)('should have checked state of %s', (value) => {
+    it.each(values)('should have checked state of %s', (value) => {
         render(<GPSSettings highAccuracyGPS={value} />)
         const checkboxElement = screen.getByLabelText(/GPS/i);
         expect(checkboxElement.checked).toBe(value);
     });
-    test.each(values)('should flip value when checked was %s', (value) => {
+    it.each(values)('should flip value when checked was %s', (value) => {
         const setHighAccuracyGPSFn = jest.fn();
         render(<GPSSettings highAccuracyGPS={value} setHighAccuracyGPS={setHighAccuracyGPSFn} />);
         const checkboxElement = screen.getByLabelText(/GPS/i);

@@ -90,7 +90,7 @@ describe('NameInput', () => {
         [false, [{ name: 'a' }, { name: 'c' }], -1, 'c'],
         [true, [{ name: 'a' }, { name: 'c' }], 1, 'c'],
     ];
-    test.each(uniqueNameTests)('should have valid = %s when values are %s, the update index is %d, and the new name is %s', (expectedValid, values, updateIndex, name) => {
+    it.each(uniqueNameTests)('should have valid = %s when values are %s, the update index is %d, and the new name is %s', (expectedValid, values, updateIndex, name) => {
         const setCustomValidityFn = jest.fn();
         const expectedMatcher = expectedValid ? '' : expect.stringMatching(/./);
         let value = 'before';

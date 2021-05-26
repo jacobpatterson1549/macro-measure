@@ -29,7 +29,7 @@ describe('Error Boundary', () => {
     });
 
     const errorMessages = ['MockErrorMessage', '', 0, null, undefined];
-    test.each(errorMessages)('should render when an error exists with message: %s', (message) => {
+    it.each(errorMessages)('should render when an error exists with message: %s', (message) => {
         const InvalidComponent = () => {
             throw new Error(message);
         };
