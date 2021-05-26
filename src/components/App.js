@@ -123,13 +123,15 @@ export const App = () => {
       case View.Item_Update:
       case View.Item_Delete:
         const items = groups ? groups[groupIndex].items : [];
-        const defaultItem = Object.assign({}, (view === View.Item_Create) ? newItem(null) : items[itemIndex]);
+        const defaultItem =(view === View.Item_Create) ? newItem(null) : items[itemIndex];
         const readItems = () => setView(View.Items_Read);
         return (<Item
           view={view}
           items={items}
           index={itemIndex}
-          defaultItem={defaultItem}
+          name={defaultItem.name}
+          lat={defaultItem.lat}
+          lng={defaultItem.lng}
           distanceUnit={distanceUnit}
           highAccuracyGPS={highAccuracyGPS}
           createStart={createItemStart}

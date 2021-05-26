@@ -8,9 +8,9 @@ import { Geolocation } from './Geolocation';
 import { Form, SubmitInput, Input, NameInput, ButtonInput } from './Form';
 import { View } from '../utils/View';
 
-export const newItem = (currentLatLng) => {
-    const lat = currentLatLng ? currentLatLng.lat : 0;
-    const lng = currentLatLng ? currentLatLng.lng : 0;
+export const newItem = (latLng) => {
+    const lat = latLng ? latLng.lat : 0;
+    const lng = latLng ? latLng.lng : 0;
     const item = {
         name: '[New Item]',
         lat: lat,
@@ -24,7 +24,9 @@ export const Item = ({
     view, // the page being viewed
     items, // the items in the group
     index, // the index of the item being shown
-    defaultItem, // the item at the index
+    name, // the name of the item at the index
+    lat, // the lat of the item at the index
+    lng, // the lng of the item at the index
     distanceUnit, // the distance length between positions
     highAccuracyGPS, // enables the GPS to be more precise
     createStart, // function called to create a new item
@@ -38,7 +40,7 @@ export const Item = ({
 }) => {
 
     const [moveAmount, setMoveAmount] = useLocalStorage('move-amount', 1);
-    const [item, setItem] = useState(defaultItem);
+    const [item, setItem] = useState({ name: name, lat: lat, lng: lng }); // TODO: use better naming: formItem ?
 
     const _createStart = (currentLatLng) => {
         setItem(newItem(currentLatLng));
@@ -66,6 +68,9 @@ export const Item = ({
         deleteEnd(index);
     };
 
+    const _updateName = (name) => {
+        setItem(Object.assign({}, item, { name: name }));
+    };
     const _updateLatLng = (heading) => () => {
         const item2 = moveLatLngTo(item, moveAmount, distanceUnit, heading);
         const item3 = Object.assign({}, item, item2);
@@ -79,8 +84,8 @@ export const Item = ({
     const getHeader = (currentLatLng) => {
         const _prevDisabled = index <= 0;
         const _prevClick = () => _read(-1);
-        const _caption = (view === View.Item_Create) ? '[Add Item]' : items[index].name;
-        const _nextDisabled = index + 1 >= items.length
+        const _caption = (view === View.Item_Create) ? '[Add Item]' : name;
+        const _nextDisabled = !items || index + 1 >= items.length
         const _nextClick = () => _read(+1);
         const _showEdit = (view === View.Item_Read);
         const _addDisabled = (currentLatLng === null);
@@ -133,35 +138,37 @@ export const Item = ({
         );
     };
 
-    const getMap = (distanceHeading, currentLatLng, hasGeolocation) => {
+    const getMap = (distanceHeading, latLng, hasGeolocation) => {
         if (!hasGeolocation) {
             return (<p>[Map disabled]</p>);
         }
         const [heading, centerLatLng, deviceLatLng] = (distanceHeading)
-            ? [distanceHeading.heading, moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading), currentLatLng]
+            ? [distanceHeading.heading, moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading), latLng]
             : [0, item, null];
         return (
-            <Map
-                heading={heading}
-                centerLatLng={centerLatLng}
-                itemLatLng={item}
-                deviceLatLng={deviceLatLng}
-            />
+            <div role="img">
+                <Map
+                    heading={heading}
+                    centerLatLng={centerLatLng}
+                    itemName={name}
+                    itemLatLng={item}
+                    deviceLatLng={deviceLatLng}
+                />
+            </div>
         );
     };
 
-    const getAction = (distanceHeading, hasGeolocation) => {
+    const getAction = (distanceHeading, latLng, hasGeolocation) => {
         if (!hasGeolocation) {
             return (<span>Cannot get location</span>);
         }
         switch (view) {
             case View.Item_Create:
             case View.Item_Update:
-                const _setName = (name) => setItem(Object.assign({}, item, { name: name }));
                 const [_onSubmit, _disabled, _caption, _updateIndex, _cancel, _submitValue] = (view === View.Item_Create)
                     // TODO: cancel for View.Item_Create should be similar to when delete is successful
-                    ? [_createEnd, !currentLatLng, 'Create Item', -1, readItems, 'Create Item']
-                    : [_updateEnd, false, ('Update ' + items[index].name), index, () => _read(0), 'Update Item'];
+                    ? [_createEnd, !latLng, 'Create Item', -1, readItems, 'Create Item']
+                    : [_updateEnd, false, ('Update ' + name), index, () => _read(0), 'Update Item'];
                 return (
                     <Form onSubmit={_onSubmit}>
                         <fieldset disabled={_disabled}>
@@ -171,7 +178,7 @@ export const Item = ({
                                 <NameInput
                                     value={item.name}
                                     values={items}
-                                    onChange={_setName}
+                                    onChange={_updateName}
                                     updateIndex={_updateIndex}
                                 />
                             </label>
@@ -234,14 +241,14 @@ export const Item = ({
             render={geolocation => {
 
                 const distanceHeading = (view === View.Item_Read && geolocation.latLng !== null)
-                    ? getDistanceHeading(item, geolocation, distanceUnit)
+                    ? getDistanceHeading(item, geolocation.latLng, distanceUnit)
                     : null;
 
                 return (
                     <>
                         {getHeader(geolocation.latLng)}
                         {getMap(distanceHeading, geolocation.latLng, geolocation.valid)}
-                        {getAction(distanceHeading, geolocation.valid)}
+                        {getAction(distanceHeading, geolocation.latLng, geolocation.valid)}
                     </>
                 );
             }} />
