@@ -1,4 +1,4 @@
-import { mount, screen, fireEvent, createEvent, render } from '@testing-library/react';
+import { screen, render } from '@testing-library/react';
 
 import { ErrorBoundary } from './ErrorBoundary';
 

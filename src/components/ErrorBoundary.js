@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { LocalStorageSettings } from './LocalStorageSettings';
 
 export class ErrorBoundary extends React.Component {

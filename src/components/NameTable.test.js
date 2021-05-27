@@ -2,7 +2,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 import { NameTable } from './NameTable';
 
-
 describe('caption', () => {
     it('should include type', () => {
         const type = 'my custom type'
