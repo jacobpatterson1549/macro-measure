@@ -56,6 +56,14 @@ describe('Geolocation', () => {
         const element = screen.queryByTitle('position');
         expect(element).not.toBeInTheDocument();
     });
+    it('should not clear watch if geolocation is falsy', () => {
+        navigator.geolocation = null; // will crash if watchPosition is called
+        const { unmount } = render(<Geolocation
+            view={View.Item_Read}
+            render={position => <MockApp position={position} />}
+        />);
+        unmount();
+    });
     describe('highAccuracy', () => {
         const highAccuracyStates = [true, false];
         it.each(highAccuracyStates)('should set highAccuracy to %s', (state) => {
