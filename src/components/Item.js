@@ -70,8 +70,8 @@ export const Item = ({
         deleteEnd(index);
     };
 
-    const _updateName = (name) => {
-        setFormName(name)
+    const _updateName = (updatedFormName) => {
+        setFormName(updatedFormName)
     };
     const _updateLatLng = (heading) => () => {
         const formLatLng = moveLatLngTo({ lat: formLat, lng: formLng }, moveAmount, distanceUnit, heading);
@@ -129,7 +129,7 @@ export const Item = ({
                         </button>
                         <button
                             disabled={_addDisabled}
-                            onClick={() => _createStart(latLng)}
+                            onClick={() => _createStart()}
                             title="create item"
                         >
                             <span>Add...</span>

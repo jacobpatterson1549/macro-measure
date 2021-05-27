@@ -30,7 +30,7 @@ export const Geolocation = ({
             const roundedPosition = roundLatLng(position);
             setLatLng(roundedPosition);
         };
-        const error = (error) => {
+        const error = () => {
             setLatLng(null);
         };
         const options = {
