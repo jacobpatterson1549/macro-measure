@@ -6,6 +6,12 @@
 # production
 /build
 
+# service worker
+/public/service-worker.js
+/public/service-worker.js.map
+/public/workbox-*.js
+/public/workbox-*.js.map
+
 # https dev certificates
 *.pem
 

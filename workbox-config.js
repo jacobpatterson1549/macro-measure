@@ -1,9 +1,9 @@
 const WorkboxPlugin = require('workbox-webpack-plugin');
 
 module.exports = {
-  globDirectory: 'build',
+  globDirectory: 'public',
   globPatterns: [
     '**/*',
   ],
-  swDest: 'build/service-worker.js',
+  swDest: 'public/service-worker.js',
 };
