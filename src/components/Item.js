@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import './Item.css';
 import { Map } from './Map';
@@ -9,8 +9,8 @@ import { Form, SubmitInput, Input, NameInput, ButtonInput } from './Form';
 import { View } from '../utils/View';
 
 export const newItem = (latLng) => {
-    const lat = latLng ? latLng.lat : 0;
-    const lng = latLng ? latLng.lng : 0;
+    const lat = latLng ? latLng.lat : '[current]';
+    const lng = latLng ? latLng.lng : '[current]';
     const item = {
         name: '[New Item]',
         lat: lat,
@@ -30,7 +30,7 @@ export const Item = ({
     highAccuracyGPS, // enables the GPS to be more precise
     createStart, // function called to create a new item
     createEnd, // (name, lat, lng): function called to create an item
-    read, //(delta): function called to read the item at the offset from the index
+    read, // function called to read the item at the specified index
     readItems, // function called to go back to the item list
     updateStart, // function to begin updating the item
     updateEnd, // function to finish updating the item
@@ -39,28 +39,29 @@ export const Item = ({
 }) => {
 
     const [moveAmount, setMoveAmount] = useLocalStorage('move-amount', 1);
-    const [item, setItem] = useState({ name: name, lat: lat, lng: lng }); // TODO: use better naming: formItem ?
+    const [formName, setFormName] = useState(name);
+    const [formLat, setFormLat] = useState(lat);
+    const [formLng, setFormLng] = useState(lng);
+    useEffect(() => setFormName(name), [name]);
+    useEffect(() => setFormLat(lat), [lat]);
+    useEffect(() => setFormLng(lng), [lng]);
 
-    const _createStart = (latLng) => {
-        setItem(newItem(latLng));
+    const _createStart = () => {
         createStart();
     };
-    const _createEnd = () => {
-        createEnd(item.name, item.lat, item.lng);
+    const _createEndFn = (latLng) => () => {
+        createEnd(formName, latLng.lat, latLng.lng);
     };
     const _read = (delta) => {
-        setItem(items[index + delta]);
         read(index + delta);
     };
     const _updateStart = () => {
-        setItem(items[index]);
         updateStart(index);
     };
     const _updateEnd = () => {
-        updateEnd(index, item.name, item.lat, item.lng);
+        updateEnd(index, formName, formLat, formLng);
     };
     const _deleteStart = () => {
-        setItem(items[index]);
         deleteStart(index);
     };
     const _deleteEnd = () => {
@@ -68,12 +69,12 @@ export const Item = ({
     };
 
     const _updateName = (name) => {
-        setItem(Object.assign({}, item, { name: name }));
+        setFormName(name)
     };
     const _updateLatLng = (heading) => () => {
-        const item2 = moveLatLngTo(item, moveAmount, distanceUnit, heading);
-        const item3 = Object.assign({}, item, item2);
-        setItem(item3);
+        const formLatLng = moveLatLngTo({ lat: formLat, lng: formLng }, moveAmount, distanceUnit, heading);
+        setFormLat(formLatLng.lat);
+        setFormLng(formLatLng.lng);
     };
     const _updateMoveAmount = (event) => {
         const value = event.target.value;
@@ -141,15 +142,21 @@ export const Item = ({
         if (!hasGeolocation) {
             return (<p>[Map disabled]</p>);
         }
+        const [itemLat, itemLng]
+            = (view === View.Item_Create) ? (latLng ? [latLng.lat, latLng.lng] : [null, null])
+            : (view === View.Item_Update) ? [formLat, formLng]
+            : [lat, lng];
+        const itemLatLng = { lat: itemLat, lng: itemLng };
         const [heading, centerLatLng, deviceLatLng] = (distanceHeading)
-            ? [distanceHeading.heading, moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading), latLng]
-            : [0, item, null];
+            ? [distanceHeading.heading, moveLatLngTo(itemLatLng, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading), latLng]
+            : [0, itemLatLng, null];
         return (
             <Map
                 heading={heading}
                 centerLatLng={centerLatLng}
-                itemName={name}
-                itemLatLng={item}
+                name={name}
+                lat={itemLat}
+                lng={itemLng}
                 deviceLatLng={deviceLatLng}
             />
         );
@@ -162,10 +169,10 @@ export const Item = ({
         switch (view) {
             case View.Item_Create:
             case View.Item_Update:
-                const [_onSubmit, _disabled, _caption, _updateIndex, _cancel, _submitValue] = (view === View.Item_Create)
+                const [_onSubmit, _disabled, _updateLatLngDisabled, _caption, _updateIndex, _cancel, _submitValue] = (view === View.Item_Create)
                     // TODO: cancel for View.Item_Create should be similar to when delete is successful
-                    ? [_createEnd, !latLng, 'Create Item', -1, readItems, 'Create Item']
-                    : [_updateEnd, false, ('Update ' + name), index, () => _read(0), 'Update Item'];
+                    ? [_createEndFn(latLng), !latLng, true, 'Create Item', -1, readItems, 'Create Item']
+                    : [_updateEnd, false, false, ('Update ' + name), index, () => _read(0), 'Update Item'];
                 return (
                     <Form onSubmit={_onSubmit}>
                         <fieldset disabled={_disabled}>
@@ -173,7 +180,7 @@ export const Item = ({
                             <label>
                                 <span>Name</span>
                                 <NameInput
-                                    value={item.name}
+                                    value={formName}
                                     values={items}
                                     onChange={_updateName}
                                     updateIndex={_updateIndex}
@@ -181,15 +188,15 @@ export const Item = ({
                             </label>
                             <label>
                                 <span>Latitude</span>
-                                <ButtonInput onClick={_updateLatLng(Heading.N)} value="+(N)" />
-                                <ButtonInput onClick={_updateLatLng(Heading.S)} value="-(S)" />
-                                <input type="number" value={item.lat} disabled />
+                                <ButtonInput onClick={_updateLatLng(Heading.N)} value="+(N)" disabled={_updateLatLngDisabled} />
+                                <ButtonInput onClick={_updateLatLng(Heading.S)} value="-(S)" disabled={_updateLatLngDisabled} />
+                                <input type="text" value={formLat} disabled title="latitude" />
                             </label>
                             <label>
                                 <span>Longitude</span>
-                                <ButtonInput onClick={_updateLatLng(Heading.W)} value="-(W)" />
-                                <ButtonInput onClick={_updateLatLng(Heading.E)} value="+(E)" />
-                                <input type="number" value={item.lng} disabled />
+                                <ButtonInput onClick={_updateLatLng(Heading.W)} value="-(W)" disabled={_updateLatLngDisabled} />
+                                <ButtonInput onClick={_updateLatLng(Heading.E)} value="+(E)" disabled={_updateLatLngDisabled} />
+                                <input type="text" value={formLng} disabled title="longitude" />
                             </label>
                             <label>
                                 <span>Move Amount ({distanceUnit})</span>
@@ -207,7 +214,7 @@ export const Item = ({
                 return (
                     <Form onSubmit={_deleteEnd}>
                         <fieldset>
-                            <legend>Delete {item.name}</legend>
+                            <legend>Delete {name}</legend>
                             <div>
                                 <ButtonInput value="Cancel" onClick={_cancelDelete} />
                                 <SubmitInput value={"Delete item"} />
@@ -239,7 +246,7 @@ export const Item = ({
             render={geolocation => {
 
                 const distanceHeading = (view === View.Item_Read && geolocation.latLng !== null)
-                    ? getDistanceHeading(item, geolocation.latLng, distanceUnit)
+                    ? getDistanceHeading({ lat: lat, lng: lng }, geolocation.latLng, distanceUnit)
                     : null;
 
                 return (

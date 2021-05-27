@@ -23,9 +23,6 @@ export const Geolocation = ({
             watchID.current = null
         });
         const success = async (geolocationPosition) => {
-            if (view !== View.Item_Read) {
-                stopWatch();
-            }
             const position = {
                 lat: geolocationPosition.coords.latitude,
                 lng: geolocationPosition.coords.longitude,

@@ -101,18 +101,6 @@ describe('Geolocation', () => {
         await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
         expect(roundLatLng).toBeCalledWith({ lat: 7, lng: -9 });
     });
-    it('should cancel watch and only set first position when view is item_create', async () => {
-        navigator.geolocation.watchPosition = jest.fn().mockReturnValue(75);
-        render(<Geolocation
-            view={View.Item_Create}
-            render={position => <MockApp position={position} />}
-        />);
-        const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
-        navigator.geolocation.clearWatch = jest.fn();
-        await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
-        expect(navigator.geolocation.clearWatch.mock.calls[0]).toEqual([75]);
-        expect(screen.queryByTitle('position').textContent).toBe("[7,-9]"); // should still be set
-    });
     it('should clear position when error occurs', async () => {
         navigator.geolocation.watchPosition = jest.fn();
         render(<Geolocation

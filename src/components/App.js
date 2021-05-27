@@ -129,14 +129,14 @@ export const App = () => {
       case View.Item_Update:
       case View.Item_Delete:
         const items = groups ? groups[groupIndex].items : [];
-        const defaultItem = (view === View.Item_Create) ? newItem(null) : items[itemIndex];
+        const item = (view === View.Item_Create) ? newItem(null) : items[itemIndex];
         return (<Item
           view={view}
           items={items}
           index={itemIndex}
-          name={defaultItem.name}
-          lat={defaultItem.lat}
-          lng={defaultItem.lng}
+          name={item.name}
+          lat={item.lat}
+          lng={item.lng}
           distanceUnit={distanceUnit}
           highAccuracyGPS={highAccuracyGPS}
           createStart={createItemStart}

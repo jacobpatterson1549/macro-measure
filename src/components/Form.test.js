@@ -129,6 +129,11 @@ describe('ButtonInput', () => {
         fireEvent(element, event);
         expect(event.defaultPrevented).toBeTruthy();
     });
+    it.each([true, false])('should set disabled when disabled=%s', (disabled) => {
+        render(<ButtonInput disabled={disabled} />);
+        const element = screen.getByRole('button');
+        expect(element.disabled).toBe(disabled);
+    });
 });
 
 describe('SubmitInput', () => {

@@ -58,11 +58,13 @@ export const NameInput = ({
 export const ButtonInput = ({
     value, // the text to display on the button
     onClick, // the action to perform when clicked
+    disabled, // prevents onClick
 }) => (
     <input
         type="button"
         value={value}
         onClick={preventDefault(onClick)}
+        disabled={disabled}
     />
 );
 

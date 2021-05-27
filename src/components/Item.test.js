@@ -73,6 +73,17 @@ describe('Item', () => {
                 expect(screen.queryByText(expected)).toBeInTheDocument();
             });
         });
+        describe('update action', () => {
+            it('should set form item latLng', () => {
+                render(<Item
+                    view={View.Item_Update}
+                    lat={1}
+                    lng={2}
+                />);
+                expect(screen.getByTitle('latitude').value).toBe('1');
+                expect(screen.getByTitle('longitude').value).toBe('2');
+            });
+        });
     });
     describe('getMap', () => {
         let oldGeolocation;
@@ -86,10 +97,13 @@ describe('Item', () => {
             render(<Item />);
             expect(screen.queryByRole('img')).toBeInTheDocument();
         });
-        it('should have map', () => {
+        it('should have map', async () => {
+            navigator.geolocation.watchPosition = jest.fn();
             render(<Item
-                currentLatLng={{ lat: 1, lng: 2 }}
+                view={View.Item_Read}
             />);
+            const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
+            await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
             expect(screen.queryByRole('img')).toBeInTheDocument();
         });
         it('should say map disabled when it does not have geolocation', () => {
