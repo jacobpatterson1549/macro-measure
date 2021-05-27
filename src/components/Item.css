@@ -34,7 +34,7 @@
 }
 
 .Item-Header > *:first-child > * {
-  font-size: 10vw;
+  font-size: 15vmin;
 }
 
 .Item-Header .name {
