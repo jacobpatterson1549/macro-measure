@@ -1,4 +1,3 @@
-
 /node_modules
 
 # testing
@@ -18,14 +17,5 @@
 .env.production.local
 
 # npm files
-package-lock.json
 npm-debug.log*
 npm-error.log*
-# pnpm files
-pnpm-lock.yaml
-.pnpm-debug.log*
-.pnpm-error.log*
-# yarn files
-yarn.lock
-yarn-debug.log*
-yarn-error.log*
