@@ -2,12 +2,18 @@ import { moveTo, headingDistanceTo } from 'geolocation-utils';
 
 // TODO: Rename to Location.js
 export const moveLatLngTo = (latLng, distance, unit, heading) => {
+    if (!isValid(latLng)) {
+        return {};
+    }
     const amountMeters = _toMeters(distance, unit);
     const headingDistance = { heading: heading, distance: amountMeters };
     return roundLatLng(moveTo(latLng, headingDistance));
 };
 
 export const getDistanceHeading = (latLng1, latLng2, unit) => {
+    if (!isValid(latLng1) || !isValid(latLng2)) {
+        return {};
+    }
     const distanceHeading = headingDistanceTo(latLng1, latLng2);
     const distance = _round(_fromMeters(distanceHeading.distance, unit), 1);
     return {
@@ -15,6 +21,10 @@ export const getDistanceHeading = (latLng1, latLng2, unit) => {
         heading: _round(distanceHeading.heading, 1),
     };
 };
+
+const isValid = (latLng) => (
+    latLng && latLng.lat !== undefined && latLng.lng !== undefined
+);
 
 const _round = (value, numDigits) => {
     const m = Math.pow(10, numDigits);

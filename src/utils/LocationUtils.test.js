@@ -23,6 +23,27 @@ describe('LatLng calculations', () => {
             expect(actualDistanceHeading.distance).toBeCloseTo(expectedDistance, 1);
             expect(actualDistanceHeading.heading).toBeCloseTo(expectedHeading, 1);
         });
+    describe('isValid', () => {
+        const badMoveLatLng = [
+            undefined,
+            {},
+            { lat: 1 },
+            { lng: 1 },
+        ];
+        const [unit, distance, heading] = ['m', 0, 0];
+        it.each(badMoveLatLng)('should return empty object when latLng is %s', (latLng) => {
+            const actual = moveLatLngTo(latLng, distance, unit, heading);
+            expect(actual).toStrictEqual({});
+        });
+        const badDistanceHeadingLatLngPairs = [
+            [undefined, {lat: 1, lng: 1}],
+            [{lat: 1, lng: 1}, undefined],
+        ];
+        it.each(badDistanceHeadingLatLngPairs)('should return empty object when latLng1 is %s and latLang2 is %s', (latLng1, latLng2) => {
+            const actual = getDistanceHeading(latLng1, latLng2, unit);
+            expect(actual).toStrictEqual({});
+        });
+    })
 });
 
 describe('meters conversions', () => {
