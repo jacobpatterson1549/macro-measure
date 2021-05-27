@@ -231,7 +231,7 @@ export const Item = ({
                         <span>Getting location...</span>
                     );
                 }
-                const _distance = (distanceHeading) ? String(distanceHeading.distance) : '?';
+                const _distance = String(distanceHeading.distance);
                 return (
                     <div className="distance">
                         <span>{_distance}</span>
