@@ -16,7 +16,7 @@ export const Header = ({
     groups, // the groups with name properties
     groupIndex, // the group being vied
 }) => {
-    const groupName = showGroupNameViews.includes(view)
+    const groupName = (showGroupNameViews.includes(view) && groups.length !== 0)
         ? groups[groupIndex].name
         : '[Groups]';
     const headerItem = (itemName, itemTitle, itemView) => {

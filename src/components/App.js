@@ -130,8 +130,8 @@ export const App = () => {
       case View.Item_Read:
       case View.Item_Update:
       case View.Item_Delete:
-        const items = groups ? groups[groupIndex].items : [];
-        const item = (view === View.Item_Create) ? newItem(null) : items[itemIndex];
+        const items = (groups.length !== 0) ? groups[groupIndex].items : [];
+        const item = (view === View.Item_Create || items.length === 0) ? newItem(null) : items[itemIndex];
         return (<Item
           view={view}
           items={items}
@@ -151,7 +151,7 @@ export const App = () => {
           deleteEnd={deleteItemEnd}
         />);
       case View.Items_Read:
-        const values = groups ? groups[groupIndex].items : [];
+        const values = (groups.length !== 0) ? groups[groupIndex].items : [];
         return (
           <NameList className="ItemList"
             type="item"

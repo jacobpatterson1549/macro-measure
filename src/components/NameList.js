@@ -51,12 +51,13 @@ export const NameList = ({
     };
 
     const getView = () => {
+        const value = (values.length !== 0) ? values[index] : {};
         switch (view) {
             case toCreateView(type):
             case toUpdateView(type):
                 const [_onSubmit, _caption, _submitValue, _updateIndex] = (view === toCreateView(type))
                     ? [_createEnd, ('Create ' + type), ('Create ' + type), -1]
-                    : [_updateEnd, ('Update ' + values[index].name), ('Update ' + type), index];
+                    : [_updateEnd, ('Update ' + value.name), ('Update ' + type), index];
                 return (
                     <Form onSubmit={_onSubmit}>
                         <fieldset>
@@ -78,11 +79,10 @@ export const NameList = ({
                     </Form>
                 );
             case toDeleteView(type):
-                const deleteName = values[index].name;
                 return (
                     <Form onSubmit={_deleteEnd}>
                         <fieldset>
-                            <legend>Delete {deleteName}?</legend>
+                            <legend>Delete {value.name}?</legend>
                             <div>
                                 <ButtonInput value="Cancel" onClick={cancel} />
                                 <SubmitInput value={'Delete ' + type} />
