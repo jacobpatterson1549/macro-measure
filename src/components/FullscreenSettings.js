@@ -40,7 +40,7 @@ export const FullscreenSettings = ({
                 <span>Fullscreen:</span>
                 <input type="checkbox" checked={fullscreen} onChange={_toggleFullscreen} />
             </label>
-            {process.env.REACT_APP_ENABLE_A2HS && a2hs}
+            {a2hs}
         </fieldset>
     );
 }

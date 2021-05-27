@@ -38,7 +38,6 @@ describe('fullscreen', () => {
 });
 
 describe('add to home screen (a2hs)', () => {
-    beforeAll(() => process.env.REACT_APP_ENABLE_A2HS = true); // TODO: DELETEME when removing feature flag
     describe('state', () => {
         it('should show install button when is truthy', () => {
             render(<FullscreenSettings installPromptEvent={{}} />);
