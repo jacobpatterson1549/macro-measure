@@ -1,4 +1,4 @@
-import { moveLatLngTo, getDistanceHeading, _toMeters, _fromMeters } from './LocationUtils';
+import { moveLatLngTo, getDistanceHeading, _toMeters, _fromMeters } from './Geolocation';
 
 describe('LatLng calculations', () => {
     const distanceTests = [

@@ -2,10 +2,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 
 import { Geolocation } from './Geolocation';
 
-import { roundLatLng } from '../utils/LocationUtils';
+import { roundLatLng } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
-jest.mock('../utils/LocationUtils');
+jest.mock('../utils/Geolocation');
 
 beforeEach(() => {
     roundLatLng.mockImplementation((latLng) => latLng);

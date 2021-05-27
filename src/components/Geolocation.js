@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 
-import { roundLatLng } from '../utils/LocationUtils';
+import { roundLatLng } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
 const locationViews = [View.Item_Read, View.Item_Create];

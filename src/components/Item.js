@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 
 import './Item.css';
 import { Map } from './Map';
-import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/LocationUtils';
-import { useLocalStorage } from '../utils/LocalStorage';
 import { Geolocation } from './Geolocation';
 import { Form, SubmitInput, Input, NameInput, ButtonInput } from './Form';
+
+import { useLocalStorage } from '../utils/LocalStorage';
+import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
 export const newItem = (latLng) => {
