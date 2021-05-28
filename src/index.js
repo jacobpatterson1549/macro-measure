@@ -1,9 +1,7 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 
 import './index.css';
 
-import { ErrorBoundary } from './components/ErrorBoundary';
 import { App } from './components/App';
 
 if ('serviceWorker' in navigator) {
@@ -13,11 +11,4 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-ReactDOM.render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <App />
-    </ErrorBoundary>
-  </React.StrictMode>,
-  document.getElementById('root')
-);
+ReactDOM.render(<App />, document.getElementById('root'));

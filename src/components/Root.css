@@ -1,4 +1,4 @@
-.App {
+.Root {
   background-color: lawngreen;
   padding-left:  1vw;
   padding-right: 1vw;
@@ -6,11 +6,11 @@
   color: red;
 }
 
-.App > *:first-child {
+.Root > *:first-child {
   height: 10vh;
 }
 
-.App > *:not(:first-child) {
+.Root > *:not(:first-child) {
   height: 85vh;
   display: flex;
   flex-direction: column;

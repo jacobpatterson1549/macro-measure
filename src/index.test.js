@@ -1,5 +1,7 @@
 import ReactDOM from 'react-dom';
 
+import { App } from './components/App';
+
 jest.mock('react-dom', () => ({ render: jest.fn() }));
 jest.spyOn(window, 'addEventListener');
 
@@ -12,7 +14,7 @@ describe('index', () => {
         rootElement.setAttribute('id', 'root');
         document.body.appendChild(rootElement);
         require('./index.js');
-        expect(ReactDOM.render).toHaveBeenCalledWith(expect.anything(), rootElement);
+        expect(ReactDOM.render).toHaveBeenCalledWith(<App />, rootElement);
     });
     describe('service worker registration', () => {
         it('should NOT add listener to register service worker when NOT in navigator', () => {
@@ -24,7 +26,7 @@ describe('index', () => {
             navigator.serviceWorker = { register: jest.fn() };
             require('./index.js');
             expect(window.addEventListener).toBeCalledTimes(1);
-            expect(window.addEventListener).toBeCalledWith('load', expect.anything());
+            expect(window.addEventListener.mock.calls[0][0]).toBe('load');
         });
         it('should register service worker when in navigator when load', () => {
             navigator.serviceWorker = { register: jest.fn() };
