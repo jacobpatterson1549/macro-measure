@@ -26,10 +26,6 @@ export const TextInput = ({
     />
 );
 
-const _onNumberChange = (onChange) => (event) => {
-    const number = event.target.value || 0;
-    onChange(number);
-};
 export const NumberInput = ({
     value, // the initial value of the input
     onChange, // the function to executed when the value changes
@@ -39,7 +35,7 @@ export const NumberInput = ({
     <Input
         type="number"
         value={value}
-        onChange={_onNumberChange(onChange)}
+        onChange={_onTextChange(onChange)}
         min={min}
         max={max}
     />
