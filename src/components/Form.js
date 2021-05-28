@@ -67,7 +67,10 @@ export const ButtonInput = ({
     />
 );
 
-const _onChange = (setChecked) => (event) => setChecked(event.target.checked)
+const _onCheckboxChange = (onChange) => (event) => {
+    const checked = event.target.checked;
+    onChange(checked);
+};
 export const CheckboxInput = ({
     checked, // boolean indicating if it is currently checked
     onChange, // the action to perform when clicked.  The first parameter is a boolean indicating the new checked state
@@ -75,7 +78,23 @@ export const CheckboxInput = ({
     <input
         type="checkbox"
         checked={checked}
-        onChange={_onChange(onChange)}
+        onChange={_onCheckboxChange(onChange)}
+    />
+);
+
+const _onFileChange = (onChange) => (event) => {
+    const file = event.target.files[0];
+    onChange(file);
+};
+export const FileInput = ({
+    accept, // a csv string of extensions or mime types to make visible
+    onChange, // the action to perform when a single file is picked.  The first parameter is the file
+}) => (
+    <input
+        type="file"
+        role="button"
+        accept={accept}
+        onChange={_onFileChange(onChange)}
     />
 );
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { ButtonInput } from './Form';
+import { ButtonInput, FileInput } from './Form';
 
 import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 
@@ -26,8 +26,7 @@ export const LocalStorageSettings = () => {
         setExportLink(anchor);
     };
 
-    const _importStorage = async (event) => {
-        const file = event.target.files[0];
+    const _importStorage = async (file) => {
         const allJSON = await file.text();
         clearLocalStorage();
         setLocalStorage(allJSON);
@@ -53,7 +52,7 @@ export const LocalStorageSettings = () => {
             </label>
             <label>
                 <span>Import ALL Saved Data:</span>
-                <input type="file" accept={jsonMimeType} onChange={_importStorage} />
+                <FileInput accept={jsonMimeType} onChange={_importStorage} />
             </label>
             <label>
                 <span>Clear ALL Saved Data:</span>

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 
-import { Form, SubmitInput, Input, NameInput, ButtonInput, CheckboxInput } from './Form';
+import { Form, SubmitInput, Input, NameInput, ButtonInput, CheckboxInput, FileInput } from './Form';
 
 describe('Input', () => {
     it("should have text type", () => {
@@ -157,6 +157,28 @@ describe('CheckboxInput', () => {
         render(<CheckboxInput checked={checked} onChange={onChange} />);
         const element = screen.getByRole('checkbox');
         element.click();
+        expect(onChange).toBeCalledWith(expected);
+    });
+});
+
+describe('FileInput', () => {
+    it('should have file type', () => {
+        render(<FileInput />);
+        const element = screen.getByRole('button');
+        expect(element.type).toBe('file');
+    });
+    it('should set accept', () => {
+        const expected = "[mock MIME type]";
+        render(<FileInput accept={expected} />);
+        const element = screen.getByRole('button');
+        expect(element.accept).toBe(expected);
+    });
+    it('should call onChange with first file when changed', () => {
+        const expected = 'file A';
+        const onChange = jest.fn();
+        render(<FileInput onChange={onChange} />);
+        const element = screen.getByRole('button');
+        fireEvent.change(element, { target: { files: [expected] } });
         expect(onChange).toBeCalledWith(expected);
     });
 });
