@@ -4,7 +4,7 @@ import './Item.css';
 
 import { Map } from './Map';
 import { Geolocation } from './Geolocation';
-import { Form, SubmitInput, Input, NameInput, ButtonInput } from './Form';
+import { Form, SubmitInput, NameInput, TextInput, NumberInput, ButtonInput } from './Form';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/Geolocation';
@@ -78,10 +78,6 @@ export const Item = ({
         setFormLat(formLatLng.lat);
         setFormLng(formLatLng.lng);
     };
-    const _updateMoveAmount = (event) => {
-        const value = event.target.value;
-        setMoveAmount(value || 1);
-    };
 
     const getHeader = (latLng) => {
         const _prevDisabled = index <= 0;
@@ -146,8 +142,8 @@ export const Item = ({
         }
         const [itemLat, itemLng]
             = (view === View.Item_Create) ? (latLng ? [latLng.lat, latLng.lng] : [null, null])
-            : (view === View.Item_Update) ? [formLat, formLng]
-            : [lat, lng];
+                : (view === View.Item_Update) ? [formLat, formLng]
+                    : [lat, lng];
         const itemLatLng = { lat: itemLat, lng: itemLng };
         const [heading, centerLatLng, deviceLatLng] = (distanceHeading)
             ? [distanceHeading.heading, moveLatLngTo(itemLatLng, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading), latLng]
@@ -192,17 +188,17 @@ export const Item = ({
                                 <span>Latitude</span>
                                 <ButtonInput onClick={_updateLatLng(Heading.N)} value="+(N)" disabled={_updateLatLngDisabled} />
                                 <ButtonInput onClick={_updateLatLng(Heading.S)} value="-(S)" disabled={_updateLatLngDisabled} />
-                                <input type="text" value={formLat} disabled title="latitude" />
+                                <TextInput value={formLat} disabled />
                             </label>
                             <label>
                                 <span>Longitude</span>
                                 <ButtonInput onClick={_updateLatLng(Heading.W)} value="-(W)" disabled={_updateLatLngDisabled} />
                                 <ButtonInput onClick={_updateLatLng(Heading.E)} value="+(E)" disabled={_updateLatLngDisabled} />
-                                <input type="text" value={formLng} disabled title="longitude" />
+                                <TextInput value={formLng} disabled />
                             </label>
                             <label>
                                 <span>Move Amount ({distanceUnit})</span>
-                                <Input type="number" value={moveAmount} onChange={_updateMoveAmount} min="0" max="1000" required={true} />
+                                <NumberInput value={moveAmount} onChange={setMoveAmount} min="0" max="1000" />
                             </label>
                             <div>
                                 <ButtonInput value="cancel" onClick={_cancel} />

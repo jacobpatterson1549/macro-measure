@@ -77,11 +77,11 @@ describe('Item', () => {
             it('should set form item latLng', () => {
                 render(<Item
                     view={View.Item_Update}
-                    lat={1}
-                    lng={2}
+                    lat={1111}
+                    lng={2222}
                 />);
-                expect(screen.getByTitle('latitude').value).toBe('1');
-                expect(screen.getByTitle('longitude').value).toBe('2');
+                expect(screen.getByDisplayValue('1111')).toBeInTheDocument();
+                expect(screen.getByDisplayValue('2222')).toBeInTheDocument();
             });
         });
     });

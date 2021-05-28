@@ -1,23 +1,49 @@
 import './Form.css';
 
 const _onFocus = (event) => event.target.select();
-export const Input = ({
-    type, // the type of input
+const Input = (props) => ( // private - do not export
+    <input
+        {...props}
+        onFocus={_onFocus}
+        required={true}
+    />
+);
+
+const _onTextChange = (onChange) => (event) => {
+    const value = event.target.value;
+    onChange(value);
+};
+export const TextInput = ({
     value, // the initial value of the input
     onChange, // the function to executed when the value changes
-    min, // the minimum value for the input (type=number only)
-    max, // the maximum value for the input (type=number only)
-    required, // a boolean indicating if the input is required to submit the form
+    disabled, // prevents interaction if specified
 }) => (
 
-    <input
-        type={type}
+    <Input
+        type="text"
         value={value}
+        onChange={_onTextChange(onChange)}
+        disabled={disabled}
+    />
+);
+
+const _onNumberChange = (onChange) => (event) => {
+    const number = event.target.value || 0;
+    onChange(number);
+};
+export const NumberInput = ({
+    value, // the initial value of the input
+    onChange, // the function to executed when the value changes
+    min, // the minimum value for the input
+    max, // the maximum value for the input
+}) => (
+
+    <Input
+        type="number"
+        value={value}
+        onChange={_onNumberChange(onChange)}
         min={min}
         max={max}
-        onChange={onChange}
-        onFocus={_onFocus}
-        required={required}
     />
 );
 
@@ -30,29 +56,25 @@ const uniqueName = (name, nameObjects, updateIndex) => {
     }
     return true;
 };
-
+const _onNameChange = (onChange, values, updateIndex) => (event) => {
+    const nameInput = event.target;
+    const name = nameInput.value;
+    const isUniqueName = uniqueName(name, values, updateIndex);
+    nameInput.setCustomValidity(isUniqueName ? '' : 'duplicate name');
+    onChange(name);
+};
 export const NameInput = ({
     value, // the value of the name
     values, // the array of existing objects with name properties
     onChange, // the function to change the value of the name
     updateIndex, // the index of the item being updated - provide a negative number if not updating any index
-}) => {
-    const updateName = (event) => {
-        const nameInput = event.target;
-        const name = nameInput.value;
-        const isUniqueName = uniqueName(name, values, updateIndex);
-        nameInput.setCustomValidity(isUniqueName ? '' : 'duplicate name');
-        onChange(name);
-    };
-    return (
-        <Input
-            type="text"
-            value={value}
-            onChange={updateName}
-            required={true}
-        />
-    );
-};
+}) => (
+    <Input
+        type="text"
+        value={value}
+        onChange={_onNameChange(onChange, values, updateIndex)}
+    />
+);
 
 export const ButtonInput = ({
     value, // the text to display on the button
@@ -116,9 +138,7 @@ export const Form = ({
     </form>
 );
 
-const preventDefault = (fn) => {
-    return (event) => {
-        event.preventDefault();
-        fn();
-    };
+const preventDefault = (fn) => (event) => {
+    event.preventDefault();
+    fn();
 };
