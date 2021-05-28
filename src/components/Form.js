@@ -120,6 +120,18 @@ export const FileInput = ({
     />
 );
 
+export const SelectInput = ({
+    value, // the currently selected value
+    values, // the array of available values, must be non-empty.  The first is selected if the specified value is not present.
+    onChange, // the action to perform when a new value is selected, called with the new value
+}) => (
+    <select value={value} onChange={_onTextChange(onChange)}>
+        {values.map((val) => (
+            <option key={val}>{val}</option>
+        ))}
+    </select>
+);
+
 export const SubmitInput = ({
     value, // the value of the submit button
 }) => (

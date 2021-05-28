@@ -1,4 +1,4 @@
-import { CheckboxInput } from './Form';
+import { CheckboxInput, SelectInput } from './Form';
 
 const distanceUnits = [
     'm',
@@ -15,22 +15,16 @@ export const GPSSettings = ({
     setDistanceUnit, // function to set the distance unit
     highAccuracyGPS, // enables the GPS to be more precise
     setHighAccuracyGPS, // function to toggle using high GPS accuracy
-}) => {
-    const _distanceUnits = distanceUnits.map((unit) => (<option key={unit}>{unit}</option>));
-    const _setDistanceUnit = (event) => setDistanceUnit(event.target.value);
-    return (
-        <fieldset>
-            <legend>GPS Settings</legend>
-            <label>
-                <span>Distance Unit:</span>
-                <select value={distanceUnit} onChange={_setDistanceUnit}>
-                    {_distanceUnits}
-                </select>
-            </label>
-            <label>
-                <span>High Accuracy GPS:</span>
-                <CheckboxInput checked={highAccuracyGPS} onChange={setHighAccuracyGPS} />
-            </label>
-        </fieldset>
-    );
-};
+}) => (
+    <fieldset>
+        <legend>GPS Settings</legend>
+        <label>
+            <span>Distance Unit:</span>
+            <SelectInput value={distanceUnit} values={distanceUnits} onChange={setDistanceUnit} />
+        </label>
+        <label>
+            <span>High Accuracy GPS:</span>
+            <CheckboxInput checked={highAccuracyGPS} onChange={setHighAccuracyGPS} />
+        </label>
+    </fieldset>
+);

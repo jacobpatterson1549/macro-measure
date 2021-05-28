@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 
-import { Form, SubmitInput, Input, TextInput, NumberInput, NameInput, ButtonInput, CheckboxInput, FileInput } from './Form';
+import { Form, SubmitInput, TextInput, NumberInput, NameInput, ButtonInput, CheckboxInput, FileInput, SelectInput } from './Form';
 
 describe('TextInput', () => {
     it('should have text type', () => {
@@ -229,6 +229,37 @@ describe('FileInput', () => {
         expect(onChange).toBeCalledWith(expected);
     });
 });
+
+describe('SelectInput', () => {
+    it('should have value', () => {
+        const expected = 'test5';
+        render(<SelectInput value={expected} values={['test5']} />);
+        const element = screen.getByRole('combobox');
+        expect(element.value).toBe(expected);
+    });
+    it('should have value when multiple exist', () => {
+        const expected = 'test5b';
+        render(<SelectInput value={expected} values={['test5a', 'test5b', 'test5c']} />);
+        const element = screen.getByRole('combobox');
+        expect(element.value).toBe(expected);
+    });
+    it('should have first value when multiple exist and initial value is not in values', () => {
+        const value = 'test5d';
+        const expected = 'test5a';
+        render(<SelectInput value={value} values={['test5a', 'test5b', 'test5c']} />);
+        const element = screen.getByRole('combobox');
+        expect(element.value).toBe(expected);
+    });
+    it('should call onChange', () => {
+        const value = 'test5a';
+        const expected = 'test5b';
+        const onChange = jest.fn();
+        render(<SelectInput value={value} values={['test5a', 'test5b', 'test5c']} onChange={onChange} />);
+        const element = screen.getByRole('combobox');
+        fireEvent.change(element, { target: { value: expected } });
+        expect(onChange).toBeCalledWith(expected);
+    });
+})
 
 describe('SubmitInput', () => {
     it('should have submit type', () => {
