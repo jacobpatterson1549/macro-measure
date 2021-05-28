@@ -11,7 +11,7 @@ const geolocation = () => window.navigator.geolocation;
 export const Geolocation = ({
     render,
     view, // the current page
-    highAccuracyGPS, // enables the GPS to be more precise // TODO: rename all these fields to enableHighAccuracy
+    highAccuracyGPS, // enables the GPS to be more precise
 }) => {
 
     const watchID = useRef(null);
