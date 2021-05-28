@@ -1,7 +1,6 @@
 import './Form.css';
 
-const onFocus = (event) => event.target.select();
-
+const _onFocus = (event) => event.target.select();
 export const Input = ({
     type, // the type of input
     value, // the initial value of the input
@@ -17,7 +16,7 @@ export const Input = ({
         min={min}
         max={max}
         onChange={onChange}
-        onFocus={onFocus}
+        onFocus={_onFocus}
         required={required}
     />
 );
@@ -65,6 +64,18 @@ export const ButtonInput = ({
         value={value}
         onClick={preventDefault(onClick)}
         disabled={disabled}
+    />
+);
+
+const _onChange = (setChecked) => (event) => setChecked(event.target.checked)
+export const CheckboxInput = ({
+    checked, // boolean indicating if it is currently checked
+    onChange, // the action to perform when clicked.  The first parameter is a boolean indicating the new checked state
+}) => (
+    <input
+        type="checkbox"
+        checked={checked}
+        onChange={_onChange(onChange)}
     />
 );
 

@@ -1,4 +1,4 @@
-import { ButtonInput } from './Form';
+import { ButtonInput, CheckboxInput } from './Form';
 
 export const FullscreenSettings = ({
     fullscreen, // a boolean indicating if the window is fullscreen
@@ -12,7 +12,7 @@ export const FullscreenSettings = ({
     const exitFullscreen = () => {
         document.exitFullscreen();
     }
-    const _toggleFullscreen = (event) => (event.target.checked) ? requestFullscreen() : exitFullscreen();
+    const _toggleFullscreen = (checked) => (checked) ? requestFullscreen() : exitFullscreen();
 
     const _promptInstall = async () => {
         installPromptEvent.prompt();
@@ -38,7 +38,7 @@ export const FullscreenSettings = ({
             <legend>Fullscreen Settings</legend>
             <label>
                 <span>Fullscreen:</span>
-                <input type="checkbox" checked={fullscreen} onChange={_toggleFullscreen} />
+                <CheckboxInput checked={fullscreen} onChange={_toggleFullscreen} />
             </label>
             {a2hs}
         </fieldset>

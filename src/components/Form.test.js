@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 
-import { Form, SubmitInput, Input, NameInput, ButtonInput } from './Form';
+import { Form, SubmitInput, Input, NameInput, ButtonInput, CheckboxInput } from './Form';
 
 describe('Input', () => {
     it("should have text type", () => {
@@ -108,6 +108,11 @@ describe('NameInput', () => {
 });
 
 describe('ButtonInput', () => {
+    it('should have button type', () => {
+        render(<ButtonInput />);
+        const element = screen.getByRole('button');
+        expect(element.type).toBe('button');
+    });
     it('should have value', () => {
         const expected = 'test4';
         render(<ButtonInput value={expected} />);
@@ -136,7 +141,32 @@ describe('ButtonInput', () => {
     });
 });
 
+describe('CheckboxInput', () => {
+    it('should have checkbox type', () => {
+        render(<CheckboxInput />);
+        const element = screen.getByRole('checkbox');
+        expect(element.type).toBe('checkbox');
+    });
+    it.each([true, false])('should handle checked=%s', (expected) => {
+        render(<CheckboxInput checked={expected} />);
+        const element = screen.getByRole('checkbox');
+        expect(element.checked).toBe(expected);
+    });
+    it.each([[true, false], [false, true]])('should call onChange with %s when checked=%s and changed', (expected, checked) => {
+        const onChange = jest.fn();
+        render(<CheckboxInput checked={checked} onChange={onChange} />);
+        const element = screen.getByRole('checkbox');
+        element.click();
+        expect(onChange).toBeCalledWith(expected);
+    });
+});
+
 describe('SubmitInput', () => {
+    it('should have submit type', () => {
+        render(<SubmitInput />);
+        const element = screen.getByRole('button');
+        expect(element.type).toBe('submit');
+    });
     it('should have value', () => {
         const expected = 'test3';
         render(<SubmitInput value={expected} />);
