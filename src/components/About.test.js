@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import { About } from './About';
 
-describe('About page', () => {
+describe('About', () => {
     it.each(['linkedin', 'github'])('should have %s link', (link) => {
         render(<About />);
         const re = new RegExp(link, 'i');

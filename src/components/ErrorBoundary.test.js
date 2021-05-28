@@ -2,7 +2,7 @@ import { screen, render } from '@testing-library/react';
 
 import { ErrorBoundary } from './ErrorBoundary';
 
-describe('Error Boundary', () => {
+describe('ErrorBoundary', () => {
     let consoleError
     beforeAll(() => {
         consoleError = console.error;

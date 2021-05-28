@@ -1,6 +1,6 @@
 import { View } from './View';
 
-describe('view', () => {
+describe('View', () => {
   it('should have have no duplicates', () => {
     const views = {};
     Object.entries(View).forEach(([_, view]) => {

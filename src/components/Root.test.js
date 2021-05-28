@@ -10,7 +10,6 @@ describe('Root', () => {
     const linkElement = screen.getByText(/[?]/i);
     expect(linkElement).toBeInTheDocument();
   });
-
   describe('views', () => {
     it.each(Object.entries(View))('should render with view %s', (name, view) => {
       window.localStorage.getItem.mockImplementation((key) => key === 'view' ? `"${view}"` : null);
