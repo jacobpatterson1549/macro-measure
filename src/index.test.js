@@ -1,8 +1,10 @@
-import ReactDOM from 'react-dom';
+import { render } from 'react-dom';
 
 import { App } from './components/App';
 
-jest.mock('react-dom', () => ({ render: jest.fn() }));
+jest.mock('react-dom', () => ({
+    render: jest.fn(),
+ }));
 jest.spyOn(window, 'addEventListener');
 
 describe('index', () => {
@@ -14,7 +16,7 @@ describe('index', () => {
         rootElement.setAttribute('id', 'root');
         document.body.appendChild(rootElement);
         require('./index.js');
-        expect(ReactDOM.render).toHaveBeenCalledWith(<App />, rootElement);
+        expect(render).toHaveBeenCalledWith(<App />, rootElement);
     });
     describe('service worker registration', () => {
         it('should NOT add listener to register service worker when NOT in navigator', () => {
