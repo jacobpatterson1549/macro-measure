@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 
+import { preventDefault } from './Form';
+
 const isFullscreen = () => !!document.fullscreenElement;
 
 // Window listens to events to provide properties in a Render Prop component
@@ -27,10 +29,7 @@ export const Window = ({ render }) => {
     }, []);
 
     const [installPromptEvent, setInstallPromptEvent] = useState(null);
-    const handler = (event) => {
-        event.preventDefault();
-        setInstallPromptEvent(event);
-    };
+    const handler = preventDefault(setInstallPromptEvent);
     useEffect(() => {
         window.addEventListener('beforeinstallprompt', handler);
         return () => {

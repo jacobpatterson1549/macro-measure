@@ -148,7 +148,7 @@ export const Form = ({
     </form>
 );
 
-const preventDefault = (fn) => (event) => {
+export const preventDefault = (callback) => (event) => {
     event.preventDefault();
-    fn();
+    callback?.(event);
 };

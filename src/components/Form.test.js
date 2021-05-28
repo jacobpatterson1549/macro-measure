@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 
-import { Form, SubmitInput, TextInput, NumberInput, NameInput, ButtonInput, CheckboxInput, FileInput, SelectInput } from './Form';
+import { Form, SubmitInput, TextInput, NumberInput, NameInput, ButtonInput, CheckboxInput, FileInput, SelectInput, preventDefault } from './Form';
 
 describe('TextInput', () => {
     it('should have text type', () => {
@@ -310,4 +310,19 @@ describe('Form', () => {
         expect(screen.getByLabelText('b')).toBeInTheDocument();
         expect(screen.getByLabelText('c')).toBeInTheDocument();
     });
+});
+
+describe('preventDefault', () => {
+    it('should call preventDefault', () => {
+        const event = { preventDefault: jest.fn() }
+        preventDefault()(event);
+        expect(event.preventDefault).toBeCalled();
+        // should not crash if callback not provided
+    });
+    it('should call fn with event', () => {
+        const callback = jest.fn();
+        const event = { preventDefault: jest.fn() }
+        preventDefault(callback)(event);
+        expect(callback).toBeCalledWith(event);
+    })
 });
