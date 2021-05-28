@@ -23,13 +23,17 @@ describe('LocalStorageSettings', () => {
     describe('import/export', () => {
         const allJSON = '{"groups":[{"name":"backup","items":[]}]}';
         it('should export storage when clicked', () => {
-            const createObjectURLMock = jest.fn();
+            const expectedURL = 'some_export_url'
+            const createObjectURLMock = jest.fn().mockReturnValue(expectedURL);
             Object.defineProperty(global.URL, 'createObjectURL', { value: createObjectURLMock });
             render(<LocalStorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
             fireEvent.click(exportElement);
             expect(getLocalStorage).toBeCalled();
             expect(createObjectURLMock).toBeCalled();
+            const exportLink = screen.getByRole('link');
+            expect(exportLink.href).toMatch(expectedURL);
+            expect(exportLink.textContent).toMatch(/^\S+$/); // expect link to have no spaces
         });
         it('should import storage when changed', async () => {
             const textFn = jest.fn().mockResolvedValue(allJSON);

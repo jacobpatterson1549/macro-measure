@@ -21,7 +21,7 @@ export const LocalStorageSettings = () => {
         const allJSON = getLocalStorage();
         const file = new Blob([allJSON], { type: jsonMimeType })
         const url = URL.createObjectURL(file);
-        const filename = `Macro Measure ${dateDigits()} backup.json`;
+        const filename = `macro_measure_backup_${dateDigits()}.json`;
         const anchor = (<a href={url} download={filename}>{filename}</a>);
         setExportLink(anchor);
     };
