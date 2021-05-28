@@ -13,41 +13,41 @@ const dateDigits = () => {
     return isoDateDigits;
 };
 
+const _exportStorage = (setExportLink) => () => {
+    const allJSON = getLocalStorage();
+    const file = new Blob([allJSON], { type: jsonMimeType })
+    const url = URL.createObjectURL(file);
+    const filename = `macro_measure_backup_${dateDigits()}.json`;
+    const anchor = (<a href={url} download={filename}>{filename}</a>);
+    setExportLink(anchor);
+};
+
+const _importStorage = async (file) => {
+    const allJSON = await file.text();
+    clearLocalStorage();
+    setLocalStorage(allJSON);
+    _reload();
+};
+
+const _resetStorage = () => {
+    clearLocalStorage();
+    _reload();
+};
+
+const _reload = () => {
+    window.location.reload(); // force all states to be refreshed
+}
+
 export const LocalStorageSettings = () => {
 
     const [exportLink, setExportLink] = useState(null);
-
-    const _exportStorage = () => {
-        const allJSON = getLocalStorage();
-        const file = new Blob([allJSON], { type: jsonMimeType })
-        const url = URL.createObjectURL(file);
-        const filename = `macro_measure_backup_${dateDigits()}.json`;
-        const anchor = (<a href={url} download={filename}>{filename}</a>);
-        setExportLink(anchor);
-    };
-
-    const _importStorage = async (file) => {
-        const allJSON = await file.text();
-        clearLocalStorage();
-        setLocalStorage(allJSON);
-        _reload();
-    };
-
-    const _resetStorage = () => {
-        clearLocalStorage();
-        _reload();
-    };
-
-    const _reload = () => {
-        window.location.reload(); // force all states to be refreshed
-    }
 
     return (
         <fieldset>
             <legend>LocalStorage Settings</legend>
             <label>
                 <span>Export ALL Saved Data:</span>
-                <ButtonInput value="Export File" onClick={_exportStorage} />
+                <ButtonInput value="Export File" onClick={_exportStorage(setExportLink)} />
                 {exportLink}
             </label>
             <label>

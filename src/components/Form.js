@@ -18,7 +18,6 @@ export const TextInput = ({
     onChange, // the function to executed when the value changes
     disabled, // prevents interaction if specified
 }) => (
-
     <Input
         type="text"
         value={value}
@@ -37,7 +36,6 @@ export const NumberInput = ({
     min, // the minimum value for the input
     max, // the maximum value for the input
 }) => (
-
     <Input
         type="number"
         value={value}
