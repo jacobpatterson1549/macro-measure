@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import './Item.css';
 
@@ -44,9 +44,9 @@ export const Item = ({
     const [formName, setFormName] = useState(name);
     const [formLat, setFormLat] = useState(lat);
     const [formLng, setFormLng] = useState(lng);
-    useEffect(() => setFormName(name), [name]);
-    useEffect(() => setFormLat(lat), [lat]);
-    useEffect(() => setFormLng(lng), [lng]);
+    // useEffect(() => setFormName(name), [name]);
+    // useEffect(() => setFormLat(lat), [lat]);
+    // useEffect(() => setFormLng(lng), [lng]);
 
     const _createStart = () => {
         createStart();

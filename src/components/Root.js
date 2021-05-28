@@ -135,7 +135,7 @@ export const Root = ({
       case View.Item_Delete:
         const items = (groups.length !== 0) ? groups[groupIndex].items : [];
         const item = (view === View.Item_Create || items.length === 0) ? newItem(null) : items[itemIndex];
-        return (<Item
+        return (<Item key={itemIndex}
           view={view}
           items={items}
           index={itemIndex}
@@ -156,7 +156,7 @@ export const Root = ({
       case View.Items_Read:
         const values = (groups.length !== 0) ? groups[groupIndex].items : [];
         return (
-          <NameList className="ItemList"
+          <NameList
             type="item"
             values={values}
             index={itemIndex}
@@ -175,7 +175,7 @@ export const Root = ({
       case View.Groups_Read:
       default:
         return (
-          <NameList className="GroupList"
+          <NameList
             type="group"
             values={groups}
             index={groupIndex}
