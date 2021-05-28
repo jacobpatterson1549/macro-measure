@@ -113,7 +113,7 @@ export const Root = ({
     setGroups(Groups.moveItemDown(groups, groupIndex, index));
   };
 
-  const main = () => {
+  const getMain = () => {
     switch (view) {
       case View.About:
         return (<About />);
@@ -204,7 +204,7 @@ export const Root = ({
         setView={setView}
       />
       <main className="Main">
-        {main()}
+        {getMain()}
       </main>
     </div>
   );

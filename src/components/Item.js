@@ -44,9 +44,6 @@ export const Item = ({
     const [formName, setFormName] = useState(name);
     const [formLat, setFormLat] = useState(lat);
     const [formLng, setFormLng] = useState(lng);
-    // useEffect(() => setFormName(name), [name]);
-    // useEffect(() => setFormLat(lat), [lat]);
-    // useEffect(() => setFormLng(lng), [lng]);
 
     const _createStart = () => {
         createStart();
@@ -70,9 +67,6 @@ export const Item = ({
         deleteEnd(index);
     };
 
-    const _updateName = (updatedFormName) => {
-        setFormName(updatedFormName)
-    };
     const _updateLatLng = (heading) => () => {
         const formLatLng = moveLatLngTo({ lat: formLat, lng: formLng }, moveAmount, distanceUnit, heading);
         setFormLat(formLatLng.lat);
@@ -180,7 +174,7 @@ export const Item = ({
                                 <NameInput
                                     value={formName}
                                     values={items}
-                                    onChange={_updateName}
+                                    onChange={setFormName}
                                     updateIndex={_updateIndex}
                                 />
                             </label>

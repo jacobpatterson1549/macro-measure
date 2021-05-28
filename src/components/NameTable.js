@@ -1,15 +1,26 @@
 const onClick = (fn, index) => () => fn(index);
 
-const tableCell = (value, title, cond, fn, index) => (
+const tableCell = (value, title, isVisible, fn, index) => (
     <td>
         {
-            cond &&
+            isVisible &&
             <button onClick={onClick(fn, index)} title={title}>
                 <span>{value}</span>
             </button>
         }
     </td>
 );
+
+const tableRows = (values, read, update, deleteValue, moveUp, moveDown) => (
+    values.map((value, index) => (
+        <tr key={value.name}>
+            {tableCell(value.name, 'select value', true, read, index)}
+            {tableCell('▲', 'move up', index > 0, moveUp, index)}
+            {tableCell('▼', 'move down', index + 1 < values.length, moveDown, index)}
+            {tableCell('Edit', 'edit value', true, update, index)}
+            {tableCell('Delete', 'delete value', true, deleteValue, index)}
+        </tr>
+    )));
 
 export const NameTable = ({
     type, //: the display name of the type of value in the table
@@ -20,19 +31,9 @@ export const NameTable = ({
     moveUp, // function to decrease the index of the value
     moveDown, // function to increase the index of the value
 }) => {
-    const _mapValues = () => (
-        values.map((value, index) => (
-            <tr key={value.name}>
-                {tableCell(value.name, 'select value', true, read, index)}
-                {tableCell('▲', 'move up', index > 0, moveUp, index)}
-                {tableCell('▼', 'move down', index + 1 < values.length, moveDown, index)}
-                {tableCell('Edit', 'edit value', true, update, index)}
-                {tableCell('Delete', 'delete value', true, deleteValue, index)}
-            </tr>
-        )));
-    const _tbody = (!values || values.length === 0)
+    const tbody = (!values || values.length === 0)
         ? (<tr><td colSpan="5">No values exist.  Create one.</td></tr>)
-        : _mapValues();
+        : tableRows(values, read, update, deleteValue, moveUp, moveDown);
     return (
         <table>
             <caption>{type} Values</caption>
@@ -46,7 +47,7 @@ export const NameTable = ({
                 </tr>
             </thead>
             <tbody>
-                {_tbody}
+                {tbody}
             </tbody>
         </table>
     );
