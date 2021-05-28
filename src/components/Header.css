@@ -1,19 +1,19 @@
 .Header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .Header * {
-  font-size: 8vmin;
-  margin-left: 1vw;
-  border: 0;
-  background: inherit;
-  color: inherit;
-  cursor: pointer;
+    font-size: 8vmin;
+    margin-left: 1vw;
+    border: 0;
+    background: inherit;
+    color: inherit;
+    cursor: pointer;
 }
 
 .Header > *:first-child {
-  margin-right: auto;
-  overflow: hidden;
+    margin-right: auto;
+    overflow: hidden;
 }
