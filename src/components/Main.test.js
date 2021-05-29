@@ -323,7 +323,7 @@ describe('Main', () => {
         itemIndex={1}
       />);
       screen.getByRole('button', { name: /delete item/i }).click();
-      expect(setView).toBeCalledWith(View.Item_Read);
+      expect(setView).toBeCalledWith(View.Items_Read);
       expect(setGroups).toBeCalledWith([{ name: 'g', items: [{ name: 'iA' }, { name: 'iC' }] }]);
     });
     it('should move an item up', () => {

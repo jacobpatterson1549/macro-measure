@@ -90,16 +90,7 @@ export const Main = ({
         setItemIndex(index);
     };
     const deleteItemEnd = (index) => {
-        const numItems = groups[groupIndex].items.length;
-        if (numItems === 1) {
-            setView(View.Items_Read);
-        } else {
-            if (index + 1 === numItems) {
-                // read previous item if currently reading last item
-                setItemIndex(index - 1);
-            }
-            setView(View.Item_Read);
-        }
+        setView(View.Items_Read);
         setGroups(Groups.deleteItem(groups, groupIndex, index));
     };
     const moveItemUp = (index) => {
