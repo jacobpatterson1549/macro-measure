@@ -80,7 +80,6 @@ export const Item = ({
         const _nextDisabled = !items || index + 1 >= items.length
         const _nextClick = () => _read(+1);
         const _showEdit = (view === View.Item_Read);
-        const _addDisabled = (latLng === null);
         return (
             <>
                 <div className="row">
@@ -118,7 +117,6 @@ export const Item = ({
                             <span>Delete...</span>
                         </button>
                         <button
-                            disabled={_addDisabled}
                             onClick={() => _createStart()}
                             title="create item"
                         >

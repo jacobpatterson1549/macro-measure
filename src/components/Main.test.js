@@ -142,7 +142,7 @@ describe('Main', () => {
       const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
       await waitFor(() => successCallback({ coords: { latitude: lat, longitude: lng, } }));
     };
-    it('should start to create an item', () => {
+    it('should start to create an item from list', () => {
       const setView = jest.fn();
       const setItemIndex = jest.fn();
       render(<Main
@@ -155,6 +155,21 @@ describe('Main', () => {
       screen.getByRole('button', { name: /create item/i }).click();
       expect(setView).toBeCalledWith(View.Item_Create);
       expect(setItemIndex).toBeCalledWith(0);
+    });
+    it('should start to create an item', () => {
+      const setView = jest.fn();
+      const setItemIndex = jest.fn();
+      render(<Main
+        view={View.Item_Read}
+        setView={setView}
+        groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
+        groupIndex={0}
+        itemIndex={1}
+        setItemIndex={setItemIndex}
+      />);
+      screen.getByRole('button', { name: /create item/i }).click();
+      expect(setView).toBeCalledWith(View.Item_Create);
+      expect(setItemIndex).toBeCalledWith(3);
     });
     it('should create an item', async () => {
       const setView = jest.fn();
