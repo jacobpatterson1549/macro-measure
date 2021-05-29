@@ -14,10 +14,10 @@ const tableCell = (value, title, isVisible, fn, index) => (
 const tableRows = (values, read, update, deleteValue, moveUp, moveDown) => (
     values.map((value, index) => (
         <tr key={value.name}>
-            {tableCell(value.name, 'select value', true, read, index)}
+            {tableCell(value.name, 'read value', true, read, index)}
             {tableCell('▲', 'move up', index > 0, moveUp, index)}
             {tableCell('▼', 'move down', index + 1 < values.length, moveDown, index)}
-            {tableCell('Edit', 'edit value', true, update, index)}
+            {tableCell('Edit', 'update value', true, update, index)}
             {tableCell('Delete', 'delete value', true, deleteValue, index)}
         </tr>
     )));

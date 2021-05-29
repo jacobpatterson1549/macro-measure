@@ -36,7 +36,7 @@ describe('NameList', () => {
             it('should start updating when the edit button is clicked', () => {
                 const updateStart = jest.fn();
                 render(<NameList type={'test'} view={'test-read'} values={values} index={1} updateStart={updateStart} />);
-                const elements = screen.getAllByRole('button', { name: 'edit value' });
+                const elements = screen.getAllByRole('button', { name: 'update value' });
                 expect(elements.length).toBe(values.length);;
                 const element = elements[1];
                 fireEvent.click(element);

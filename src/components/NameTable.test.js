@@ -35,7 +35,7 @@ describe('NameTable', () => {
             const handler = jest.fn();
             const index = 0;
             render(<NameTable values={values} read={handler} />);
-            const elements = screen.getAllByTitle(/select/);
+            const elements = screen.getAllByTitle('read value');
             const element = elements[index];
             fireEvent.click(element);
             expect(elements.length).toBe(values.length);
@@ -45,7 +45,7 @@ describe('NameTable', () => {
             const handler = jest.fn();
             const index = 1;
             render(<NameTable values={values} moveUp={handler} />);
-            const elements = screen.getAllByTitle(/move up/);
+            const elements = screen.getAllByTitle('move up');
             const element = elements[index];
             fireEvent.click(element);
             expect(elements.length).toBe(values.length - 1); // no first move up
@@ -55,7 +55,7 @@ describe('NameTable', () => {
             const handler = jest.fn();
             const index = 2;
             render(<NameTable values={values} moveDown={handler} />);
-            const elements = screen.getAllByTitle(/move down/);
+            const elements = screen.getAllByTitle('move down');
             const element = elements[index];
             fireEvent.click(element);
             expect(elements.length).toBe(values.length - 1); // no last move down
@@ -65,7 +65,7 @@ describe('NameTable', () => {
             const handler = jest.fn();
             const index = 3;
             render(<NameTable values={values} update={handler} />);
-            const elements = screen.getAllByTitle(/edit/);
+            const elements = screen.getAllByTitle('update value');
             const element = elements[index];
             fireEvent.click(element);
             expect(elements.length).toBe(values.length);
@@ -75,7 +75,7 @@ describe('NameTable', () => {
             const handler = jest.fn();
             const index = 4;
             render(<NameTable values={values} deleteValue={handler} />);
-            const elements = screen.getAllByTitle(/delete/);
+            const elements = screen.getAllByTitle('delete value');
             const element = elements[index];
             fireEvent.click(element);
             expect(elements.length).toBe(values.length);
