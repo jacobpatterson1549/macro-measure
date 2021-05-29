@@ -117,7 +117,7 @@ export const Item = ({
                             <span>Delete...</span>
                         </button>
                         <button
-                            onClick={() => _createStart()}
+                            onClick={_createStart}
                             title="create item"
                         >
                             <span>Add...</span>
@@ -160,7 +160,6 @@ export const Item = ({
             case View.Item_Create:
             case View.Item_Update:
                 const [_onSubmit, _disabled, _updateLatLngDisabled, _caption, _updateIndex, _cancel, _submitValue] = (view === View.Item_Create)
-                    // TODO: cancel for View.Item_Create should be similar to when delete is successful
                     ? [_createEndFn(latLng), !latLng, true, 'Create Item', -1, readItems, 'Create Item']
                     : [_updateEnd, false, false, ('Update ' + name), index, () => _read(0), 'Update Item'];
                 return (
