@@ -123,7 +123,7 @@ export const Main = ({
             case View.Item_Update:
             case View.Item_Delete:
                 const items = (groups.length !== 0) ? groups[groupIndex].items : [];
-                const item = (view === View.Item_Create || items.length === 0) ? newItem(null) : items[itemIndex];
+                const item = (view === View.Item_Create || items.length === 0) ? newItem() : items[itemIndex];
                 return (<Item key={itemIndex}
                     view={view}
                     items={items}

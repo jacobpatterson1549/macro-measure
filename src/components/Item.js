@@ -10,16 +10,11 @@ import { useLocalStorage } from '../utils/LocalStorage';
 import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
-export const newItem = (latLng) => {
-    const lat = latLng ? latLng.lat : '[current]';
-    const lng = latLng ? latLng.lng : '[current]';
-    const item = {
-        name: '[New Item]',
-        lat: lat,
-        lng: lng,
-    };
-    return item;
-};
+export const newItem = () => ({
+    name: '[New Item]',
+    lat: '[current]',
+    lng: '[current]',
+});
 
 export const Item = ({
     view, // the page being viewed
