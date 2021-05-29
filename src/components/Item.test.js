@@ -112,4 +112,26 @@ describe('Item', () => {
             expect(screen.queryByText(/map disabled/i)).toBeInTheDocument();
         });
     });
+    describe('updateLatLng', () => {
+        const latLngTests = [
+            [8.9831528, 0, '+(N)'],
+            [-8.9831528, 0, '-(S)'],
+            [0, -8.9831528, '-(W)'],
+            [0, +8.9831528, '+(E)'],
+        ];
+        it.each(latLngTests)('should update latLng to [%s,%s] when %s button is clicked', async (lat, lng, direction) => {
+            navigator.geolocation.watchPosition = jest.fn();
+            window.localStorage.getItem.mockImplementation((key) => key === 'move-amount' ? '1000' : null);
+            render(<Item
+                view={View.Item_Update}
+                lat={0}
+                lng={0}
+                distanceUnit='km'
+            />);
+            const element = screen.getByRole('button', { name: direction });
+            element.click();
+            expect(screen.getByDisplayValue(lat)).toBeInTheDocument();
+            expect(screen.getByDisplayValue(lng)).toBeInTheDocument();
+        });
+    });
 });
