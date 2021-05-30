@@ -4,37 +4,21 @@ import { preventDefault } from './Form';
 
 // Window listens to events to provide properties in a Render Prop component
 export const Window = ({ render }) => {
-
     const [fullscreen, setFullscreen] = useState(isFullscreen());
-    const fullscreenChanged = handleFullscreenChanged(setFullscreen);
-    useEffect(() => {
-        window.addEventListener('fullscreenchange', fullscreenChanged);
-        return () => {
-            window.removeEventListener('fullscreenchange', fullscreenChanged)
-        };
-    });
-
     const [onLine, setOnLine] = useState(window.navigator.onLine);
-    const goOnline = handleOnLineChanged(setOnLine, true);
-    const goOffline = handleOnLineChanged(setOnLine, false);
-    useEffect(() => {
-        window.addEventListener('online', goOnline);
-        window.addEventListener('offline', goOffline);
-        return () => {
-            window.removeEventListener('online', goOnline);
-            window.removeEventListener('offline', goOffline);
-        };
-    });
-
     const [installPromptEvent, setInstallPromptEvent] = useState(null);
-    const handleInstallPrompt = preventDefault(setInstallPromptEvent);
+    const windowEvents = [
+        ['fullscreenchange', handleFullscreenChanged(setFullscreen)],
+        ['online', handleOnLineChanged(setOnLine, true)],
+        ['offline', handleOnLineChanged(setOnLine, false)],
+        ['beforeinstallprompt', preventDefault(setInstallPromptEvent)],
+    ]
     useEffect(() => {
-        window.addEventListener('beforeinstallprompt', handleInstallPrompt);
-        return () => {
-            window.removeEventListener('beforeinstallprompt', handleInstallPrompt);
-        };
+        windowEvents.forEach(([type, listener]) => (window.addEventListener(type, listener)));
+        return () => (
+            windowEvents.forEach(([type, listener]) => window.removeEventListener(type, listener))
+        );
     });
-
     return (
         <>
             {render({
