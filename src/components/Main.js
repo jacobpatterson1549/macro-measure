@@ -25,15 +25,23 @@ export const Main = ({
 }) => {
     const [distanceUnit, setDistanceUnit] = useLocalStorage('distanceUnit', DefaultDistanceUnit);
     const [highAccuracyGPS, setHighAccuracyGPS] = useLocalStorage('highAccuracyGPS', false);
-    return (
-        <main className="Main">
-            {getMain(
-                distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS,
-                fullscreen, onLine, installPromptEvent,
-                view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex)}
-        </main>
+    return render(
+        distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS,
+        fullscreen, onLine, installPromptEvent, view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex,
     );
 }
+
+const render = (
+    distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS,
+    fullscreen, onLine, installPromptEvent, view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex,
+) => (
+    <main className="Main">
+        {getMain(
+            distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS,
+            fullscreen, onLine, installPromptEvent,
+            view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex)}
+    </main>
+);
 
 const getMain = (
     distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS,

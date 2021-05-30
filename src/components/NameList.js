@@ -20,23 +20,25 @@ export const NameList = ({
     cancel, // function to cancel the current action
 }) => {
     const [name, setName] = useLocalStorage(getLocalStorageNameKey(type), '?');
-    return (
-        <div>
-            <NameTable
-                type={type}
-                values={values}
-                read={read}
-                update={handleUpdateStart(updateStart, setName, values)}
-                deleteValue={handleDeleteStart(deleteStart, setName, values)}
-                moveUp={moveUp}
-                moveDown={moveDown}
-            />
-            {getActions(view, type, name, setName, values, index, createStart, createEnd, updateEnd, deleteEnd, cancel)}
-        </div>
-    );
+    return render(name, setName, view, type, values, index, createStart, createEnd, read, updateStart, updateEnd, deleteStart, deleteEnd, moveUp, moveDown, cancel);
 };
 
-const getActions = (view, type, name, setName, values, index, createStart, createEnd, updateEnd, deleteEnd, cancel) => {
+const render = (name, setName, view, type, values, index, createStart, createEnd, read, updateStart, updateEnd, deleteStart, deleteEnd, moveUp, moveDown, cancel) => (
+    <div>
+        <NameTable
+            type={type}
+            values={values}
+            read={read}
+            update={handleUpdateStart(updateStart, setName, values)}
+            deleteValue={handleDeleteStart(deleteStart, setName, values)}
+            moveUp={moveUp}
+            moveDown={moveDown}
+        />
+        {getActions(name, setName, view, type, values, index, createStart, createEnd, updateEnd, deleteEnd, cancel)}
+    </div>
+);
+
+const getActions = (name, setName, view, type, values, index, createStart, createEnd, updateEnd, deleteEnd, cancel) => {
     const value = (values.length !== 0) ? values[index] : {};
     switch (view) {
         case toCreateView(type):
@@ -105,7 +107,6 @@ const toDeleteView = (type) => (
 const getLocalStorageNameKey = (type) => (
     type + '-name'
 );
-
 
 const handleCreateStart = (createStart, setName) => () => {
     setName('[New Value Name]');

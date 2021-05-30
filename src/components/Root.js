@@ -15,27 +15,35 @@ export const Root = ({
   const [groupIndex, setGroupIndex] = useLocalStorage('groupIndex', 0);
   const [itemIndex, setItemIndex] = useLocalStorage('itemIndex', 0);
   const [groups, setGroups] = useLocalStorage('groups', []);
-  return (
-    <div className="Root">
-      <Header
-        view={view}
-        groups={groups}
-        groupIndex={groupIndex}
-        setView={setView}
-      />
-      <Main
-        fullscreen={fullscreen}
-        onLine={onLine}
-        installPromptEvent={installPromptEvent}
-        view={view}
-        setView={setView}
-        groups={groups}
-        setGroups={setGroups}
-        groupIndex={groupIndex}
-        setGroupIndex={setGroupIndex}
-        itemIndex={itemIndex}
-        setItemIndex={setItemIndex}
-      />
-    </div>
+  return render(
+    fullscreen, onLine, installPromptEvent,
+    view, setView, groupIndex, setGroupIndex, itemIndex, setItemIndex, groups, setGroups,
   );
 };
+
+const render = (
+  fullscreen, onLine, installPromptEvent,
+  view, setView, groupIndex, setGroupIndex, itemIndex, setItemIndex, groups, setGroups,
+) => (
+  <div className="Root">
+    <Header
+      view={view}
+      groups={groups}
+      groupIndex={groupIndex}
+      setView={setView}
+    />
+    <Main
+      fullscreen={fullscreen}
+      onLine={onLine}
+      installPromptEvent={installPromptEvent}
+      view={view}
+      setView={setView}
+      groups={groups}
+      setGroups={setGroups}
+      groupIndex={groupIndex}
+      setGroupIndex={setGroupIndex}
+      itemIndex={itemIndex}
+      setItemIndex={setItemIndex}
+    />
+  </div>
+);

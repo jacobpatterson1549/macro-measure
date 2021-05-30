@@ -24,7 +24,6 @@ export const NameTable = ({
     </table>
 );
 
-
 const getTableBody = (values, read, update, deleteValue, moveUp, moveDown) => (
     (!values || values.length === 0)
         ? (<tr><td colSpan="5">No values exist.  Create one.</td></tr>)

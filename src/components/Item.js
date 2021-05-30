@@ -32,34 +32,9 @@ export const Item = ({
     const [formName, setFormName] = useState(name);
     const [formLat, setFormLat] = useState(lat);
     const [formLng, setFormLng] = useState(lng);
-    return (
-        <Geolocation
-            view={view}
-            highAccuracyGPS={highAccuracyGPS}
-            render={geolocation => {
-                const distanceHeading = (view === View.Item_Read && geolocation.latLng !== null)
-                    ? getDistanceHeading({ lat: lat, lng: lng }, geolocation.latLng, distanceUnit)
-                    : null;
-                return (
-                    <div className="Item">
-                        <div className="Item-Header">
-                            {getHeader(view, items, index, name, createStart, read, readItems, updateStart, deleteStart)}
-                        </div>
-                        <div role="img">
-                            {getMap(
-                                distanceHeading, geolocation.latLng, geolocation.valid,
-                                formLat, formLng,
-                                view, name, lat, lng, distanceUnit)}
-                        </div>
-                        <div>
-                            {getAction(
-                                distanceHeading, geolocation.latLng, geolocation.valid,
-                                moveAmount, setMoveAmount, formName, setFormName, formLat, setFormLat, formLng, setFormLng,
-                                view, items, index, name, distanceUnit, createEnd, read, readItems, updateEnd, deleteEnd)}
-                        </div>
-                    </div>
-                );
-            }} />
+    return render(
+        moveAmount, setMoveAmount, formName, setFormName, formLat, setFormLat, formLng, setFormLng,
+        view, items, index, name, lat, lng, distanceUnit, highAccuracyGPS, createStart, createEnd, read, readItems, updateStart, updateEnd, deleteStart, deleteEnd,
     );
 };
 
@@ -68,6 +43,48 @@ export const newItem = () => ({
     lat: '[current]',
     lng: '[current]',
 });
+
+const render = (
+    moveAmount, setMoveAmount, formName, setFormName, formLat, setFormLat, formLng, setFormLng,
+    view, items, index, name, lat, lng, distanceUnit, highAccuracyGPS, createStart, createEnd, read, readItems, updateStart, updateEnd, deleteStart, deleteEnd,
+) => (
+    <Geolocation
+        view={view}
+        highAccuracyGPS={highAccuracyGPS}
+        render={geolocation => {
+            const distanceHeading = (view === View.Item_Read && geolocation.latLng !== null)
+                ? getDistanceHeading({ lat: lat, lng: lng }, geolocation.latLng, distanceUnit)
+                : null;
+            return renderItem(
+                geolocation, distanceHeading, moveAmount, setMoveAmount, formName, setFormName, formLat, setFormLat, formLng, setFormLng,
+                view, items, index, name, lat, lng, distanceUnit, createStart, createEnd, read, readItems, updateStart, updateEnd, deleteStart, deleteEnd,
+            );
+        }}
+    />
+);
+
+const renderItem = (
+    geolocation, distanceHeading, moveAmount, setMoveAmount, formName, setFormName, formLat, setFormLat, formLng, setFormLng,
+    view, items, index, name, lat, lng, distanceUnit, createStart, createEnd, read, readItems, updateStart, updateEnd, deleteStart, deleteEnd,
+) => (
+    <div className="Item">
+        <div className="Item-Header">
+            {getHeader(view, items, index, name, createStart, read, readItems, updateStart, deleteStart)}
+        </div>
+        <div role="img">
+            {getMap(
+                distanceHeading, geolocation.latLng, geolocation.valid,
+                formLat, formLng,
+                view, name, lat, lng, distanceUnit)}
+        </div>
+        <div>
+            {getAction(
+                distanceHeading, geolocation.latLng, geolocation.valid,
+                moveAmount, setMoveAmount, formName, setFormName, formLat, setFormLat, formLng, setFormLng,
+                view, items, index, name, distanceUnit, createEnd, read, readItems, updateEnd, deleteEnd)}
+        </div>
+    </div>
+);
 
 const getHeader = (view, items, index, name, createStart, read, readItems, updateStart, deleteStart) => {
     const prevDisabled = index <= 0;

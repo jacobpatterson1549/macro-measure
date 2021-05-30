@@ -6,29 +6,31 @@ import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/Lo
 
 export const LocalStorageSettings = () => {
     const [exportLink, setExportLink] = useState(null);
-    return (
-        <fieldset>
-            <legend>LocalStorage Settings</legend>
-            <label>
-                <span>Export ALL Saved Data:</span>
-                <ButtonInput value="Export File" onClick={exportStorage(setExportLink)} />
-                {exportLink}
-            </label>
-            <label>
-                <span>Import ALL Saved Data:</span>
-                <FileInput accept={jsonMimeType} onChange={importStorage} />
-            </label>
-            <label>
-                <span>Clear ALL Saved Data:</span>
-                <ButtonInput value="Clear" onClick={resetStorage} />
-            </label>
-            <label>
-                <span>Reload page and Saved Data:</span>
-                <ButtonInput value="Reload" onClick={reload} />
-            </label>
-        </fieldset>
-    );
+    return render(exportLink, setExportLink);
 };
+
+const render = (exportLink, setExportLink) => (
+    <fieldset>
+        <legend>LocalStorage Settings</legend>
+        <label>
+            <span>Export ALL Saved Data:</span>
+            <ButtonInput value="Export File" onClick={exportStorage(setExportLink)} />
+            {exportLink}
+        </label>
+        <label>
+            <span>Import ALL Saved Data:</span>
+            <FileInput accept={jsonMimeType} onChange={importStorage} />
+        </label>
+        <label>
+            <span>Clear ALL Saved Data:</span>
+            <ButtonInput value="Clear" onClick={resetStorage} />
+        </label>
+        <label>
+            <span>Reload page and Saved Data:</span>
+            <ButtonInput value="Reload" onClick={reload} />
+        </label>
+    </fieldset>
+);
 
 const exportStorage = (setExportLink) => () => {
     const allJSON = getLocalStorage();

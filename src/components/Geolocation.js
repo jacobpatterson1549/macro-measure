@@ -19,14 +19,11 @@ export const Geolocation = ({
             stopWatch(watchID);
         };
     }, [view, highAccuracyGPS]);
-    return (
-        <>
-            {render({
-                valid: !!getGeolocation(),
-                latLng: latLng,
-            })}
-        </>
-    );
+    const props = {
+        valid: !!getGeolocation(),
+        latLng: latLng,
+    };
+    return render(props);
 };
 
 const startWatch = (watchID, setLatLng, highAccuracyGPS) => {
