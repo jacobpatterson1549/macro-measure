@@ -24,12 +24,18 @@ export const Main = ({
     const [highAccuracyGPS, setHighAccuracyGPS] = useLocalStorage('highAccuracyGPS', false);
     return (
         <main className="Main">
-            {getMain(distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS, fullscreen, onLine, installPromptEvent, view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex)}
+            {getMain(
+                distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS,
+                fullscreen, onLine, installPromptEvent,
+                view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex)}
         </main>
     );
 }
 
-const getMain = (distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS, fullscreen, onLine, installPromptEvent, view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex) => {
+const getMain = (
+    distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS,
+    fullscreen, onLine, installPromptEvent,
+    view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex) => {
     switch (view) {
         case View.About:
             return (
