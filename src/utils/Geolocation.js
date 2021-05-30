@@ -28,29 +28,22 @@ export const Heading = {
     W: -90,
 };
 
-export const roundLatLng = (latLng) => {
-    return {
+export const roundLatLng = (latLng) => (
+    {
         lat: round(latLng.lat, 7),
         lng: round(latLng.lng, 7),
-    };
-}
-
-export const toMeters = (distance, unit, invertRatio) => { // exported for testing
-    let ratio = unit === 'm' ? 1
-        : unit === 'km' ? 1000
-            : unit === 'ft' ? 3048 / 10000
-                : unit === 'yd' ? 3 * 3048 / 10000
-                    : unit === 'mi' ? 5280 * 3048 / 10000
-                        : NaN;
-    if (invertRatio) {
-        ratio = 1 / ratio;
     }
-    return distance * ratio;
-};
+);
 
-export const fromMeters = (distance, unit) => { // exported for testing
-    return toMeters(distance, unit, true);
-};
+export const toMeters = (distance, unit, invert) => ( // exported for testing
+    (invert)
+        ? distance / metersRatio(unit)
+        : distance * metersRatio(unit)
+);
+
+export const fromMeters = (distance, unit) => ( // exported for testing
+    toMeters(distance, unit, true)
+);
 
 const isValid = (latLng) => (
     latLng && latLng.lat !== undefined && latLng.lng !== undefined
@@ -60,3 +53,12 @@ const round = (value, numDigits) => {
     const m = Math.pow(10, numDigits);
     return Math.round(value * m) / m;
 };
+
+const metersRatio = (unit) => (
+    unit === 'm' ? 1
+        : unit === 'km' ? 1000
+            : unit === 'ft' ? 3048 / 10000
+                : unit === 'yd' ? 3 * 3048 / 10000
+                    : unit === 'mi' ? 5280 * 3048 / 10000
+                        : NaN
+);
