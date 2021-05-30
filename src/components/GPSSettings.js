@@ -1,15 +1,5 @@
 import { CheckboxInput, SelectInput } from './Form';
 
-const distanceUnits = [
-    'm',
-    'km',
-    'ft',
-    'yd',
-    'mi',
-];
-
-export const DefaultDistanceUnit = 'm';
-
 export const GPSSettings = ({
     distanceUnit, // the distance length between positions
     setDistanceUnit, // function to set the distance unit
@@ -28,3 +18,13 @@ export const GPSSettings = ({
         </label>
     </fieldset>
 );
+
+export const DefaultDistanceUnit = 'm';
+
+const distanceUnits = [
+    'm',
+    'km',
+    'ft',
+    'yd',
+    'mi',
+];

@@ -1,12 +1,38 @@
 import { ButtonInput, CheckboxInput } from './Form';
 
-const _toggleFullscreen = (toFullscreen) => (
+export const FullscreenSettings = ({
+    fullscreen, // a boolean indicating if the window is fullscreen
+    onLine, // a boolean indicating if the app is online
+    installPromptEvent, // an event to install the app, null if the app is installed
+}) => (
+    <fieldset>
+        <legend>Fullscreen Settings</legend>
+        <label>
+            <span>Fullscreen:</span>
+            <CheckboxInput checked={fullscreen} onChange={toggleFullscreen} />
+        </label>
+        {
+            installPromptEvent
+                ? (
+                    <label>
+                        <span>Add to Home Screen:</span>
+                        <ButtonInput value="Install" onClick={promptInstall(installPromptEvent)} />
+                    </label>
+                )
+                : (
+                    <span>{onLine ? 'Online:' : 'OFFLINE:'} App updates after online reload.</span>
+                )
+        }
+    </fieldset>
+);
+
+const toggleFullscreen = (toFullscreen) => (
     (toFullscreen)
         ? document.body.requestFullscreen()
         : document.exitFullscreen()
 );
 
-const _promptInstall = (installPromptEvent) => async () => {
+const promptInstall = (installPromptEvent) => async () => {
     installPromptEvent.prompt();
     const choiceResult = await installPromptEvent.userChoice;
     if (choiceResult.outcome === 'accepted') {
@@ -14,30 +40,3 @@ const _promptInstall = (installPromptEvent) => async () => {
         window.location.reload();
     }
 };
-
-export const FullscreenSettings = ({
-    fullscreen, // a boolean indicating if the window is fullscreen
-    onLine, // a boolean indicating if the app is online
-    installPromptEvent, // an event to install the app, null if the app is installed
-}) => {
-    const a2hs = installPromptEvent
-        ? (
-            <label>
-                <span>Add to Home Screen:</span>
-                <ButtonInput value="Install" onClick={_promptInstall(installPromptEvent)} />
-            </label>
-        )
-        : (
-            <span>{onLine ? 'Online:' : 'OFFLINE:'} App updates after online reload.</span>
-        );
-    return (
-        <fieldset>
-            <legend>Fullscreen Settings</legend>
-            <label>
-                <span>Fullscreen:</span>
-                <CheckboxInput checked={fullscreen} onChange={_toggleFullscreen} />
-            </label>
-            {a2hs}
-        </fieldset>
-    );
-}

@@ -3,10 +3,6 @@ import { useState, useRef, useEffect } from 'react';
 import { roundLatLng } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
-const locationViews = [View.Item_Read, View.Item_Create];
-
-const geolocation = () => window.navigator.geolocation;
-
 // Geolocation watches the position, rendering it when it changes.
 export const Geolocation = ({
     render,
@@ -60,3 +56,7 @@ export const Geolocation = ({
         </>
     );
 };
+
+const locationViews = [View.Item_Read, View.Item_Create];
+
+const geolocation = () => window.navigator.geolocation;

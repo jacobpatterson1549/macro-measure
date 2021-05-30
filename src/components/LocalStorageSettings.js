@@ -4,16 +4,33 @@ import { ButtonInput, FileInput } from './Form';
 
 import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 
-const jsonMimeType = "application/json";
-
-const dateDigits = () => {
-    const date = new Date();
-    const isoDate = date.toISOString();
-    const isoDateDigits = isoDate.replace(/\D/g, '');
-    return isoDateDigits;
+export const LocalStorageSettings = () => {
+    const [exportLink, setExportLink] = useState(null);
+    return (
+        <fieldset>
+            <legend>LocalStorage Settings</legend>
+            <label>
+                <span>Export ALL Saved Data:</span>
+                <ButtonInput value="Export File" onClick={exportStorage(setExportLink)} />
+                {exportLink}
+            </label>
+            <label>
+                <span>Import ALL Saved Data:</span>
+                <FileInput accept={jsonMimeType} onChange={importStorage} />
+            </label>
+            <label>
+                <span>Clear ALL Saved Data:</span>
+                <ButtonInput value="Clear" onClick={resetStorage} />
+            </label>
+            <label>
+                <span>Reload page and Saved Data:</span>
+                <ButtonInput value="Reload" onClick={reload} />
+            </label>
+        </fieldset>
+    );
 };
 
-const _exportStorage = (setExportLink) => () => {
+const exportStorage = (setExportLink) => () => {
     const allJSON = getLocalStorage();
     const file = new Blob([allJSON], { type: jsonMimeType })
     const url = URL.createObjectURL(file);
@@ -22,46 +39,27 @@ const _exportStorage = (setExportLink) => () => {
     setExportLink(anchor);
 };
 
-const _importStorage = async (file) => {
+const importStorage = async (file) => {
     const allJSON = await file.text();
     clearLocalStorage();
     setLocalStorage(allJSON);
-    _reload();
+    reload();
 };
 
-const _resetStorage = () => {
+const resetStorage = () => {
     clearLocalStorage();
-    _reload();
+    reload();
 };
 
-const _reload = () => {
+const reload = () => {
     window.location.reload(); // force all states to be refreshed
 }
 
-export const LocalStorageSettings = () => {
-
-    const [exportLink, setExportLink] = useState(null);
-
-    return (
-        <fieldset>
-            <legend>LocalStorage Settings</legend>
-            <label>
-                <span>Export ALL Saved Data:</span>
-                <ButtonInput value="Export File" onClick={_exportStorage(setExportLink)} />
-                {exportLink}
-            </label>
-            <label>
-                <span>Import ALL Saved Data:</span>
-                <FileInput accept={jsonMimeType} onChange={_importStorage} />
-            </label>
-            <label>
-                <span>Clear ALL Saved Data:</span>
-                <ButtonInput value="Clear" onClick={_resetStorage} />
-            </label>
-            <label>
-                <span>Reload page and Saved Data:</span>
-                <ButtonInput value="Reload" onClick={_reload} />
-            </label>
-        </fieldset>
-    );
+const dateDigits = () => {
+    const date = new Date();
+    const isoDate = date.toISOString();
+    const isoDateDigits = isoDate.replace(/\D/g, '');
+    return isoDateDigits;
 };
+
+const jsonMimeType = "application/json";

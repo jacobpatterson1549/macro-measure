@@ -16,8 +16,9 @@ export class ErrorBoundary extends Component {
   }
 
   render() {
-    if (this.state.hasError) {
-      return (
+    return (!this.state.hasError)
+      ? this.props.children
+      : (
         <div>
           <h1>Something went wrong.</h1>
           {
@@ -28,8 +29,5 @@ export class ErrorBoundary extends Component {
           <LocalStorageSettings />
         </div>
       );
-    }
-
-    return this.props.children;
   }
 }

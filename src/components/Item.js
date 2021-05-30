@@ -68,7 +68,7 @@ export const Item = ({
         setFormLng(formLatLng.lng);
     };
 
-    const getHeader = (latLng) => {
+    const getHeader = () => {
         const _prevDisabled = index <= 0;
         const _prevClick = () => _read(-1);
         const _caption = (view === View.Item_Create) ? '[Add Item]' : name;
@@ -228,15 +228,13 @@ export const Item = ({
             view={view}
             highAccuracyGPS={highAccuracyGPS}
             render={geolocation => {
-
                 const distanceHeading = (view === View.Item_Read && geolocation.latLng !== null)
                     ? getDistanceHeading({ lat: lat, lng: lng }, geolocation.latLng, distanceUnit)
                     : null;
-
                 return (
                     <div className="Item">
                         <div className="Item-Header">
-                            {getHeader(geolocation.latLng)}
+                            {getHeader()}
                         </div>
                         <div role="img">
                             {getMap(distanceHeading, geolocation.latLng, geolocation.valid)}
