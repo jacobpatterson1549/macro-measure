@@ -20,6 +20,7 @@
     "workbox-webpack-plugin": "^6.1.5"
   },
   "scripts": {
+    "clean": "{ git check-ignore public/* | xargs; echo 'build coverage node_modules'; } | xargs rm -rf",
     "start": "react-scripts start",
     "build": "workbox generateSW && react-scripts build",
     "test": "react-scripts test",
