@@ -57,6 +57,9 @@ export const Geolocation = ({
     );
 };
 
-const locationViews = [View.Item_Read, View.Item_Create];
+const locationViews = [
+    View.Item_Read,
+    View.Item_Create,
+];
 
 const geolocation = () => window.navigator.geolocation;

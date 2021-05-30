@@ -9,10 +9,10 @@ export const Header = ({
     groupIndex, // the group being vied
 }) => (
     <header className="Header">
-        {headerItem(setView, groupName(view, groups, groupIndex), 'groups list', View.Groups_Read)}
-        {headerItem(setView, 'ⓘ', 'about page', View.About)}
-        {headerItem(setView, '?', 'help page', View.Help)}
-        {headerItem(setView, '⚙', 'edit settings', View.Settings)}
+        {getHeaderItem(setView, groupName(view, groups, groupIndex), 'groups list', View.Groups_Read)}
+        {getHeaderItem(setView, 'ⓘ', 'about page', View.About)}
+        {getHeaderItem(setView, '?', 'help page', View.Help)}
+        {getHeaderItem(setView, '⚙', 'edit settings', View.Settings)}
     </header>
 );
 
@@ -30,10 +30,12 @@ const groupName = (view, groups, groupIndex) => (
         : '[Groups]'
 );
 
-const headerItem = (setView, itemName, itemTitle, itemView) => (
+const getHeaderItem = (setView, itemName, itemTitle, itemView) => (
     <button onClick={viewItem(setView, itemView)} title={itemTitle}>
         <span>{itemName}</span>
     </button>
 );
 
-const viewItem = (setView, itemView) => () => setView(itemView);
+const viewItem = (setView, itemView) => () => (
+    setView(itemView)
+);
