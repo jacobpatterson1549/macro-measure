@@ -91,9 +91,7 @@ export const SelectInput = ({
     onChange, // the action to perform when a new value is selected, called with the new value
 }) => (
     <select value={value} onChange={onTextChange(onChange)}>
-        {values.map((val) => (
-            <option key={val}>{val}</option>
-        ))}
+        {getOptions(values)}
     </select>
 );
 
@@ -156,3 +154,9 @@ const isUniqueName = (name, nameObjects, updateIndex) => {
     }
     return true;
 };
+
+const getOptions = (values) => (
+    values.map((val) => (
+        <option key={val}>{val}</option>
+    ))
+);
