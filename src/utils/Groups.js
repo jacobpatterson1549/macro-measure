@@ -1,5 +1,3 @@
-const deepCopy = (groups) => JSON.parse(JSON.stringify(groups));
-
 export const Groups = {
   createGroup: (groups, name) => {
     groups = deepCopy(groups);
@@ -19,19 +17,10 @@ export const Groups = {
     return groups;
   },
   moveGroupUp: (groups, index) => {
-    return Groups._moveGroup(groups, index, -1);
+    return moveGroup(groups, index, -1);
   },
   moveGroupDown: (groups, index) => {
-    return Groups._moveGroup(groups, index, +1);
-  },
-  _moveGroup: (groups, index, delta) => {
-    if (index >= 0 && index < groups.length && index + delta >= 0 && index + delta < groups.length) {
-      groups = deepCopy(groups);
-      const tmp = groups[index];
-      groups[index] = groups[index + delta];
-      groups[index + delta] = tmp;
-    }
-    return groups;
+    return moveGroup(groups, index, +1);
   },
   deleteGroup: (groups, index) => {
     if (index >= 0 && index < groups.length) {
@@ -70,23 +59,10 @@ export const Groups = {
     return groups;
   },
   moveItemUp: (groups, groupIndex, index) => {
-    return Groups._moveItem(groups, groupIndex, index, -1);
+    return moveItem(groups, groupIndex, index, -1);
   },
   moveItemDown: (groups, groupIndex, index) => {
-    return Groups._moveItem(groups, groupIndex, index, +1);
-  },
-  _moveItem: (groups, groupIndex, index, delta) => {
-    if (groupIndex >= 0 && groupIndex < groups.length) {
-      groups = deepCopy(groups);
-      const group = groups[groupIndex];
-      const items = group.items;
-      if (index >= 0 && index < items.length && index + delta >= 0 && index + delta < items.length) {
-        const tmp = items[index];
-        items[index] = items[index + delta];
-        items[index + delta] = tmp;
-      }
-    }
-    return groups;
+    return moveItem(groups, groupIndex, index, +1);
   },
   deleteItem: (groups, groupIndex, index) => {
     if (groupIndex >= 0 && groupIndex < groups.length) {
@@ -100,3 +76,29 @@ export const Groups = {
     return groups;
   },
 };
+
+const moveGroup = (groups, index, delta) => {
+  if (index >= 0 && index < groups.length && index + delta >= 0 && index + delta < groups.length) {
+    groups = deepCopy(groups);
+    const tmp = groups[index];
+    groups[index] = groups[index + delta];
+    groups[index + delta] = tmp;
+  }
+  return groups;
+};
+
+const moveItem = (groups, groupIndex, index, delta) => {
+  if (groupIndex >= 0 && groupIndex < groups.length) {
+    groups = deepCopy(groups);
+    const group = groups[groupIndex];
+    const items = group.items;
+    if (index >= 0 && index < items.length && index + delta >= 0 && index + delta < items.length) {
+      const tmp = items[index];
+      items[index] = items[index + delta];
+      items[index + delta] = tmp;
+    }
+  }
+  return groups;
+};
+
+const deepCopy = (groups) => JSON.parse(JSON.stringify(groups));
