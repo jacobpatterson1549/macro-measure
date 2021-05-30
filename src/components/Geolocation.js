@@ -9,52 +9,52 @@ export const Geolocation = ({
     view, // the current page
     highAccuracyGPS, // enables the GPS to be more precise
 }) => {
-
     const watchID = useRef(null);
     const [latLng, setLatLng] = useState(null);
-
     useEffect(() => {
-        const stopWatch = (() => {
-            geolocation().clearWatch(watchID.current);
-            watchID.current = null
-        });
-        const success = async (geolocationPosition) => {
-            const position = {
-                lat: geolocationPosition.coords.latitude,
-                lng: geolocationPosition.coords.longitude,
-            };
-            const roundedPosition = roundLatLng(position);
-            setLatLng(roundedPosition);
-        };
-        const error = () => {
-            setLatLng(null);
-        };
-        const options = {
-            enableHighAccuracy: highAccuracyGPS,
-        };
-        const startWatch = () => {
-            stopWatch();
-            watchID.current = geolocation().watchPosition(success, error, options);
-        };
-
-        if (!watchID.current && locationViews.includes(view) && geolocation()) {
-            startWatch();
+        if (!watchID.current && locationViews.includes(view)) {
+            startWatch(watchID, setLatLng, highAccuracyGPS);
         }
         return () => {
-            if (geolocation()) {
-                stopWatch();
-            }
+            stopWatch(watchID);
         };
     }, [view, highAccuracyGPS]);
-
     return (
         <>
             {render({
-                valid: !!geolocation(),
+                valid: !!getGeolocation(),
                 latLng: latLng,
             })}
         </>
     );
+};
+
+const startWatch = (watchID, setLatLng, highAccuracyGPS) => {
+    stopWatch(watchID);
+    const success = handleSuccess(setLatLng);
+    const error = handleError(setLatLng);
+    const options = {
+        enableHighAccuracy: highAccuracyGPS,
+    };
+    watchID.current = getGeolocation()?.watchPosition(success, error, options);
+};
+
+const stopWatch = (watchID) => {
+    getGeolocation()?.clearWatch(watchID.current);
+    watchID.current = null;
+};
+
+const handleSuccess = (setLatLng) => (geolocationPosition) => {
+    const position = {
+        lat: geolocationPosition.coords.latitude,
+        lng: geolocationPosition.coords.longitude,
+    };
+    const roundedPosition = roundLatLng(position);
+    setLatLng(roundedPosition);
+};
+
+const handleError = (setLatLng) => () => {
+    setLatLng(null);
 };
 
 const locationViews = [
@@ -62,4 +62,6 @@ const locationViews = [
     View.Item_Create,
 ];
 
-const geolocation = () => window.navigator.geolocation;
+const getGeolocation = () => (
+    window.navigator.geolocation
+);
