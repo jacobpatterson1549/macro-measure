@@ -86,11 +86,26 @@ const getActions = (view, type, name, setName, values, index, createStart, creat
     }
 };
 
-const toCreateView = (type) => type + '-create';
-const toReadView = (type) => type + '-read';
-const toUpdateView = (type) => type + '-update';
-const toDeleteView = (type) => type + '-delete';
-const getLocalStorageNameKey = (type) => type + '-name';
+const toCreateView = (type) => (
+    type + '-create'
+);
+
+const toReadView = (type) => (
+    type + '-read'
+);
+
+const toUpdateView = (type) => (
+    type + '-update'
+);
+
+const toDeleteView = (type) => (
+    type + '-delete'
+);
+
+const getLocalStorageNameKey = (type) => (
+    type + '-name'
+);
+
 
 const handleCreateStart = (createStart, setName) => () => {
     setName('[New Value Name]');

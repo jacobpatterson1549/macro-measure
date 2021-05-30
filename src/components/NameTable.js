@@ -53,4 +53,6 @@ const tableCell = (value, title, isVisible, fn, index) => (
     </td>
 );
 
-const onClick = (fn, index) => () => fn(index);
+const onClick = (fn, index) => () => (
+    fn(index)
+);

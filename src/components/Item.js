@@ -226,19 +226,33 @@ const getAction = (
     }
 };
 
-const handleCreateStart = (createStart) => () => createStart();
+const handleCreateStart = (createStart) => () => (
+    createStart()
+);
 
-const handleCreateEnd = (createEnd, formName, latLng) => () => createEnd(formName, latLng.lat, latLng.lng);
+const handleCreateEnd = (createEnd, formName, latLng) => () => (
+    createEnd(formName, latLng.lat, latLng.lng)
+);
 
-const handleRead = (read, index, delta) => () => read(index + delta);
+const handleRead = (read, index, delta) => () => (
+    read(index + delta)
+);
 
-const handleUpdateStart = (updateStart, index) => () => updateStart(index);
+const handleUpdateStart = (updateStart, index) => () => (
+    updateStart(index)
+);
 
-const handleUpdateEnd = (updateEnd, index, formName, formLat, formLng) => () => updateEnd(index, formName, formLat, formLng);
+const handleUpdateEnd = (updateEnd, index, formName, formLat, formLng) => () => (
+    updateEnd(index, formName, formLat, formLng)
+);
 
-const handleDeleteStart = (deleteStart, index) => () => deleteStart(index);
+const handleDeleteStart = (deleteStart, index) => () => (
+    deleteStart(index)
+);
 
-const handleDeleteEnd = (deleteEnd, index) => () => deleteEnd(index);
+const handleDeleteEnd = (deleteEnd, index) => () => (
+    deleteEnd(index)
+);
 
 const handleUpdateLatLng = (heading, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit) => () => {
     const formLatLng = moveLatLngTo({ lat: formLat, lng: formLng }, moveAmount, distanceUnit, heading);
