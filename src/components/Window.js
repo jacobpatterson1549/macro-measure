@@ -12,7 +12,7 @@ export const Window = ({ render }) => {
         ['online', handleOnLineChanged(setOnLine, true)],
         ['offline', handleOnLineChanged(setOnLine, false)],
         ['beforeinstallprompt', preventDefault(setInstallPromptEvent)],
-    ]
+    ];
     useEffect(() => {
         windowEvents.forEach(([type, listener]) => (window.addEventListener(type, listener)));
         return () => (

@@ -1,12 +1,4 @@
-export const NameTable = ({
-    type, //: the display name of the type of value in the table
-    values, //: array of objects, each of which should have a 'name' attribute.  The names should be unique.
-    read,  // function that is call when a value's name is clicked
-    update, // function to edit a value
-    deleteValue, // function to delete a value
-    moveUp, // function to decrease the index of the value
-    moveDown, // function to increase the index of the value
-}) => (
+export const NameTable = ({ type, values, read, update, deleteValue, moveUp, moveDown }) => (
     <table>
         <caption>{type} Values</caption>
         <thead>

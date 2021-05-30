@@ -2,12 +2,7 @@ import './Header.css';
 
 import { View } from '../utils/View';
 
-export const Header = ({
-    view, // the page being viewed
-    setView, // function to set the main view of the app
-    groups, // the groups with name properties
-    groupIndex, // the group being vied
-}) => (
+export const Header = ({ view, setView, groups, groupIndex }) => (
     <header className="Header">
         {getHeaderItem(setView, groupName(view, groups, groupIndex), 'groups list', View.Groups_Read)}
         {getHeaderItem(setView, 'ⓘ', 'about page', View.About)}

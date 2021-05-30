@@ -1,10 +1,6 @@
 import { ButtonInput, CheckboxInput } from './Form';
 
-export const FullscreenSettings = ({
-    fullscreen, // a boolean indicating if the window is fullscreen
-    onLine, // a boolean indicating if the app is online
-    installPromptEvent, // an event to install the app, null if the app is installed
-}) => (
+export const FullscreenSettings = ({ fullscreen, onLine, installPromptEvent }) => (
     <fieldset>
         <legend>Fullscreen Settings</legend>
         <label>

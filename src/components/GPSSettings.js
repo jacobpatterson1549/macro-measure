@@ -1,11 +1,6 @@
 import { CheckboxInput, SelectInput } from './Form';
 
-export const GPSSettings = ({
-    distanceUnit, // the distance length between positions
-    setDistanceUnit, // function to set the distance unit
-    highAccuracyGPS, // enables the GPS to be more precise
-    setHighAccuracyGPS, // function to toggle using high GPS accuracy
-}) => (
+export const GPSSettings = ({ distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS }) => (
     <fieldset>
         <legend>GPS Settings</legend>
         <label>

@@ -14,40 +14,20 @@ import {
     createItem, updateItem, deleteItem, moveItemUp, moveItemDown,
 } from '../utils/Groups';
 
-export const Main = ({
-    fullscreen,
-    onLine,
-    installPromptEvent,
-    view, setView,
-    groups, setGroups,
-    groupIndex, setGroupIndex,
-    itemIndex, setItemIndex,
-}) => {
+export const Main = (props) => {
     const [distanceUnit, setDistanceUnit] = useLocalStorage('distanceUnit', DefaultDistanceUnit);
     const [highAccuracyGPS, setHighAccuracyGPS] = useLocalStorage('highAccuracyGPS', false);
-    return render(
-        distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS,
-        fullscreen, onLine, installPromptEvent, view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex,
-    );
+    return render({ ...props, distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS });
 }
 
-const render = (
-    distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS,
-    fullscreen, onLine, installPromptEvent, view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex,
-) => (
+const render = (props) => (
     <main className="Main">
-        {getMain(
-            distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS,
-            fullscreen, onLine, installPromptEvent,
-            view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex)}
+        {getMain(props)}
     </main>
 );
 
-const getMain = (
-    distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS,
-    fullscreen, onLine, installPromptEvent,
-    view, setView, groups, setGroups, groupIndex, setGroupIndex, itemIndex, setItemIndex) => {
-    switch (view) {
+const getMain = (props) => {
+    switch (props.view) {
         case View.About:
             return (
                 <About
@@ -59,53 +39,53 @@ const getMain = (
         case View.Settings:
             return (
                 <Settings
-                    distanceUnit={distanceUnit}
-                    setDistanceUnit={setDistanceUnit}
-                    highAccuracyGPS={highAccuracyGPS}
-                    setHighAccuracyGPS={setHighAccuracyGPS}
-                    fullscreen={fullscreen}
-                    onLine={onLine}
-                    installPromptEvent={installPromptEvent}
+                    distanceUnit={props.distanceUnit}
+                    setDistanceUnit={props.setDistanceUnit}
+                    highAccuracyGPS={props.highAccuracyGPS}
+                    setHighAccuracyGPS={props.setHighAccuracyGPS}
+                    fullscreen={props.fullscreen}
+                    onLine={props.onLine}
+                    installPromptEvent={props.installPromptEvent}
                 />);
         case View.Item_Create:
         case View.Item_Read:
         case View.Item_Update:
         case View.Item_Delete:
-            const items = (groups.length !== 0) ? groups[groupIndex].items : [];
-            const item = (view === View.Item_Create || items.length === 0) ? newItem() : items[itemIndex];
+            const items = (props.groups.length !== 0) ? props.groups[props.groupIndex].items : [];
+            const item = (props.view === View.Item_Create || items.length === 0) ? newItem() : items[props.itemIndex];
             return (
-                <Item key={itemIndex}
-                    view={view}
+                <Item key={props.itemIndex}
+                    view={props.view}
                     items={items}
-                    index={itemIndex}
+                    index={props.itemIndex}
                     name={item.name}
                     lat={item.lat}
                     lng={item.lng}
-                    distanceUnit={distanceUnit}
-                    highAccuracyGPS={highAccuracyGPS}
-                    createStart={handleCreateItemStart(setView, setItemIndex, groups, groupIndex)}
-                    createEnd={handleCreateItemEnd(setView, setGroups, groups, groupIndex)}
-                    read={handleReadItem(setView, setItemIndex)}
-                    readItems={handleReadItems(setView)}
-                    updateStart={handleUpdateItemStart(setView, setItemIndex)}
-                    updateEnd={handleUpdateItemEnd(setView, setGroups, groups, groupIndex)}
-                    deleteStart={handleDeleteItemStart(setView, setItemIndex)}
-                    deleteEnd={handleDeleteItemEnd(setView, setGroups, groups, groupIndex)}
+                    distanceUnit={props.distanceUnit}
+                    highAccuracyGPS={props.highAccuracyGPS}
+                    createStart={handleCreateItemStart(props.setView, props.setItemIndex, props.groups, props.groupIndex)}
+                    createEnd={handleCreateItemEnd(props.setView, props.setGroups, props.groups, props.groupIndex)}
+                    read={handleReadItem(props.setView, props.setItemIndex)}
+                    readItems={handleReadItems(props.setView)}
+                    updateStart={handleUpdateItemStart(props.setView, props.setItemIndex)}
+                    updateEnd={handleUpdateItemEnd(props.setView, props.setGroups, props.groups, props.groupIndex)}
+                    deleteStart={handleDeleteItemStart(props.setView, props.setItemIndex)}
+                    deleteEnd={handleDeleteItemEnd(props.setView, props.setGroups, props.groups, props.groupIndex)}
                 />);
         case View.Items_Read:
-            const values = (groups.length !== 0) ? groups[groupIndex].items : [];
+            const values = (props.groups.length !== 0) ? props.groups[props.groupIndex].items : [];
             return (
                 <NameList
                     type="item"
                     values={values}
-                    index={itemIndex}
-                    view={view}
-                    createStart={handleCreateItemStart(setView, setItemIndex, groups, groupIndex)}
-                    read={handleReadItem(setView, setItemIndex)}
-                    updateStart={handleUpdateItemStart(setView, setItemIndex)}
-                    deleteStart={handleDeleteItemStart(setView, setItemIndex)}
-                    moveUp={handleMoveItemUp(setView, setGroups, groups, groupIndex)}
-                    moveDown={handleMoveItemDown(setView, setGroups, groups, groupIndex)}
+                    index={props.itemIndex}
+                    view={props.view}
+                    createStart={handleCreateItemStart(props.setView, props.setItemIndex, props.groups, props.groupIndex)}
+                    read={handleReadItem(props.setView, props.setItemIndex)}
+                    updateStart={handleUpdateItemStart(props.setView, props.setItemIndex)}
+                    deleteStart={handleDeleteItemStart(props.setView, props.setItemIndex)}
+                    moveUp={handleMoveItemUp(props.setView, props.setGroups, props.groups, props.groupIndex)}
+                    moveDown={handleMoveItemDown(props.setView, props.setGroups, props.groups, props.groupIndex)}
                 />
             );
         case View.Group_Create:
@@ -116,19 +96,19 @@ const getMain = (
             return (
                 <NameList
                     type="group"
-                    values={groups}
-                    index={groupIndex}
-                    view={view}
-                    createStart={handleCreateGroupStart(setView)}
-                    createEnd={handleCreateGroupEnd(setView, setGroups, groups)}
-                    read={handleReadGroup(setView, setGroupIndex)}
-                    updateStart={handleUpdateGroupStart(setView, setGroupIndex)}
-                    updateEnd={handleUpdateGroupEnd(setView, setGroups, groups)}
-                    deleteStart={handleDeleteGroupStart(setView, setGroupIndex)}
-                    deleteEnd={handleDeleteGroupEnd(setView, setGroups, groups)}
-                    moveUp={handleMoveGroupUp(setView, setGroups, groups)}
-                    moveDown={handleMoveGroupDown(setView, setGroups, groups)}
-                    cancel={handleReadGroups(setView)}
+                    values={props.groups}
+                    index={props.groupIndex}
+                    view={props.view}
+                    createStart={handleCreateGroupStart(props.setView)}
+                    createEnd={handleCreateGroupEnd(props.setView, props.setGroups, props.groups)}
+                    read={handleReadGroup(props.setView, props.setGroupIndex)}
+                    updateStart={handleUpdateGroupStart(props.setView, props.setGroupIndex)}
+                    updateEnd={handleUpdateGroupEnd(props.setView, props.setGroups, props.groups)}
+                    deleteStart={handleDeleteGroupStart(props.setView, props.setGroupIndex)}
+                    deleteEnd={handleDeleteGroupEnd(props.setView, props.setGroups, props.groups)}
+                    moveUp={handleMoveGroupUp(props.setView, props.setGroups, props.groups)}
+                    moveDown={handleMoveGroupDown(props.setView, props.setGroups, props.groups)}
+                    cancel={handleReadGroups(props.setView)}
                 />
             );
     }

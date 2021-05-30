@@ -1,13 +1,7 @@
 import './Map.css';
 
-export const Map = ({
-    heading, // the angle from north to rotate the map
-    centerLatLng, // the center of the map
-    name, // the item name
-    lat, // the item latitude
-    lng, // the item longitude
-    deviceLatLng, // the current position, might be null
-}) => (
+// TODO: Map arguments should be {item, device, heading}.  This component should calculate the center if the device field is non-null.
+export const Map = ({ heading, centerLatLng, name, lat, lng, deviceLatLng }) => (
     <div className="Map">
         <h3>TODO: map</h3>
         <p>{name}: [{lat}, {lng}]</p>

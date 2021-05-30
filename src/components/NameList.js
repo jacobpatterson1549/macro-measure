@@ -3,42 +3,27 @@ import { Form, SubmitInput, NameInput, ButtonInput } from './Form';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 
-export const NameList = ({
-    view, // the action being performed
-    type, // the display name of the type of value in the table
-    values, // array of objects, each of which should have a 'name' attribute.  The names should be unique.
-    index, // the index of the value being edited
-    createStart, // function to begin creating a value
-    createEnd, // function to finish creating a value with the name
-    read, // function to read the value when the name is clicked
-    updateStart, // function to begin updating the name of the value at the index
-    updateEnd, // function to finish updating the name of the value at the index
-    deleteStart, // function to begin deleting the value at the index
-    deleteEnd, // function to finish deleting the value at index
-    moveUp, // function to decrease the index of the value
-    moveDown, // function to increase the index of the value
-    cancel, // function to cancel the current action
-}) => {
-    const [name, setName] = useLocalStorage(getLocalStorageNameKey(type), '?');
-    return render(name, setName, view, type, values, index, createStart, createEnd, read, updateStart, updateEnd, deleteStart, deleteEnd, moveUp, moveDown, cancel);
+export const NameList = (props) => {
+    const [name, setName] = useLocalStorage(getLocalStorageNameKey(props.type), '?');
+    return render({ ...props, name, setName });
 };
 
-const render = (name, setName, view, type, values, index, createStart, createEnd, read, updateStart, updateEnd, deleteStart, deleteEnd, moveUp, moveDown, cancel) => (
+const render = (props) => (
     <div>
         <NameTable
-            type={type}
-            values={values}
-            read={read}
-            update={handleUpdateStart(updateStart, setName, values)}
-            deleteValue={handleDeleteStart(deleteStart, setName, values)}
-            moveUp={moveUp}
-            moveDown={moveDown}
+            type={props.type}
+            values={props.values}
+            read={props.read}
+            update={handleUpdateStart(props.updateStart, props.setName, props.values)}
+            deleteValue={handleDeleteStart(props.deleteStart, props.setName, props.values)}
+            moveUp={props.moveUp}
+            moveDown={props.moveDown}
         />
-        {getActions(name, setName, view, type, values, index, createStart, createEnd, updateEnd, deleteEnd, cancel)}
+        {getActions(props)}
     </div>
 );
 
-const getActions = (name, setName, view, type, values, index, createStart, createEnd, updateEnd, deleteEnd, cancel) => {
+const getActions = ({ view, type, values, index, createStart, createEnd, updateEnd, deleteEnd, cancel, name, setName }) => {
     const value = (values.length !== 0) ? values[index] : {};
     switch (view) {
         case toCreateView(type):
