@@ -111,18 +111,16 @@ const getMap = (props) => {
     const [itemLat, itemLng]
         = (props.view === View.Item_Create) ? (props.geolocation.latLng ? [props.geolocation.latLng.lat, props.geolocation.latLng.lng] : [null, null])
             : (props.view === View.Item_Update) ? [props.formLat, props.formLng] : [props.lat, props.lng];
-    const itemLatLng = { lat: itemLat, lng: itemLng };
-    const [heading, centerLatLng, deviceLatLng] = (props.distanceHeading)
-        ? [props.distanceHeading.heading, moveLatLngTo(itemLatLng, props.distanceHeading.distance / 2, props.distanceUnit, props.distanceHeading.heading), props.geolocation.latLng]
-        : [0, itemLatLng, null];
+    const item = { name: props.name, lat: itemLat, lng: itemLng };
+    const [device, distanceHeading] = (props.distanceHeading)
+        ? [props.geolocation.latLng, props.distanceHeading]
+        : [];
     return (
         <Map
-            heading={heading}
-            centerLatLng={centerLatLng}
-            name={props.name}
-            lat={itemLat}
-            lng={itemLng}
-            deviceLatLng={deviceLatLng}
+            item={item}
+            device={device}
+            distanceHeading={distanceHeading}
+            distanceUnit={props.distanceUnit}
         />
     );
 };

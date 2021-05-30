@@ -1,15 +1,23 @@
 import './Map.css';
 
-// TODO: Map arguments should be {item, device, heading}.  This component should calculate the center if the device field is non-null.
-export const Map = ({ heading, centerLatLng, name, lat, lng, deviceLatLng }) => (
+import { moveLatLngTo } from '../utils/Geolocation';
+
+export const Map = ({ item, device, distanceHeading, distanceUnit }) => {
+    const center = device
+        ? moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading)
+        : item;
+    return render(item, device, center, distanceHeading?.heading || 0);
+};
+
+const render = (item, device, center, heading) => (
     <div className="Map">
         <h3>TODO: map</h3>
-        <p>{name}: [{lat}, {lng}]</p>
+        <p>{item.name}: [{item.lat}, {item.lng}]</p>
         {
-            deviceLatLng &&
-            <p>you: [{deviceLatLng.lat}, {deviceLatLng.lng}]</p>
+            device &&
+            <p>you: [{device.lat}, {device.lng}]</p>
         }
         <p title="degrees clockwise from north">heading: {heading}</p>
-        <p>map center: [{centerLatLng.lat}, {centerLatLng.lng}]</p>
+        <p>map center: [{center.lat}, {center.lng}]</p>
     </div>
 );
