@@ -1,13 +1,7 @@
-import { Form, SubmitInput, NameInput, ButtonInput } from './Form';
 import { NameTable } from './NameTable';
+import { Form, SubmitInput, NameInput, ButtonInput } from './Form';
 
 import { useLocalStorage } from '../utils/LocalStorage';
-
-const toCreateView = (type) => type + '-create';
-const toReadView = (type) => type + '-read';
-const toUpdateView = (type) => type + '-update';
-const toDeleteView = (type) => type + '-delete';
-const getLocalStorageNameKey = (type) => type + '-name';
 
 export const NameList = ({
     view, // the action being performed
@@ -25,93 +19,97 @@ export const NameList = ({
     moveDown, // function to increase the index of the value
     cancel, // function to cancel the current action
 }) => {
-
     const [name, setName] = useLocalStorage(getLocalStorageNameKey(type), '?');
-
-    const _createStart = () => {
-        setName('[New Value Name]');
-        createStart();
-    };
-    const _createEnd = () => {
-        createEnd(name);
-    };
-    const _updateStart = (_index) => {
-        setName(values[_index].name);
-        updateStart(_index);
-    };
-    const _updateEnd = () => {
-        updateEnd(index, name);
-    };
-    const _deleteStart = (_index) => {
-        setName(values[_index].name);
-        deleteStart(_index);
-    };
-    const _deleteEnd = () => {
-        deleteEnd(index);
-    };
-
-    const getView = () => {
-        const value = (values.length !== 0) ? values[index] : {};
-        switch (view) {
-            case toCreateView(type):
-            case toUpdateView(type):
-                const [_onSubmit, _caption, _submitValue, _updateIndex] = (view === toCreateView(type))
-                    ? [_createEnd, ('Create ' + type), ('Create ' + type), -1]
-                    : [_updateEnd, ('Update ' + value.name), ('Update ' + type), index];
-                return (
-                    <Form onSubmit={_onSubmit}>
-                        <fieldset>
-                            <legend>{_caption}</legend>
-                            <label>
-                                <span>Name:</span>
-                                <NameInput
-                                    value={name}
-                                    values={values}
-                                    onChange={setName}
-                                    isUniqueName={_updateIndex}
-                                />
-                            </label>
-                            <div>
-                                <ButtonInput value="Cancel" onClick={cancel} />
-                                <SubmitInput value={_submitValue} />
-                            </div>
-                        </fieldset>
-                    </Form>
-                );
-            case toDeleteView(type):
-                return (
-                    <Form onSubmit={_deleteEnd}>
-                        <fieldset>
-                            <legend>Delete {value.name}?</legend>
-                            <div>
-                                <ButtonInput value="Cancel" onClick={cancel} />
-                                <SubmitInput value={'Delete ' + type} />
-                            </div>
-                        </fieldset>
-                    </Form>
-                );
-            case toReadView(type):
-            default:
-                return (
-                    <Form onSubmit={_createStart}>
-                        <SubmitInput value={'Create ' + type} />
-                    </Form>
-                );
-        }
-    };
-
     return (
         <div>
             <NameTable
                 type={type}
                 values={values}
                 read={read}
-                update={_updateStart}
-                deleteValue={_deleteStart}
+                update={_updateStart(updateStart, setName, values)}
+                deleteValue={_deleteStart(deleteStart, setName, values)}
                 moveUp={moveUp}
                 moveDown={moveDown}
             />
-            {getView()}
+            {getActions(view, type, name, setName, values, index, createStart, createEnd, updateEnd, deleteEnd, cancel)}
         </div>
     );
+};
+
+const getActions = (view, type, name, setName, values, index, createStart, createEnd, updateEnd, deleteEnd, cancel) => {
+    const value = (values.length !== 0) ? values[index] : {};
+    switch (view) {
+        case toCreateView(type):
+        case toUpdateView(type):
+            const [_onSubmit, _caption, _submitValue, _updateIndex] = (view === toCreateView(type))
+                ? [_createEnd(createEnd, name), ('Create ' + type), ('Create ' + type), -1]
+                : [_updateEnd(updateEnd, index, name), ('Update ' + value.name), ('Update ' + type), index];
+            return (
+                <Form onSubmit={_onSubmit}>
+                    <fieldset>
+                        <legend>{_caption}</legend>
+                        <label>
+                            <span>Name:</span>
+                            <NameInput
+                                value={name}
+                                values={values}
+                                onChange={setName}
+                                isUniqueName={_updateIndex}
+                            />
+                        </label>
+                        <div>
+                            <ButtonInput value="Cancel" onClick={cancel} />
+                            <SubmitInput value={_submitValue} />
+                        </div>
+                    </fieldset>
+                </Form>
+            );
+        case toDeleteView(type):
+            return (
+                <Form onSubmit={_deleteEnd(deleteEnd, index)}>
+                    <fieldset>
+                        <legend>Delete {value.name}?</legend>
+                        <div>
+                            <ButtonInput value="Cancel" onClick={cancel} />
+                            <SubmitInput value={'Delete ' + type} />
+                        </div>
+                    </fieldset>
+                </Form>
+            );
+        case toReadView(type):
+        default:
+            return (
+                <Form onSubmit={_createStart(createStart, setName)}>
+                    <SubmitInput value={'Create ' + type} />
+                </Form>
+            );
+    }
+};
+
+const toCreateView = (type) => type + '-create';
+const toReadView = (type) => type + '-read';
+const toUpdateView = (type) => type + '-update';
+const toDeleteView = (type) => type + '-delete';
+const getLocalStorageNameKey = (type) => type + '-name';
+
+const _createStart = (createStart, setName) => () => {
+    setName('[New Value Name]');
+    createStart();
+};
+const _createEnd = (createEnd, name) => () => {
+    createEnd(name);
+};
+const _updateStart = (updateStart, setName, values) => (index) => {
+    setName(values[index].name);
+    updateStart(index);
+};
+const _updateEnd = (updateEnd, index, name) => () => {
+    updateEnd(index, name);
+};
+const _deleteStart = (deleteStart, setName, values) => (index) => {
+    setName(values[index].name);
+    deleteStart(index);
+};
+const _deleteEnd = (deleteEnd, index) => () => {
+    deleteEnd(index);
 };
