@@ -66,14 +66,14 @@ const getMain = (distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracy
                     lng={item.lng}
                     distanceUnit={distanceUnit}
                     highAccuracyGPS={highAccuracyGPS}
-                    createStart={createItemStart(setView, setItemIndex, groups, groupIndex)}
-                    createEnd={createItemEnd(setView, setGroups, groups, groupIndex)}
-                    read={readItem(setView, setItemIndex)}
-                    readItems={readItems(setView)}
-                    updateStart={updateItemStart(setView, setItemIndex)}
-                    updateEnd={updateItemEnd(setView, setGroups, groups, groupIndex)}
-                    deleteStart={deleteItemStart(setView, setItemIndex)}
-                    deleteEnd={deleteItemEnd(setView, setGroups, groups, groupIndex)}
+                    createStart={handleCreateItemStart(setView, setItemIndex, groups, groupIndex)}
+                    createEnd={handleCreateItemEnd(setView, setGroups, groups, groupIndex)}
+                    read={handleReadItem(setView, setItemIndex)}
+                    readItems={handleReadItems(setView)}
+                    updateStart={handleUpdateItemStart(setView, setItemIndex)}
+                    updateEnd={handleUpdateItemEnd(setView, setGroups, groups, groupIndex)}
+                    deleteStart={handleDeleteItemStart(setView, setItemIndex)}
+                    deleteEnd={handleDeleteItemEnd(setView, setGroups, groups, groupIndex)}
                 />);
         case View.Items_Read:
             const values = (groups.length !== 0) ? groups[groupIndex].items : [];
@@ -83,12 +83,12 @@ const getMain = (distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracy
                     values={values}
                     index={itemIndex}
                     view={view}
-                    createStart={createItemStart(setView, setItemIndex, groups, groupIndex)}
-                    read={readItem(setView, setItemIndex)}
-                    updateStart={updateItemStart(setView, setItemIndex)}
-                    deleteStart={deleteItemStart(setView, setItemIndex)}
-                    moveUp={moveItemUp(setView, setGroups, groups, groupIndex)}
-                    moveDown={moveItemDown(setView, setGroups, groups, groupIndex)}
+                    createStart={handleCreateItemStart(setView, setItemIndex, groups, groupIndex)}
+                    read={handleReadItem(setView, setItemIndex)}
+                    updateStart={handleUpdateItemStart(setView, setItemIndex)}
+                    deleteStart={handleDeleteItemStart(setView, setItemIndex)}
+                    moveUp={handleMoveItemUp(setView, setGroups, groups, groupIndex)}
+                    moveDown={handleMoveItemDown(setView, setGroups, groups, groupIndex)}
                 />
             );
         case View.Group_Create:
@@ -102,98 +102,98 @@ const getMain = (distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracy
                     values={groups}
                     index={groupIndex}
                     view={view}
-                    createStart={createGroupStart(setView)}
-                    createEnd={createGroupEnd(setView, setGroups, groups)}
-                    read={readGroup(setView, setGroupIndex)}
-                    updateStart={updateGroupStart(setView, setGroupIndex)}
-                    updateEnd={updateGroupEnd(setView, setGroups, groups)}
-                    deleteStart={deleteGroupStart(setView, setGroupIndex)}
-                    deleteEnd={deleteGroupEnd(setView, setGroups, groups)}
-                    moveUp={moveGroupUp(setView, setGroups, groups)}
-                    moveDown={moveGroupDown(setView, setGroups, groups)}
-                    cancel={readGroups(setView)}
+                    createStart={handleCreateGroupStart(setView)}
+                    createEnd={handleCreateGroupEnd(setView, setGroups, groups)}
+                    read={handleReadGroup(setView, setGroupIndex)}
+                    updateStart={handleUpdateGroupStart(setView, setGroupIndex)}
+                    updateEnd={handleUpdateGroupEnd(setView, setGroups, groups)}
+                    deleteStart={handleDeleteGroupStart(setView, setGroupIndex)}
+                    deleteEnd={handleDeleteGroupEnd(setView, setGroups, groups)}
+                    moveUp={handleMoveGroupUp(setView, setGroups, groups)}
+                    moveDown={handleMoveGroupDown(setView, setGroups, groups)}
+                    cancel={handleReadGroups(setView)}
                 />
             );
     }
 };
 
 // groups
-const createGroupStart = (setView) => () => {
+const handleCreateGroupStart = (setView) => () => {
     setView(View.Group_Create);
 };
-const createGroupEnd = (setView, setGroups, groups) => (name) => {
+const handleCreateGroupEnd = (setView, setGroups, groups) => (name) => {
     setView(View.Groups_Read);
     setGroups(Groups.createGroup(groups, name));
 };
-const readGroup = (setView, setGroupIndex) => (index) => {
+const handleReadGroup = (setView, setGroupIndex) => (index) => {
     setView(View.Items_Read);
     setGroupIndex(index);
 };
-const readGroups = (setView) => () => {
+const handleReadGroups = (setView) => () => {
     setView(View.Groups_Read);
 };
-const updateGroupStart = (setView, setGroupIndex) => (index) => {
+const handleUpdateGroupStart = (setView, setGroupIndex) => (index) => {
     setView(View.Group_Update);
     setGroupIndex(index);
 };
-const updateGroupEnd = (setView, setGroups, groups) => (index, name) => {
+const handleUpdateGroupEnd = (setView, setGroups, groups) => (index, name) => {
     setView(View.Groups_Read);
     setGroups(Groups.updateGroup(groups, index, name));
 };
-const deleteGroupStart = (setView, setGroupIndex) => (index) => {
+const handleDeleteGroupStart = (setView, setGroupIndex) => (index) => {
     setView(View.Group_Delete);
     setGroupIndex(index);
 };
-const deleteGroupEnd = (setView, setGroups, groups) => (index) => {
+const handleDeleteGroupEnd = (setView, setGroups, groups) => (index) => {
     setView(View.Groups_Read);
     setGroups(Groups.deleteGroup(groups, index));
 };
-const moveGroupUp = (setView, setGroups, groups) => (index) => {
+const handleMoveGroupUp = (setView, setGroups, groups) => (index) => {
     setView(View.Groups_Read);
     setGroups(Groups.moveGroupUp(groups, index));
 };
-const moveGroupDown = (setView, setGroups, groups) => (index) => {
+const handleMoveGroupDown = (setView, setGroups, groups) => (index) => {
     setView(View.Groups_Read);
     setGroups(Groups.moveGroupDown(groups, index));
 };
 
 // items
-const createItemStart = (setView, setItemIndex, groups, groupIndex) => () => {
+const handleCreateItemStart = (setView, setItemIndex, groups, groupIndex) => () => {
     setView(View.Item_Create);
     setItemIndex(groups[groupIndex].items.length);
 };
-const createItemEnd = (setView, setGroups, groups, groupIndex) => (name, lat, lng) => {
+const handleCreateItemEnd = (setView, setGroups, groups, groupIndex) => (name, lat, lng) => {
     setView(View.Item_Read);
     setGroups(Groups.createItem(groups, groupIndex, name, lat, lng));
 };
-const readItem = (setView, setItemIndex) => (index) => {
+const handleReadItem = (setView, setItemIndex) => (index) => {
     setView(View.Item_Read);
     setItemIndex(index);
 };
-const readItems = (setView) => () => {
+const handleReadItems = (setView) => () => {
     setView(View.Items_Read);
 };
-const updateItemStart = (setView, setItemIndex) => (index) => {
+const handleUpdateItemStart = (setView, setItemIndex) => (index) => {
     setView(View.Item_Update);
     setItemIndex(index);
 };
-const updateItemEnd = (setView, setGroups, groups, groupIndex) => (index, name, lat, lng) => {
+const handleUpdateItemEnd = (setView, setGroups, groups, groupIndex) => (index, name, lat, lng) => {
     setView(View.Item_Read);
     setGroups(Groups.updateItem(groups, groupIndex, index, name, lat, lng));
 };
-const deleteItemStart = (setView, setItemIndex) => (index) => {
+const handleDeleteItemStart = (setView, setItemIndex) => (index) => {
     setView(View.Item_Delete);
     setItemIndex(index);
 };
-const deleteItemEnd = (setView, setGroups, groups, groupIndex) => (index) => {
+const handleDeleteItemEnd = (setView, setGroups, groups, groupIndex) => (index) => {
     setView(View.Items_Read);
     setGroups(Groups.deleteItem(groups, groupIndex, index));
 };
-const moveItemUp = (setView, setGroups, groups, groupIndex) => (index) => {
+const handleMoveItemUp = (setView, setGroups, groups, groupIndex) => (index) => {
     setView(View.Items_Read);
     setGroups(Groups.moveItemUp(groups, groupIndex, index));
 };
-const moveItemDown = (setView, setGroups, groups, groupIndex) => (index) => {
+const handleMoveItemDown = (setView, setGroups, groups, groupIndex) => (index) => {
     setView(View.Items_Read);
     setGroups(Groups.moveItemDown(groups, groupIndex, index));
 };

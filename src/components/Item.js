@@ -70,48 +70,48 @@ export const newItem = () => ({
 });
 
 const getHeader = (view, items, index, name, createStart, read, readItems, updateStart, deleteStart) => {
-    const _prevDisabled = index <= 0;
-    const _caption = (view === View.Item_Create) ? '[Add Item]' : name;
-    const _nextDisabled = !items || index + 1 >= items.length
-    const _showEdit = (view === View.Item_Read);
+    const prevDisabled = index <= 0;
+    const headerName = (view === View.Item_Create) ? '[Add Item]' : name;
+    const nextDisabled = !items || index + 1 >= items.length
+    const showEdit = (view === View.Item_Read);
     return (
         <>
             <div className="row">
                 <button className="left arrow"
-                    disabled={_prevDisabled}
-                    onClick={_read(read, index, -1)}
+                    disabled={prevDisabled}
+                    onClick={handleRead(read, index, -1)}
                     title="previous item"
                 >
                     <span>◀</span>
                 </button>
                 <button onClick={readItems} title="items list" className="name">
-                    <span>{_caption}</span>
+                    <span>{headerName}</span>
                 </button>
                 <button className="right arrow"
-                    disabled={_nextDisabled}
-                    onClick={_read(read, index, +1)}
+                    disabled={nextDisabled}
+                    onClick={handleRead(read, index, +1)}
                     title="next item"
                 >
                     <span>▶</span>
                 </button>
             </div>
             {
-                _showEdit &&
+                showEdit &&
                 <div className="row">
                     <button
-                        onClick={_updateStart(updateStart, index)}
+                        onClick={handleUpdateStart(updateStart, index)}
                         title="edit item"
                     >
                         <span>Edit...</span>
                     </button>
                     <button
-                        onClick={_deleteStart(deleteStart, index)}
+                        onClick={handleDeleteStart(deleteStart, index)}
                         title="delete item"
                     >
                         <span>Delete...</span>
                     </button>
                     <button
-                        onClick={_createStart(createStart)}
+                        onClick={handleCreateStart(createStart)}
                         title="create item"
                     >
                         <span>Add...</span>
@@ -159,32 +159,32 @@ const getAction = (
     switch (view) {
         case View.Item_Create:
         case View.Item_Update:
-            const [_onSubmit, _disabled, _updateLatLngDisabled, _caption, _updateIndex, _cancel, _submitValue] = (view === View.Item_Create)
-                ? [_createEnd(createEnd, formName, latLng), !latLng, true, 'Create Item', -1, readItems, 'Create Item']
-                : [_updateEnd(updateEnd, index, formName, formLat, formLng), false, false, ('Update ' + name), index, _read(read, index, 0), 'Update Item'];
+            const [handleSubmit, submitDisabled, updateLatLngDisabled, actionName, updateIndex, handleCancel, submitValue] = (view === View.Item_Create)
+                ? [handleCreateEnd(createEnd, formName, latLng), !latLng, true, 'Create Item', -1, readItems, 'Create Item']
+                : [handleUpdateEnd(updateEnd, index, formName, formLat, formLng), false, false, ('Update ' + name), index, handleRead(read, index, 0), 'Update Item'];
             return (
-                <Form onSubmit={_onSubmit}>
-                    <fieldset disabled={_disabled}>
-                        <legend>{_caption}</legend>
+                <Form onSubmit={handleSubmit}>
+                    <fieldset disabled={submitDisabled}>
+                        <legend>{actionName}</legend>
                         <label>
                             <span>Name</span>
                             <NameInput
                                 value={formName}
                                 values={items}
                                 onChange={setFormName}
-                                updateIndex={_updateIndex}
+                                updateIndex={updateIndex}
                             />
                         </label>
                         <label>
                             <span>Latitude</span>
-                            <ButtonInput onClick={_updateLatLng(Heading.N, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit)} value="+(N)" disabled={_updateLatLngDisabled} />
-                            <ButtonInput onClick={_updateLatLng(Heading.S, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit)} value="-(S)" disabled={_updateLatLngDisabled} />
+                            <ButtonInput onClick={handleUpdateLatLng(Heading.N, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit)} value="+(N)" disabled={updateLatLngDisabled} />
+                            <ButtonInput onClick={handleUpdateLatLng(Heading.S, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit)} value="-(S)" disabled={updateLatLngDisabled} />
                             <TextInput value={formLat} disabled />
                         </label>
                         <label>
                             <span>Longitude</span>
-                            <ButtonInput onClick={_updateLatLng(Heading.W, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit)} value="-(W)" disabled={_updateLatLngDisabled} />
-                            <ButtonInput onClick={_updateLatLng(Heading.E, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit)} value="+(E)" disabled={_updateLatLngDisabled} />
+                            <ButtonInput onClick={handleUpdateLatLng(Heading.W, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit)} value="-(W)" disabled={updateLatLngDisabled} />
+                            <ButtonInput onClick={handleUpdateLatLng(Heading.E, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit)} value="+(E)" disabled={updateLatLngDisabled} />
                             <TextInput value={formLng} disabled />
                         </label>
                         <label>
@@ -192,20 +192,19 @@ const getAction = (
                             <NumberInput value={moveAmount} onChange={setMoveAmount} min="0" max="1000" />
                         </label>
                         <div>
-                            <ButtonInput value="cancel" onClick={_cancel} />
-                            <SubmitInput value={_submitValue} />
+                            <ButtonInput value="cancel" onClick={handleCancel} />
+                            <SubmitInput value={submitValue} />
                         </div>
                     </fieldset>
                 </Form>
             );
         case View.Item_Delete:
-            const _cancelDelete = _read(read, index, 0);
             return (
-                <Form onSubmit={_deleteEnd(deleteEnd, index)}>
+                <Form onSubmit={handleDeleteEnd(deleteEnd, index)}>
                     <fieldset>
                         <legend>Delete {name}</legend>
                         <div>
-                            <ButtonInput value="Cancel" onClick={_cancelDelete} />
+                            <ButtonInput value="Cancel" onClick={handleRead(read, index, 0)} />
                             <SubmitInput value={"Delete item"} />
                         </div>
                     </fieldset>
@@ -218,31 +217,30 @@ const getAction = (
                     <span>Getting location...</span>
                 );
             }
-            const _distance = String(distanceHeading.distance);
             return (
                 <div className="distance">
-                    <span>{_distance}</span>
+                    <span>{String(distanceHeading.distance)}</span>
                     <span> {distanceUnit}</span>
                 </div>
             );
     }
 };
 
-const _createStart = (createStart) => () => createStart();
+const handleCreateStart = (createStart) => () => createStart();
 
-const _createEnd = (createEnd, formName, latLng) => () => createEnd(formName, latLng.lat, latLng.lng);
+const handleCreateEnd = (createEnd, formName, latLng) => () => createEnd(formName, latLng.lat, latLng.lng);
 
-const _read = (read, index, delta) => () => read(index + delta);
+const handleRead = (read, index, delta) => () => read(index + delta);
 
-const _updateStart = (updateStart, index) => () => updateStart(index);
+const handleUpdateStart = (updateStart, index) => () => updateStart(index);
 
-const _updateEnd = (updateEnd, index, formName, formLat, formLng) => () => updateEnd(index, formName, formLat, formLng);
+const handleUpdateEnd = (updateEnd, index, formName, formLat, formLng) => () => updateEnd(index, formName, formLat, formLng);
 
-const _deleteStart = (deleteStart, index) => () => deleteStart(index);
+const handleDeleteStart = (deleteStart, index) => () => deleteStart(index);
 
-const _deleteEnd = (deleteEnd, index) => () => deleteEnd(index);
+const handleDeleteEnd = (deleteEnd, index) => () => deleteEnd(index);
 
-const _updateLatLng = (heading, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit) => () => {
+const handleUpdateLatLng = (heading, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit) => () => {
     const formLatLng = moveLatLngTo({ lat: formLat, lng: formLng }, moveAmount, distanceUnit, heading);
     setFormLat(formLatLng.lat);
     setFormLng(formLatLng.lng);

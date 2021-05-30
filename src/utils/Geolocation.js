@@ -4,7 +4,7 @@ export const moveLatLngTo = (latLng, distance, unit, heading) => {
     if (!isValid(latLng)) {
         return {};
     }
-    const amountMeters = _toMeters(distance, unit);
+    const amountMeters = toMeters(distance, unit);
     const headingDistance = { heading: heading, distance: amountMeters };
     return roundLatLng(moveTo(latLng, headingDistance));
 };
@@ -14,30 +14,28 @@ export const getDistanceHeading = (latLng1, latLng2, unit) => {
         return {};
     }
     const distanceHeading = headingDistanceTo(latLng1, latLng2);
-    const distance = _round(_fromMeters(distanceHeading.distance, unit), 1);
+    const distance = round(fromMeters(distanceHeading.distance, unit), 1);
     return {
-        distance: _round(distance, 1),
-        heading: _round(distanceHeading.heading, 1),
+        distance: round(distance, 1),
+        heading: round(distanceHeading.heading, 1),
     };
 };
 
-const isValid = (latLng) => (
-    latLng && latLng.lat !== undefined && latLng.lng !== undefined
-);
-
-const _round = (value, numDigits) => {
-    const m = Math.pow(10, numDigits);
-    return Math.round(value * m) / m;
+export const Heading = {
+    N: 0,
+    E: 90,
+    S: 180,
+    W: -90,
 };
 
 export const roundLatLng = (latLng) => {
     return {
-        lat: _round(latLng.lat, 7),
-        lng: _round(latLng.lng, 7),
+        lat: round(latLng.lat, 7),
+        lng: round(latLng.lng, 7),
     };
 }
 
-export const _toMeters = (distance, unit, invertRatio) => {
+export const toMeters = (distance, unit, invertRatio) => { // exported for testing
     let ratio = unit === 'm' ? 1
         : unit === 'km' ? 1000
             : unit === 'ft' ? 3048 / 10000
@@ -50,13 +48,15 @@ export const _toMeters = (distance, unit, invertRatio) => {
     return distance * ratio;
 };
 
-export const _fromMeters = (distance, unit) => {
-    return _toMeters(distance, unit, true);
+export const fromMeters = (distance, unit) => { // exported for testing
+    return toMeters(distance, unit, true);
 };
 
-export const Heading = {
-    N: 0,
-    E: 90,
-    S: 180,
-    W: -90,
+const isValid = (latLng) => (
+    latLng && latLng.lat !== undefined && latLng.lng !== undefined
+);
+
+const round = (value, numDigits) => {
+    const m = Math.pow(10, numDigits);
+    return Math.round(value * m) / m;
 };

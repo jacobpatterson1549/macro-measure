@@ -26,8 +26,8 @@ export const NameList = ({
                 type={type}
                 values={values}
                 read={read}
-                update={_updateStart(updateStart, setName, values)}
-                deleteValue={_deleteStart(deleteStart, setName, values)}
+                update={handleUpdateStart(updateStart, setName, values)}
+                deleteValue={handleDeleteStart(deleteStart, setName, values)}
                 moveUp={moveUp}
                 moveDown={moveDown}
             />
@@ -41,32 +41,32 @@ const getActions = (view, type, name, setName, values, index, createStart, creat
     switch (view) {
         case toCreateView(type):
         case toUpdateView(type):
-            const [_onSubmit, _caption, _submitValue, _updateIndex] = (view === toCreateView(type))
-                ? [_createEnd(createEnd, name), ('Create ' + type), ('Create ' + type), -1]
-                : [_updateEnd(updateEnd, index, name), ('Update ' + value.name), ('Update ' + type), index];
+            const [handleSubmit, actionName, submitValue, updateIndex] = (view === toCreateView(type))
+                ? [handleCreateEnd(createEnd, name), ('Create ' + type), ('Create ' + type), -1]
+                : [handleUpdateEnd(updateEnd, index, name), ('Update ' + value.name), ('Update ' + type), index];
             return (
-                <Form onSubmit={_onSubmit}>
+                <Form onSubmit={handleSubmit}>
                     <fieldset>
-                        <legend>{_caption}</legend>
+                        <legend>{actionName}</legend>
                         <label>
                             <span>Name:</span>
                             <NameInput
                                 value={name}
                                 values={values}
                                 onChange={setName}
-                                isUniqueName={_updateIndex}
+                                isUniqueName={updateIndex}
                             />
                         </label>
                         <div>
                             <ButtonInput value="Cancel" onClick={cancel} />
-                            <SubmitInput value={_submitValue} />
+                            <SubmitInput value={submitValue} />
                         </div>
                     </fieldset>
                 </Form>
             );
         case toDeleteView(type):
             return (
-                <Form onSubmit={_deleteEnd(deleteEnd, index)}>
+                <Form onSubmit={handleDeleteEnd(deleteEnd, index)}>
                     <fieldset>
                         <legend>Delete {value.name}?</legend>
                         <div>
@@ -79,7 +79,7 @@ const getActions = (view, type, name, setName, values, index, createStart, creat
         case toReadView(type):
         default:
             return (
-                <Form onSubmit={_createStart(createStart, setName)}>
+                <Form onSubmit={handleCreateStart(createStart, setName)}>
                     <SubmitInput value={'Create ' + type} />
                 </Form>
             );
@@ -92,24 +92,24 @@ const toUpdateView = (type) => type + '-update';
 const toDeleteView = (type) => type + '-delete';
 const getLocalStorageNameKey = (type) => type + '-name';
 
-const _createStart = (createStart, setName) => () => {
+const handleCreateStart = (createStart, setName) => () => {
     setName('[New Value Name]');
     createStart();
 };
-const _createEnd = (createEnd, name) => () => {
+const handleCreateEnd = (createEnd, name) => () => {
     createEnd(name);
 };
-const _updateStart = (updateStart, setName, values) => (index) => {
+const handleUpdateStart = (updateStart, setName, values) => (index) => {
     setName(values[index].name);
     updateStart(index);
 };
-const _updateEnd = (updateEnd, index, name) => () => {
+const handleUpdateEnd = (updateEnd, index, name) => () => {
     updateEnd(index, name);
 };
-const _deleteStart = (deleteStart, setName, values) => (index) => {
+const handleDeleteStart = (deleteStart, setName, values) => (index) => {
     setName(values[index].name);
     deleteStart(index);
 };
-const _deleteEnd = (deleteEnd, index) => () => {
+const handleDeleteEnd = (deleteEnd, index) => () => {
     deleteEnd(index);
 };

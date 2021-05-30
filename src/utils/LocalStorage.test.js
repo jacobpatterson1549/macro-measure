@@ -11,9 +11,9 @@ describe('LocalStorage', () => {
             clickValue,
         }) => {
             const [value, setValue] = useLocalStorage(key, defaultValue);
-            const _setValue = () => setValue(clickValue)
+            const handleSetValue = () => () => setValue(clickValue)
             return (
-                <p onClick={_setValue}>{value}</p>
+                <p onClick={handleSetValue()}>{value}</p>
             );
         };
         it('should get defaultValue', () => {
