@@ -1,6 +1,5 @@
 import './Main.css'
 
-import { Groups } from '../utils/Groups';
 import { Settings } from './Settings';
 import { DefaultDistanceUnit } from './GPSSettings';
 import { About } from './About';
@@ -10,6 +9,10 @@ import { Item, newItem } from './Item';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 import { View } from '../utils/View';
+import {
+    createGroup, updateGroup, deleteGroup, moveGroupUp, moveGroupDown,
+    createItem, updateItem, deleteItem, moveItemUp, moveItemDown,
+} from '../utils/Groups';
 
 export const Main = ({
     fullscreen,
@@ -129,7 +132,7 @@ const handleCreateGroupStart = (setView) => () => {
 };
 const handleCreateGroupEnd = (setView, setGroups, groups) => (name) => {
     setView(View.Groups_Read);
-    setGroups(Groups.createGroup(groups, name));
+    setGroups(createGroup(groups, name));
 };
 const handleReadGroup = (setView, setGroupIndex) => (index) => {
     setView(View.Items_Read);
@@ -144,7 +147,7 @@ const handleUpdateGroupStart = (setView, setGroupIndex) => (index) => {
 };
 const handleUpdateGroupEnd = (setView, setGroups, groups) => (index, name) => {
     setView(View.Groups_Read);
-    setGroups(Groups.updateGroup(groups, index, name));
+    setGroups(updateGroup(groups, index, name));
 };
 const handleDeleteGroupStart = (setView, setGroupIndex) => (index) => {
     setView(View.Group_Delete);
@@ -152,15 +155,15 @@ const handleDeleteGroupStart = (setView, setGroupIndex) => (index) => {
 };
 const handleDeleteGroupEnd = (setView, setGroups, groups) => (index) => {
     setView(View.Groups_Read);
-    setGroups(Groups.deleteGroup(groups, index));
+    setGroups(deleteGroup(groups, index));
 };
 const handleMoveGroupUp = (setView, setGroups, groups) => (index) => {
     setView(View.Groups_Read);
-    setGroups(Groups.moveGroupUp(groups, index));
+    setGroups(moveGroupUp(groups, index));
 };
 const handleMoveGroupDown = (setView, setGroups, groups) => (index) => {
     setView(View.Groups_Read);
-    setGroups(Groups.moveGroupDown(groups, index));
+    setGroups(moveGroupDown(groups, index));
 };
 
 // items
@@ -170,7 +173,7 @@ const handleCreateItemStart = (setView, setItemIndex, groups, groupIndex) => () 
 };
 const handleCreateItemEnd = (setView, setGroups, groups, groupIndex) => (name, lat, lng) => {
     setView(View.Item_Read);
-    setGroups(Groups.createItem(groups, groupIndex, name, lat, lng));
+    setGroups(createItem(groups, groupIndex, name, lat, lng));
 };
 const handleReadItem = (setView, setItemIndex) => (index) => {
     setView(View.Item_Read);
@@ -185,7 +188,7 @@ const handleUpdateItemStart = (setView, setItemIndex) => (index) => {
 };
 const handleUpdateItemEnd = (setView, setGroups, groups, groupIndex) => (index, name, lat, lng) => {
     setView(View.Item_Read);
-    setGroups(Groups.updateItem(groups, groupIndex, index, name, lat, lng));
+    setGroups(updateItem(groups, groupIndex, index, name, lat, lng));
 };
 const handleDeleteItemStart = (setView, setItemIndex) => (index) => {
     setView(View.Item_Delete);
@@ -193,13 +196,13 @@ const handleDeleteItemStart = (setView, setItemIndex) => (index) => {
 };
 const handleDeleteItemEnd = (setView, setGroups, groups, groupIndex) => (index) => {
     setView(View.Items_Read);
-    setGroups(Groups.deleteItem(groups, groupIndex, index));
+    setGroups(deleteItem(groups, groupIndex, index));
 };
 const handleMoveItemUp = (setView, setGroups, groups, groupIndex) => (index) => {
     setView(View.Items_Read);
-    setGroups(Groups.moveItemUp(groups, groupIndex, index));
+    setGroups(moveItemUp(groups, groupIndex, index));
 };
 const handleMoveItemDown = (setView, setGroups, groups, groupIndex) => (index) => {
     setView(View.Items_Read);
-    setGroups(Groups.moveItemDown(groups, groupIndex, index));
+    setGroups(moveItemDown(groups, groupIndex, index));
 };
