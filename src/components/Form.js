@@ -145,15 +145,11 @@ const onFileChange = (onChange) => (event) => {
     onChange(file);
 };
 
-const isUniqueName = (name, nameObjects, updateIndex) => {
-    for (let i = 0; i < nameObjects.length; i++) {
-        const value = nameObjects[i]
-        if (name === value.name && i !== updateIndex) {
-            return false;
-        }
-    }
-    return true;
-};
+const isUniqueName = (name, nameObjects, updateIndex) => (
+    nameObjects.length === 0 || nameObjects
+        .map((value, i) => (value.name !== name || i === updateIndex))
+        .reduce((accumulator, currentValue) => accumulator && currentValue)
+);
 
 const getOptions = (values) => (
     values.map((val) => (
