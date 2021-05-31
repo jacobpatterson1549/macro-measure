@@ -370,4 +370,14 @@ describe('Main', () => {
       expect(setGroups).toBeCalledWith([{ name: 'g', items: [{ name: 'iB' }, { name: 'iA' }, { name: 'iC' }] }]);
     });
   });
+  describe('settings toggling', () => {
+    it('should setHighAccuracyGPS', () => {
+      render(<Main
+        view={View.Settings}
+      />);
+      const element = screen.getByRole('checkbox', { name: /GPS/ });
+      element.click(); // will crash if state props are not correctly appended to inherited props
+      expect(element.checked).toBe(true);
+    });
+  });
 });
