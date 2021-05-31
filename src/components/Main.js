@@ -51,8 +51,8 @@ const getMain = (props) => {
         case View.Item_Read:
         case View.Item_Update:
         case View.Item_Delete:
-            const items = (props.groups.length !== 0) ? props.groups[props.groupIndex].items : [];
-            const item = (props.view === View.Item_Create || items.length === 0) ? newItem() : items[props.itemIndex];
+            const items = (props.groups && props.groups.length !== 0) ? props.groups[props.groupIndex].items : [];
+            const item = (View.isCreate(props.view) || items.length === 0) ? newItem() : items[props.itemIndex];
             return (
                 <Item key={props.itemIndex}
                     view={props.view}
@@ -73,7 +73,7 @@ const getMain = (props) => {
                     deleteEnd={handleDeleteItemEnd(props.setView, props.setGroups, props.groups, props.groupIndex)}
                 />);
         case View.Items_Read:
-            const values = (props.groups.length !== 0) ? props.groups[props.groupIndex].items : [];
+            const values = (props.groups && props.groups.length !== 0) ? props.groups[props.groupIndex].items : [];
             return (
                 <NameList
                     type="item"

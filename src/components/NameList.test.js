@@ -1,14 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import { NameList } from './NameList';
+import { View } from '../utils/View';
 
 describe('NameList', () => {
     describe('View', () => {
         const viewTests = [
-            ['Create', 'test-create'],
-            ['Update', 'test-update'],
-            ['Delete', 'test-delete'],
-            ['Create', 'test-read'],
+            ['Create', View.Group_Create],
+            ['Update', View.Group_Update],
+            ['Delete', View.Group_Delete],
+            ['Create', View.Groups_Read],
         ];
         it.each(viewTests)('should have only button of %s when view is %s', (expected, view) => {
             render(<NameList
@@ -27,7 +28,7 @@ describe('NameList', () => {
         describe('start', () => {
             it('should start creating when the create button is clicked', () => {
                 const createStart = jest.fn();
-                render(<NameList type={'test'} view={'test-read'} values={values} index={1} createStart={createStart} />);
+                render(<NameList type={'test'} view={View.Item_Read} values={values} index={1} createStart={createStart} />);
                 const element = screen.getByRole('button', { name: /test/ });
                 fireEvent.click(element);
                 expect(createStart).toBeCalled();
@@ -35,7 +36,7 @@ describe('NameList', () => {
             });
             it('should start updating when the edit button is clicked', () => {
                 const updateStart = jest.fn();
-                render(<NameList type={'test'} view={'test-read'} values={values} index={1} updateStart={updateStart} />);
+                render(<NameList type={'test'} view={View.Groups_Read} values={values} index={1} updateStart={updateStart} />);
                 const elements = screen.getAllByRole('button', { name: 'update value' });
                 expect(elements.length).toBe(values.length);;
                 const element = elements[1];
@@ -45,7 +46,7 @@ describe('NameList', () => {
             });
             it('should start deleting when the delete button is clicked', () => {
                 const deleteStart = jest.fn();
-                render(<NameList type={'test'} view={'test-read'} values={values} index={1} deleteStart={deleteStart} />);
+                render(<NameList type={'test'} view={View.Groups_Read} values={values} index={1} deleteStart={deleteStart} />);
                 const elements = screen.getAllByRole('button', { name: 'delete value' });
                 expect(elements.length).toBe(values.length);;
                 const element = elements[2];
@@ -59,7 +60,7 @@ describe('NameList', () => {
                 const expected = 'create_name_8';
                 window.localStorage.getItem.mockReturnValue(`"${expected}"`);
                 const createEnd = jest.fn();
-                render(<NameList type={'test'} view={'test-create'} values={values} index={1} createEnd={createEnd} />);
+                render(<NameList type={'test'} view={View.Group_Create} values={values} index={1} createEnd={createEnd} />);
                 const element = screen.getByRole('button', { name: 'Create test' });
                 fireEvent.submit(element);
                 expect(createEnd).toBeCalledWith(expected);
@@ -68,14 +69,14 @@ describe('NameList', () => {
                 const expected = 'update_name_6';
                 window.localStorage.getItem.mockReturnValue(`"${expected}"`);
                 const updateEnd = jest.fn();
-                render(<NameList type={'test'} view={'test-update'} values={values} index={1} updateEnd={updateEnd} />);
+                render(<NameList type={'test'} view={View.Group_Update} values={values} index={1} updateEnd={updateEnd} />);
                 const element = screen.getByRole('button', { name: 'Update test' });
                 fireEvent.submit(element);
                 expect(updateEnd).toBeCalledWith(1, expected);
             });
             it('should finish deleting when the form is submitted', () => {
                 const deleteEnd = jest.fn();
-                render(<NameList type={'test'} view={'test-delete'} values={values} index={2} deleteEnd={deleteEnd} />);
+                render(<NameList type={'test'} view={View.Group_Delete} values={values} index={2} deleteEnd={deleteEnd} />);
                 const element = screen.getByRole('button', { name: 'Delete test' });
                 fireEvent.submit(element);
                 expect(deleteEnd).toBeCalledWith(2);

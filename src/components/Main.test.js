@@ -5,6 +5,17 @@ import { Main } from './Main';
 import { View } from '../utils/View';
 
 describe('Main', () => {
+  describe('views', () => {
+    const views = Object.values(View).filter(Number.isInteger);
+    it.each(views)('should render with view id=%s', (view) => {
+      render(<Main view={view} />);
+    });
+    it('should render default view if view is unknown (or outdated)', () => {
+      render(<Main view={'settings'} />);
+      expect(screen.queryByText(/settings/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/create group/i)).toBeInTheDocument();
+    });
+  });
   describe('group CRUD', () => {
     it('should start to create a group', () => {
       const setView = jest.fn();

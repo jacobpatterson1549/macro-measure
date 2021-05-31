@@ -29,7 +29,7 @@ const render = (props) => (
         view={props.view}
         highAccuracyGPS={props.highAccuracyGPS}
         render={geolocation => {
-            const distanceHeading = (props.view === View.Item_Read && geolocation.latLng !== null)
+            const distanceHeading = (View.isRead(props.view) && geolocation.latLng !== null)
                 ? getDistanceHeading({ lat: props.lat, lng: props.lng }, geolocation.latLng, props.distanceUnit)
                 : null;
             return renderItem({ ...props, geolocation, distanceHeading });
@@ -53,9 +53,9 @@ const renderItem = (props) => (
 
 const getHeader = (props) => {
     const prevDisabled = props.index <= 0;
-    const headerName = (props.view === View.Item_Create) ? '[Add Item]' : props.name;
+    const headerName = (View.isCreate(props.view)) ? '[Add Item]' : props.name;
     const nextDisabled = !props.items || props.index + 1 >= props.items.length
-    const showEdit = (props.view === View.Item_Read);
+    const showEdit = View.isRead(props.view);
     return (
         <>
             <div className="row">
@@ -109,8 +109,8 @@ const getMap = (props) => {
         return (<p>[Map disabled]</p>);
     }
     const [itemLat, itemLng]
-        = (props.view === View.Item_Create) ? (props.geolocation.latLng ? [props.geolocation.latLng.lat, props.geolocation.latLng.lng] : [null, null])
-            : (props.view === View.Item_Update) ? [props.formLat, props.formLng] : [props.lat, props.lng];
+        = (View.isCreate(props.view)) ? (props.geolocation.latLng ? [props.geolocation.latLng.lat, props.geolocation.latLng.lng] : [null, null])
+            : (View.isUpdate(props.view)) ? [props.formLat, props.formLng] : [props.lat, props.lng];
     const item = { name: props.name, lat: itemLat, lng: itemLng };
     const [device, distanceHeading] = (props.distanceHeading)
         ? [props.geolocation.latLng, props.distanceHeading]
@@ -132,7 +132,7 @@ const getAction = (props) => {
     switch (props.view) {
         case View.Item_Create:
         case View.Item_Update:
-            const [handleSubmit, submitDisabled, updateLatLngDisabled, actionName, updateIndex, handleCancel, submitValue] = (props.view === View.Item_Create)
+            const [handleSubmit, submitDisabled, updateLatLngDisabled, actionName, updateIndex, handleCancel, submitValue] = (View.isCreate(props.view))
                 ? [handleCreateEnd(props.createEnd, props.formName, props.geolocation.latLng), !props.geolocation.latLng, true, 'Create Item', -1, props.readItems, 'Create Item']
                 : [handleUpdateEnd(props.updateEnd, props.index, props.formName, props.formLat, props.formLng), false, false, ('Update ' + props.name), props.index, handleRead(props.read, props.index, 0), 'Update Item'];
             return (
