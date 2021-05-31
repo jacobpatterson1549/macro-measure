@@ -60,7 +60,7 @@ describe('Item', () => {
             });
             it('should show NaN distance when reading item with currentLatLng and invalid distance unit', async () => {
                 navigator.geolocation.watchPosition = jest.fn();
-                const expected = 'DISTNANCE_UNIT'
+                const expected = 'DISTANCE_UNIT'
                 render(<Item
                     view={View.Item_Read}
                     distanceUnit={expected}
