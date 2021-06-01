@@ -106,7 +106,9 @@ const getHeader = (props) => {
 
 const getMap = (props) => {
     if (!props.geolocation.valid) {
-        return (<p>[Map disabled]</p>);
+        return (
+            <p>[Map disabled]</p>
+        );
     }
     const [itemLat, itemLng]
         = (View.isCreate(props.view)) ? (props.geolocation.latLng ? [props.geolocation.latLng.lat, props.geolocation.latLng.lng] : [null, null])
@@ -127,7 +129,9 @@ const getMap = (props) => {
 
 const getAction = (props) => {
     if (!props.geolocation.valid) {
-        return (<span>Cannot get location</span>);
+        return (
+            <span>Cannot get location</span>
+        );
     }
     switch (props.view) {
         case View.Item_Create:

@@ -3,18 +3,16 @@ import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 import { Window } from './Window';
 
 describe('Window', () => {
-    const MockApp = ({ win }) => {
-        return (
-            <div>
-                <p title="fullscreen">{String(win.fullscreen)}</p>
-                <p title="onLine">{String(win.onLine)}</p>
-                {
-                    win.installPromptEvent &&
-                    <button>INSTALL</button>
-                }
-            </div>
-        );
-    };
+    const MockApp = ({ win }) => (
+        <div>
+            <p title="fullscreen">{String(win.fullscreen)}</p>
+            <p title="onLine">{String(win.onLine)}</p>
+            {
+                win.installPromptEvent &&
+                <button>INSTALL</button>
+            }
+        </div>
+    );
     const tests = [
         [true, true],
         [true, false],

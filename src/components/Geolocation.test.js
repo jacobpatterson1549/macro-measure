@@ -19,17 +19,15 @@ describe('Geolocation', () => {
     afterEach(() => {
         navigator.geolocation = oldGeolocation;
     });
-    const MockApp = ({ position: geolocation }) => {
-        return (
-            <div>
-                {
-                    geolocation.latLng &&
-                    <p title="position">[{geolocation.latLng.lat},{geolocation.latLng.lng}]</p>
-                }
-                <p title="valid">{String(geolocation.valid)}</p>
-            </div>
-        )
-    };
+    const MockApp = ({ position: geolocation }) => (
+        <div>
+            {
+                geolocation.latLng &&
+                <p title="position">[{geolocation.latLng.lat},{geolocation.latLng.lng}]</p>
+            }
+            <p title="valid">{String(geolocation.valid)}</p>
+        </div>
+    );
     describe('views', () => {
         const viewTests = [
             [View.Item_Create, true],

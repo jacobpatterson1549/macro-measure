@@ -6,7 +6,8 @@ export const Map = ({ item, device, distanceHeading, distanceUnit }) => {
     const center = device
         ? moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading)
         : item;
-    return render(item, device, center, distanceHeading?.heading || 0);
+    const heading = distanceHeading?.heading || 0;
+    return render(item, device, center, heading);
 };
 
 const render = (item, device, center, heading) => (
