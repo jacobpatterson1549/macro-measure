@@ -37,6 +37,7 @@ const viewFuncs = {
     needsGPS: (viewId) => !!(viewFlagsById[viewId] & NEEDS_GPS),
 };
 
-export const View = Object.assign({},
-    viewIdsByName,
-    viewFuncs);
+export const View = {
+    ...viewIdsByName,
+    ...viewFuncs,
+};
