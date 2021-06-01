@@ -126,10 +126,6 @@ describe('Main', () => {
     });
   });
   describe('item CRUD', () => {
-    const mockGeolocation = async (lat, lng) => {
-      const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
-      await waitFor(() => successCallback({ coords: { latitude: lat, longitude: lng, } }));
-    };
     it('should start to create an item from list', () => {
       const createItemStart = jest.fn();
       render(<Main
@@ -163,7 +159,8 @@ describe('Main', () => {
         createItemEnd={createItemEnd}
       />);
       fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: expected } });
-      await mockGeolocation(7, -9); // enable the submit button
+      const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
+      await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } })); // must have location to create item
       screen.getByRole('button', { name: /create item/i }).click();
       expect(createItemEnd).toBeCalledWith(expected, 7, -9);
     });
@@ -202,7 +199,6 @@ describe('Main', () => {
         groupIndex={0}
         readItemList={readItemList}
       />);
-      await mockGeolocation(); // TODO: cancel should never be disabled for item create, do not combine with tests below because should go back to list
       screen.getByText(/cancel/i).click();
       expect(readItemList).toBeCalledWith();
     });

@@ -67,10 +67,11 @@ export const SelectInput = ({ value, values, onChange }) => (
     </select>
 );
 
-export const SubmitInput = ({ value }) => (
+export const SubmitInput = ({ value, disabled }) => (
     <input
         type="submit"
         value={value || 'Submit'}
+        disabled={disabled}
     />
 );
 

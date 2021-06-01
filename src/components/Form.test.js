@@ -279,6 +279,18 @@ describe('SubmitInput', () => {
         const element = screen.getByRole('button');
         expect(element.value).toBe(expected);
     });
+    it('should not be disabled', () => {
+        const expected = 'Submit';
+        render(<SubmitInput />);
+        const element = screen.getByRole('button');
+        expect(element.disabled).toBeFalsy();
+    });
+    it('should set disabled', () => {
+        const expected = 'Submit';
+        render(<SubmitInput disabled={true} />);
+        const element = screen.getByRole('button');
+        expect(element.disabled).toBeTruthy();
+    });
 });
 
 describe('Form', () => {

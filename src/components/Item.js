@@ -132,12 +132,12 @@ const getAction = (props) => {
     switch (props.view) {
         case View.Item_Create:
         case View.Item_Update:
-            const [handleSubmit, submitDisabled, updateLatLngDisabled, actionName, updateIndex, handleCancel, submitValue] = (View.isCreate(props.view))
-                ? [handleCreateEnd(props.createEnd, props.formName, props.geolocation.latLng), !props.geolocation.latLng, true, 'Create Item', -1, handleReadItemList(props.readItemList), 'Create Item']
-                : [handleUpdateEnd(props.updateEnd, props.index, props.formName, props.formLat, props.formLng), false, false, ('Update ' + props.name), props.index, handleRead(props.read, props.index, 0), 'Update Item'];
+            const [handleSubmit, hasLatLng, updateLatLngDisabled, actionName, updateIndex, handleCancel, submitValue] = (View.isCreate(props.view))
+                ? [handleCreateEnd(props.createEnd, props.formName, props.geolocation.latLng), !!props.geolocation.latLng, true, 'Create Item', -1, handleReadItemList(props.readItemList), 'Create Item']
+                : [handleUpdateEnd(props.updateEnd, props.index, props.formName, props.formLat, props.formLng), true, false, ('Update ' + props.name), props.index, handleRead(props.read, props.index, 0), 'Update Item'];
             return (
                 <Form onSubmit={handleSubmit}>
-                    <fieldset disabled={submitDisabled}>
+                    <fieldset>
                         <legend>{actionName}</legend>
                         <label>
                             <span>Name</span>
@@ -148,25 +148,27 @@ const getAction = (props) => {
                                 updateIndex={updateIndex}
                             />
                         </label>
-                        <label>
-                            <span>Latitude</span>
-                            <ButtonInput onClick={handleUpdateLatLng(Heading.N, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="+(N)" disabled={updateLatLngDisabled} />
-                            <ButtonInput onClick={handleUpdateLatLng(Heading.S, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="-(S)" disabled={updateLatLngDisabled} />
-                            <TextInput value={props.formLat} disabled />
-                        </label>
-                        <label>
-                            <span>Longitude</span>
-                            <TextInput value={props.formLng} disabled />
-                            <ButtonInput onClick={handleUpdateLatLng(Heading.W, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="-(W)" disabled={updateLatLngDisabled} />
-                            <ButtonInput onClick={handleUpdateLatLng(Heading.E, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="+(E)" disabled={updateLatLngDisabled} />
-                        </label>
-                        <label>
-                            <span>Move Amount ({props.distanceUnit})</span>
-                            <NumberInput value={props.moveAmount} onChange={props.setMoveAmount} min="0" max="1000" />
-                        </label>
+                        <fieldset disabled={!hasLatLng}>
+                            <label>
+                                <span>Latitude</span>
+                                <ButtonInput onClick={handleUpdateLatLng(Heading.N, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="+(N)" disabled={updateLatLngDisabled} />
+                                <ButtonInput onClick={handleUpdateLatLng(Heading.S, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="-(S)" disabled={updateLatLngDisabled} />
+                                <TextInput value={props.formLat} disabled />
+                            </label>
+                            <label>
+                                <span>Longitude</span>
+                                <ButtonInput onClick={handleUpdateLatLng(Heading.W, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="-(W)" disabled={updateLatLngDisabled} />
+                                <ButtonInput onClick={handleUpdateLatLng(Heading.E, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="+(E)" disabled={updateLatLngDisabled} />
+                                <TextInput value={props.formLng} disabled />
+                            </label>
+                            <label>
+                                <span>Move Amount ({props.distanceUnit})</span>
+                                <NumberInput value={props.moveAmount} onChange={props.setMoveAmount} min="0" max="1000" />
+                            </label>
+                        </fieldset>
                         <div>
                             <ButtonInput value="cancel" onClick={handleCancel} />
-                            <SubmitInput value={submitValue} />
+                            <SubmitInput value={submitValue} disabled={!hasLatLng} />
                         </div>
                     </fieldset>
                 </Form>
