@@ -11,7 +11,7 @@ import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/Geolocation'
 import { View } from '../utils/View';
 
 export const Item = (props) => {
-    const [moveAmount, setMoveAmount] = useLocalStorage('move-amount', 1);
+    const [moveAmount, setMoveAmount] = useLocalStorage('moveAmount', 1);
     const [formName, setFormName] = useState(props.name);
     const [formLat, setFormLat] = useState(props.lat);
     const [formLng, setFormLng] = useState(props.lng);

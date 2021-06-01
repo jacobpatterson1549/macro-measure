@@ -121,7 +121,7 @@ describe('Item', () => {
         ];
         it.each(latLngTests)('should update latLng to [%s,%s] when %s button is clicked', async (lat, lng, direction) => {
             navigator.geolocation.watchPosition = jest.fn();
-            window.localStorage.getItem.mockImplementation((key) => key === 'move-amount' ? '1000' : null);
+            window.localStorage.getItem.mockReturnValue(1000); // moveAmount
             render(<Item
                 view={View.Item_Update}
                 lat={0}
