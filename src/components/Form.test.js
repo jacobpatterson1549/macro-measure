@@ -261,38 +261,6 @@ describe('SelectInput', () => {
     });
 })
 
-describe('SubmitInput', () => {
-    it('should have submit type', () => {
-        render(<SubmitInput />);
-        const element = screen.getByRole('button');
-        expect(element.type).toBe('submit');
-    });
-    it('should have value', () => {
-        const expected = 'test3';
-        render(<SubmitInput value={expected} />);
-        const element = screen.getByRole('button');
-        expect(element.value).toBe(expected);
-    });
-    it('should have default value', () => {
-        const expected = 'Submit';
-        render(<SubmitInput />);
-        const element = screen.getByRole('button');
-        expect(element.value).toBe(expected);
-    });
-    it('should not be disabled', () => {
-        const expected = 'Submit';
-        render(<SubmitInput />);
-        const element = screen.getByRole('button');
-        expect(element.disabled).toBeFalsy();
-    });
-    it('should set disabled', () => {
-        const expected = 'Submit';
-        render(<SubmitInput disabled={true} />);
-        const element = screen.getByRole('button');
-        expect(element.disabled).toBeTruthy();
-    });
-});
-
 describe('Label', () => {
     it('should have caption', () => {
         const expected = '[some caption]';
@@ -362,14 +330,14 @@ describe('Fieldset', () => {
 describe('Form', () => {
     it('should call onSubmit when submitted', () => {
         const onSubmit = jest.fn();
-        render(<Form onSubmit={onSubmit}><SubmitInput /></Form>);
+        render(<Form onSubmit={onSubmit} />);
         const element = screen.getByRole('button');
         fireEvent.submit(element);
         expect(onSubmit).toBeCalled();
     });
     it('should preventDefault when submitted', () => {
         const onSubmit = jest.fn();
-        render(<Form onSubmit={onSubmit}><SubmitInput /></Form>);
+        render(<Form onSubmit={onSubmit}></Form>);
         const element = screen.getByRole('button');
         const event = createEvent.submit(element);
         fireEvent(element, event);
@@ -381,12 +349,59 @@ describe('Form', () => {
                 <Label caption="a"><input /></Label>
                 <Label caption="b"><input /></Label>
                 <Label caption="c"><input /></Label>
-                <SubmitInput />
             </Form>
         );
         expect(screen.getByLabelText('a')).toBeInTheDocument();
         expect(screen.getByLabelText('b')).toBeInTheDocument();
         expect(screen.getByLabelText('c')).toBeInTheDocument();
+    });
+    it('should have submit type', () => {
+        render(<Form />);
+        const element = screen.getByRole('button');
+        expect(element.type).toBe('submit');
+    });
+    it('should have submit value', () => {
+        const expected = 'test3';
+        render(<Form submitValue={expected} />);
+        const element = screen.getByRole('button');
+        expect(element.value).toBe(expected);
+    });
+    it('should have default value', () => {
+        const expected = 'Submit';
+        render(<Form />);
+        const element = screen.getByRole('button');
+        expect(element.value).toBe(expected);
+    });
+    it('should not have disabled submit button', () => {
+        const expected = 'Submit';
+        render(<Form />);
+        const element = screen.getByRole('button');
+        expect(element.disabled).toBeFalsy();
+    });
+    it('should have disable submit button', () => {
+        const expected = 'Submit';
+        render(<Form submitDisabled={true} />);
+        const element = screen.getByRole('button');
+        expect(element.disabled).toBeTruthy();
+    });
+    it('should have two buttons', () => {
+        const onCancel = jest.fn();
+        render(<Form onCancel={onCancel} />);
+        const elements = screen.getAllByRole('button');
+        expect(elements.length).toBe(2);
+    });
+    it('should call onCancel', () => {
+        const onCancel = jest.fn();
+        render(<Form onCancel={onCancel} />);
+        const element = screen.getByRole('button', { name: 'Cancel' });
+        element.click();
+        expect(onCancel).toBeCalled();
+    });
+    it('should NOT disable cancel button when submit button is', () => {
+        const onCancel = jest.fn();
+        render(<Form submitDisabled={true} onCancel={onCancel} />);
+        expect(screen.getByRole('button', { name: 'Cancel' }).disabled).toBeFalsy();
+        expect(screen.getByRole('button', { name: 'Submit' }).disabled).toBeTruthy();
     });
 });
 

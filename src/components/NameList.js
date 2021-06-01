@@ -1,5 +1,5 @@
 import { NameTable } from './NameTable';
-import { Form, Fieldset, Label, SubmitInput, NameInput, ButtonInput } from './Form';
+import { Form, Fieldset, Label, NameInput } from './Form';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 import { View } from '../utils/View';
@@ -31,7 +31,11 @@ const getAction = ({ view, type, values, index, createStart, createEnd, updateEn
             ? [handleCreateEnd(createEnd, name), ('Create ' + type), ('Create ' + type), -1]
             : [handleUpdateEnd(updateEnd, index, name), ('Update ' + value.name), ('Update ' + type), index];
         return (
-            <Form onSubmit={handleSubmit}>
+            <Form
+                onSubmit={handleSubmit}
+                submitValue={submitValue}
+                onCancel={cancel}
+            >
                 <Fieldset caption={actionName}>
                     <Label caption="Name">
                         <NameInput
@@ -41,31 +45,27 @@ const getAction = ({ view, type, values, index, createStart, createEnd, updateEn
                             isUniqueName={updateIndex}
                         />
                     </Label>
-                    <div>
-                        <ButtonInput value="Cancel" onClick={cancel} />
-                        <SubmitInput value={submitValue} />
-                    </div>
                 </Fieldset>
             </Form>
         );
     }
     if (View.isDelete(view)) {
         return (
-            <Form onSubmit={handleDeleteEnd(deleteEnd, index)}>
-                <Fieldset caption={'Delete ' + value.name + '?'}>
-                    <div>
-                        <ButtonInput value="Cancel" onClick={cancel} />
-                        <SubmitInput value={'Delete ' + type} />
-                    </div>
-                </Fieldset>
+            <Form
+                onSubmit={handleDeleteEnd(deleteEnd, index)}
+                submitValue={'Delete ' + type}
+                onCancel={cancel}
+            >
+                <Fieldset caption={'Delete ' + value.name} />
             </Form>
         );
     }
     // (View.isRead(view))
     return (
-        <Form onSubmit={handleCreateStart(createStart, setName)}>
-            <SubmitInput value={'Create ' + type} />
-        </Form>
+        <Form
+            onSubmit={handleCreateStart(createStart, setName)}
+            submitValue={'Create ' + type}
+        />
     );
 };
 

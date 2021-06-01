@@ -67,14 +67,6 @@ export const SelectInput = ({ value, values, onChange }) => (
     </select>
 );
 
-export const SubmitInput = ({ value, disabled }) => (
-    <input
-        type="submit"
-        value={value || 'Submit'}
-        disabled={disabled}
-    />
-);
-
 export const Label = ({ caption, children }) => (
     <label className="Label">
         <span>{caption}</span>
@@ -92,9 +84,20 @@ export const Fieldset = ({ caption, disabled, border = true, children }) => (
     </fieldset>
 );
 
-export const Form = ({ onSubmit, children }) => (
+export const Form = ({ onSubmit, submitDisabled, submitValue = 'Submit', onCancel, children }) => (
     <form className="Form" onSubmit={preventDefault(onSubmit)}>
         {children}
+        <div className="ActionButtons">
+            {
+                onCancel &&
+                <ButtonInput value="Cancel" onClick={onCancel} />
+            }
+            <input
+                type="submit"
+                value={submitValue}
+                disabled={submitDisabled}
+            />
+        </div>
     </form>
 );
 
