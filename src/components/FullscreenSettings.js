@@ -1,18 +1,16 @@
-import { Fieldset, ButtonInput, CheckboxInput } from './Form';
+import { Fieldset, Label, ButtonInput, CheckboxInput } from './Form';
 
 export const FullscreenSettings = ({ fullscreen, onLine, installPromptEvent }) => (
-    <Fieldset caption='Fullscreen Settings'>
-        <label>
-            <span>Fullscreen:</span>
+    <Fieldset caption="Fullscreen Settings">
+        <Label caption="Fullscreen">
             <CheckboxInput checked={fullscreen} onChange={toggleFullscreen} />
-        </label>
+        </Label>
         {
             installPromptEvent
                 ? (
-                    <label>
-                        <span>Add to Home Screen:</span>
+                    <Label caption="Add to Home Screen">
                         <ButtonInput value="Install" onClick={promptInstall(installPromptEvent)} />
-                    </label>
+                    </Label>
                 )
                 : (
                     <span>{onLine ? 'Online:' : 'OFFLINE:'} App updates after online reload.</span>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Fieldset, ButtonInput, FileInput } from './Form';
+import { Fieldset, Label, ButtonInput, FileInput } from './Form';
 
 import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 
@@ -10,24 +10,20 @@ export const LocalStorageSettings = () => {
 };
 
 const render = (exportLink, setExportLink) => (
-    <Fieldset caption='LocalStorage Settings'>
-        <label>
-            <span>Export ALL Saved Data:</span>
+    <Fieldset caption="LocalStorage Settings">
+        <Label caption="Export ALL Saved Data">
             <ButtonInput value="Export File" onClick={exportStorage(setExportLink)} />
             {exportLink}
-        </label>
-        <label>
-            <span>Import ALL Saved Data:</span>
+        </Label>
+        <Label caption="Import ALL Saved Data">
             <FileInput accept={jsonMimeType} onChange={importStorage} />
-        </label>
-        <label>
-            <span>Clear ALL Saved Data:</span>
+        </Label>
+        <Label caption="Clear ALL Saved Data">
             <ButtonInput value="Clear" onClick={resetStorage} />
-        </label>
-        <label>
-            <span>Reload page and Saved Data:</span>
+        </Label>
+        <Label caption="Reload page and Saved Data">
             <ButtonInput value="Reload" onClick={reload} />
-        </label>
+        </Label>
     </Fieldset>
 );
 

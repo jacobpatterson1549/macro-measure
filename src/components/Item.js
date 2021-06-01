@@ -4,7 +4,7 @@ import './Item.css';
 
 import { Map } from './Map';
 import { Geolocation } from './Geolocation';
-import { Form, Fieldset, SubmitInput, NameInput, TextInput, NumberInput, ButtonInput } from './Form';
+import { Form, Fieldset, Label, SubmitInput, NameInput, TextInput, NumberInput, ButtonInput } from './Form';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/Geolocation';
@@ -138,32 +138,28 @@ const getAction = (props) => {
             return (
                 <Form onSubmit={handleSubmit}>
                     <Fieldset caption={actionName}>
-                        <label>
-                            <span>Name</span>
+                        <Label caption="Name">
                             <NameInput
                                 value={props.formName}
                                 values={props.items}
                                 onChange={props.setFormName}
                                 updateIndex={updateIndex}
                             />
-                        </label>
+                        </Label>
                         <Fieldset disabled={!hasLatLng} border={false}>
-                            <label>
-                                <span>Latitude</span>
+                            <Label caption="Latitude">
                                 <ButtonInput onClick={handleUpdateLatLng(Heading.N, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="+(N)" disabled={updateLatLngDisabled} />
                                 <ButtonInput onClick={handleUpdateLatLng(Heading.S, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="-(S)" disabled={updateLatLngDisabled} />
                                 <TextInput value={props.formLat} disabled />
-                            </label>
-                            <label>
-                                <span>Longitude</span>
+                            </Label>
+                            <Label caption="Longitude">
                                 <ButtonInput onClick={handleUpdateLatLng(Heading.W, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="-(W)" disabled={updateLatLngDisabled} />
                                 <ButtonInput onClick={handleUpdateLatLng(Heading.E, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="+(E)" disabled={updateLatLngDisabled} />
                                 <TextInput value={props.formLng} disabled />
-                            </label>
-                            <label>
-                                <span>Move Amount ({props.distanceUnit})</span>
+                            </Label>
+                            <Label caption={`Move Amount (${props.distanceUnit})`}>
                                 <NumberInput value={props.moveAmount} onChange={props.setMoveAmount} min="0" max="1000" />
-                            </label>
+                            </Label>
                         </Fieldset>
                         <div>
                             <ButtonInput value="cancel" onClick={handleCancel} />
@@ -178,7 +174,7 @@ const getAction = (props) => {
                     <Fieldset caption={'Delete ' + props.name}>
                         <div>
                             <ButtonInput value="Cancel" onClick={handleRead(props.read, props.index, 0)} />
-                            <SubmitInput value={"Delete item"} />
+                            <SubmitInput value="Delete item" />
                         </div>
                     </Fieldset>
                 </Form>

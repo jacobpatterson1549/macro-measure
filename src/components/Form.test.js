@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 
-import { Form, SubmitInput, TextInput, NumberInput, NameInput, ButtonInput, CheckboxInput, FileInput, SelectInput, preventDefault, Fieldset } from './Form';
+import { Form, SubmitInput, TextInput, NumberInput, NameInput, ButtonInput, CheckboxInput, FileInput, SelectInput, preventDefault, Fieldset, Label } from './Form';
 
 describe('TextInput', () => {
     it('should have text type', () => {
@@ -293,6 +293,27 @@ describe('SubmitInput', () => {
     });
 });
 
+describe('Label', () => {
+    it('should have caption', () => {
+        const expected = '[some caption]';
+        render(<Label caption={expected} />);
+        const element = screen.getByText(expected);
+        expect(element).toBeInTheDocument();
+    });
+    it('should have children', () => {
+        const expected = '[some caption]';
+        render(
+            <Label caption={expected}>
+                <div>A</div>
+                <div>B</div>
+                <div>C</div>
+            </Label>
+        );
+        const element = screen.getByText(expected);
+        expect(element.parentElement.childElementCount).toBe(4);
+    });
+});
+
 describe('Fieldset', () => {
     it('should NOT have legend', () => {
         render(<Fieldset />);
@@ -318,9 +339,9 @@ describe('Fieldset', () => {
     it('should have children', () => {
         render(
             <Fieldset>
-                <label>A</label>
-                <label>B</label>
-                <label>C</label>
+                <Label caption="A" />
+                <Label caption="B" />
+                <Label caption="C" />
             </Fieldset>
         );
         const element = screen.getByRole('group');
@@ -357,9 +378,9 @@ describe('Form', () => {
     it('should preserve children', () => {
         render(
             <Form>
-                <label>a<TextInput /></label>
-                <label>b<TextInput /></label>
-                <label>c<TextInput /></label>
+                <Label caption="a"><input /></Label>
+                <Label caption="b"><input /></Label>
+                <Label caption="c"><input /></Label>
                 <SubmitInput />
             </Form>
         );

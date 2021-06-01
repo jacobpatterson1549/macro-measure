@@ -9,3 +9,7 @@
 .Fieldset .NoBorder {
     border: 0;
 }
+
+.Label *:first-child:after {
+    content: ":";
+}

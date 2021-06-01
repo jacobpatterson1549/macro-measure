@@ -75,6 +75,13 @@ export const SubmitInput = ({ value, disabled }) => (
     />
 );
 
+export const Label = ({ caption, children }) => (
+    <label className="Label">
+        <span>{caption}</span>
+        {children}
+    </label>
+);
+
 export const Fieldset = ({ caption, disabled, border = true, children }) => (
     <fieldset className={'Fieldset' + (!border ? ' NoBorder' : '')} disabled={disabled}>
         {

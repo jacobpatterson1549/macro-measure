@@ -1,5 +1,5 @@
 import { NameTable } from './NameTable';
-import { Form, Fieldset, SubmitInput, NameInput, ButtonInput } from './Form';
+import { Form, Fieldset, Label, SubmitInput, NameInput, ButtonInput } from './Form';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 import { View } from '../utils/View';
@@ -33,15 +33,14 @@ const getAction = ({ view, type, values, index, createStart, createEnd, updateEn
         return (
             <Form onSubmit={handleSubmit}>
                 <Fieldset caption={actionName}>
-                    <label>
-                        <span>Name:</span>
+                    <Label caption="Name">
                         <NameInput
                             value={name}
                             values={values}
                             onChange={setName}
                             isUniqueName={updateIndex}
                         />
-                    </label>
+                    </Label>
                     <div>
                         <ButtonInput value="Cancel" onClick={cancel} />
                         <SubmitInput value={submitValue} />

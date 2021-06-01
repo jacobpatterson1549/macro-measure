@@ -7,12 +7,12 @@ describe('FullscreenSettings', () => {
         describe('state', () => {
             it('should be available if not currently active', () => {
                 render(<FullscreenSettings fullscreen={false} />);
-                const element = screen.getByRole('checkbox', { name: 'Fullscreen:' });
+                const element = screen.getByRole('checkbox');
                 expect(element.checked).toBeFalsy();
             });
             it('should be exit-able if currently active', () => {
                 render(<FullscreenSettings fullscreen={true} />);
-                const element = screen.getByRole('checkbox', { name: 'Fullscreen:' });
+                const element = screen.getByRole('checkbox');
                 expect(element.checked).toBeTruthy();
             });
         });
@@ -22,7 +22,7 @@ describe('FullscreenSettings', () => {
                 document.fullscreenElement = null;
                 document.body.requestFullscreen = jest.fn().mockReturnValue(() => { });
                 render(root);
-                const element = screen.getByRole('checkbox', { name: 'Fullscreen:' });
+                const element = screen.getByRole('checkbox');
                 fireEvent.click(element);
                 await waitFor(expect(document.body.requestFullscreen).toBeCalled);
             });
@@ -31,7 +31,7 @@ describe('FullscreenSettings', () => {
                 document.fullscreenElement = root;
                 document.exitFullscreen = jest.fn();
                 render(root);
-                const element = screen.getByRole('checkbox', { name: 'Fullscreen:' });
+                const element = screen.getByRole('checkbox');
                 fireEvent.click(element);
                 expect(document.exitFullscreen).toBeCalled();
             });
