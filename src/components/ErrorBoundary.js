@@ -23,4 +23,4 @@ export class ErrorBoundary extends Component {
         <LocalStorageSettings />
       </div>
     );
-};
+}
