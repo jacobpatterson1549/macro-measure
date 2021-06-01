@@ -43,7 +43,7 @@ describe('Window', () => {
         });
     });
     describe('promptInstall', () => {
-        const mockOnbeforeinstallprompt = (accepted) => {
+        const mockOnbeforeinstallprompt = () => {
             // test procedure from https://github.com/testing-library/testing-library-docs/issues/798
             const event = createEvent('beforeinstallprompt', window);
             Object.defineProperty(event, 'preventDefault', { value: jest.fn() });
@@ -55,15 +55,15 @@ describe('Window', () => {
             const element = screen.queryByRole('button');
             expect(element).not.toBeInTheDocument();
         });
-        it('should have the install button when the event is fired', async () => {
+        it('should have the install button when the event is fired', () => {
             render(<Window render={win => (<MockApp win={win} />)} />);
-            await mockOnbeforeinstallprompt();
+            mockOnbeforeinstallprompt();
             const element = screen.queryByRole('button');
             expect(element).toBeInTheDocument();
         });
-        it('should preventDefault when the event is fired', async () => {
+        it('should preventDefault when the event is fired', () => {
             render(<Window render={win => (<MockApp win={win} />)} />);
-            const event = await mockOnbeforeinstallprompt();
+            const event = mockOnbeforeinstallprompt();
             expect(event.preventDefault).toBeCalled();
         });
     });
