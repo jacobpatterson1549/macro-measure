@@ -16,136 +16,113 @@ describe('Main', () => {
       expect(screen.queryByText(/create group/i)).toBeInTheDocument();
     });
   });
+  // These tests (group/item CRUD) are very similar to these in Groups.test.js - update them both
   describe('group CRUD', () => {
     it('should start to create a group', () => {
-      const setView = jest.fn();
+      const createGroupStart = jest.fn();
       render(<Main
         view={View.Groups_Read}
-        setView={setView}
+        createGroupStart={createGroupStart}
         groups={[]}
       />);
       screen.getByRole('button', { name: /create group/i }).click();
-      expect(setView).toBeCalledWith(View.Group_Create);
+      expect(createGroupStart).toBeCalled();
     });
     it('should create a group', () => {
-      const setView = jest.fn();
-      const setGroups = jest.fn();
+      const createGroupEnd = jest.fn();
       const expected = '[my custom group name]';
       render(<Main
         view={View.Group_Create}
-        setView={setView}
         groups={[]}
-        setGroups={setGroups}
+        createGroupEnd={createGroupEnd}
       />);
       fireEvent.change(screen.getByRole('textbox'), { target: { value: expected } });
       screen.getByRole('button', { name: /create group/i }).click();
-      expect(setView).toBeCalledWith(View.Groups_Read);
-      expect(setGroups).toBeCalledWith([{ name: expected, items: [] }]);
+      expect(createGroupEnd).toBeCalledWith(expected);
     });
     it('should read a group', () => {
-      const setView = jest.fn();
-      const setGroupIndex = jest.fn();
+      const readGroup = jest.fn();
       render(<Main
         view={View.Groups_Read}
-        setView={setView}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
-        setGroupIndex={setGroupIndex}
+        readGroup={readGroup}
       />);
       screen.getByText('groupB').click();
-      expect(setView).toBeCalledWith(View.Items_Read);
-      expect(setGroupIndex).toBeCalledWith(1);
+      expect(readGroup).toBeCalled();
     });
     it.each([View.Group_Create, View.Group_Update, View.Group_Delete])('should read groups when %s is cancelled', (view) => {
-      const setView = jest.fn();
+      const readGroups = jest.fn();
       render(<Main
         view={view}
-        setView={setView}
         groups={[]}
+        readGroups={readGroups}
       />);
       screen.getByText(/cancel/i).click();
-      expect(setView).toBeCalledWith(View.Groups_Read);
+      expect(readGroups).toBeCalled();
     });
     it('should start to update a group', () => {
-      const setView = jest.fn();
-      const setGroupIndex = jest.fn();
+      const updateGroupStart = jest.fn();
       render(<Main
         view={View.Groups_Read}
-        setView={setView}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
-        setGroupIndex={setGroupIndex}
+        updateGroupStart={updateGroupStart}
       />);
       screen.getAllByRole('button', { name: /update/i })[2].click();
-      expect(setView).toBeCalledWith(View.Group_Update);
-      expect(setGroupIndex).toBeCalledWith(2);
+      expect(updateGroupStart).toBeCalledWith(2);
     });
     it('should update a group', () => {
-      const setView = jest.fn();
-      const setGroups = jest.fn();
+      const updateGroupEnd = jest.fn();
       const expected = '[groupC-EDITED]'
       render(<Main
         view={View.Group_Update}
-        setView={setView}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
-        setGroups={setGroups}
         groupIndex={2}
+        updateGroupEnd={updateGroupEnd}
       />);
       fireEvent.change(screen.getByRole('textbox'), { target: { value: expected } });
       screen.getByRole('button', { name: /update group/i }).click();
-      expect(setView).toBeCalledWith(View.Groups_Read);
-      expect(setGroups).toBeCalledWith([{ name: 'groupA' }, { name: 'groupB' }, { name: expected }]);
+      expect(updateGroupEnd).toBeCalledWith(2, expected);
     });
     it('should start to delete a group', () => {
-      const setView = jest.fn();
-      const setGroupIndex = jest.fn();
+      const deleteGroupStart = jest.fn();
       render(<Main
         view={View.Groups_Read}
-        setView={setView}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
-        setGroupIndex={setGroupIndex}
+        deleteGroupStart={deleteGroupStart}
       />);
       screen.getAllByRole('button', { name: /delete/i })[1].click();
-      expect(setView).toBeCalledWith(View.Group_Delete);
-      expect(setGroupIndex).toBeCalledWith(1);
+      expect(deleteGroupStart).toBeCalledWith(1);
     });
     it('should delete a group', () => {
-      const setView = jest.fn();
-      const setGroups = jest.fn();
+      const deleteGroupEnd = jest.fn();
       render(<Main
         view={View.Group_Delete}
-        setView={setView}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
-        setGroups={setGroups}
         groupIndex={1}
+        deleteGroupEnd={deleteGroupEnd}
       />);
       screen.getByRole('button', { name: /delete group/i }).click();
-      expect(setView).toBeCalledWith(View.Groups_Read);
-      expect(setGroups).toBeCalledWith([{ name: 'groupA' }, { name: 'groupC' }]);
+      expect(deleteGroupEnd).toBeCalledWith(1);
     });
     it('should move a group up', () => {
-      const setView = jest.fn();
-      const setGroups = jest.fn();
+      const moveGroupUp = jest.fn();
       render(<Main
         view={View.Groups_Read}
-        setView={setView}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
-        setGroups={setGroups}
+        moveGroupUp={moveGroupUp}
       />);
       screen.getAllByRole('button', { name: /move up/i })[1].click(); // first group cannot be moved up
-      expect(setView).toBeCalledWith(View.Groups_Read);
-      expect(setGroups).toBeCalledWith([{ name: 'groupA' }, { name: 'groupC' }, { name: 'groupB' }]);
+      expect(moveGroupUp).toBeCalledWith(2);
     });
     it('should move a group down', () => {
-      const setView = jest.fn();
-      const setGroups = jest.fn();
+      const moveGroupDown = jest.fn();
       render(<Main
         view={View.Groups_Read}
-        setView={setView}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
-        setGroups={setGroups}
+        moveGroupDown={moveGroupDown}
       />);
       screen.getAllByRole('button', { name: /move down/i })[0].click();
-      expect(setView).toBeCalledWith(View.Groups_Read);
-      expect(setGroups).toBeCalledWith([{ name: 'groupB' }, { name: 'groupA' }, { name: 'groupC' }]);
+      expect(moveGroupDown).toBeCalledWith(0);
     });
   });
   describe('item CRUD', () => {
@@ -154,231 +131,190 @@ describe('Main', () => {
       await waitFor(() => successCallback({ coords: { latitude: lat, longitude: lng, } }));
     };
     it('should start to create an item from list', () => {
-      const setView = jest.fn();
-      const setItemIndex = jest.fn();
+      const createItemStart = jest.fn();
       render(<Main
         view={View.Items_Read}
-        setView={setView}
         groups={[{ name: 'g', items: [] }]}
         groupIndex={0}
-        setItemIndex={setItemIndex}
+        createItemStart={createItemStart}
       />);
       screen.getByRole('button', { name: /create item/i }).click();
-      expect(setView).toBeCalledWith(View.Item_Create);
-      expect(setItemIndex).toBeCalledWith(0);
+      expect(createItemStart).toBeCalled();
     });
     it('should start to create an item', () => {
-      const setView = jest.fn();
-      const setItemIndex = jest.fn();
+      const createItemStart = jest.fn();
       render(<Main
         view={View.Item_Read}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         itemIndex={1}
-        setItemIndex={setItemIndex}
+        createItemStart={createItemStart}
       />);
       screen.getByRole('button', { name: /create item/i }).click();
-      expect(setView).toBeCalledWith(View.Item_Create);
-      expect(setItemIndex).toBeCalledWith(3);
+      expect(createItemStart).toBeCalled();
     });
     it('should create an item', async () => {
-      const setView = jest.fn();
-      const setGroups = jest.fn();
+      const createItemEnd = jest.fn();
       const expected = '[my custom item name]';
       render(<Main
         view={View.Item_Create}
-        setView={setView}
         groups={[{ name: 'g', items: [] }]}
         groupIndex={0}
-        setGroups={setGroups}
+        createItemEnd={createItemEnd}
       />);
       fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: expected } });
       await mockGeolocation(7, -9); // enable the submit button
       screen.getByRole('button', { name: /create item/i }).click();
-      expect(setView).toBeCalledWith(View.Item_Read);
-      expect(setGroups).toBeCalledWith([{ name: 'g', items: [{ name: expected, lat: 7, lng: -9 }] }]);
+      expect(createItemEnd).toBeCalledWith(expected, 7, -9);
     });
     it('should read an item', () => {
-      const setView = jest.fn();
-      const setItemIndex = jest.fn();
+      const readItem = jest.fn();
       render(<Main
         view={View.Items_Read}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
-        setItemIndex={setItemIndex}
+        readItem={readItem}
       />);
       screen.getByText('iB').click();
-      expect(setView).toBeCalledWith(View.Item_Read);
-      expect(setItemIndex).toBeCalledWith(1);
+      expect(readItem).toBeCalledWith(1);
     });
     const itemArrowReadTests = [
       ['previous item', 0],
       ['next item', 2],
     ];
     it.each(itemArrowReadTests)('should read the %s', (buttonName, expected) => {
-      const setView = jest.fn();
-      const setItemIndex = jest.fn();
+      const readItem = jest.fn();
       render(<Main
         view={View.Item_Read}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         itemIndex={1}
-        setItemIndex={setItemIndex}
+        readItem={readItem}
       />);
       screen.getByRole('button', { name: buttonName }).click();
-      expect(setView).toBeCalledWith(View.Item_Read);
-      expect(setItemIndex).toBeCalledWith(expected);
+      expect(readItem).toBeCalledWith(expected);
     });
     it('should read items when item create is cancelled', async () => {
-      const setView = jest.fn();
+      const readItems = jest.fn();
       render(<Main
         view={View.Item_Create}
-        setView={setView}
         groups={[]}
         groupIndex={0}
+        readItems={readItems}
       />);
-      await mockGeolocation(); // TODO: cancel should never be disabled for item create, combine with tests below
+      await mockGeolocation(); // TODO: cancel should never be disabled for item create, do not combine with tests below because should go back to list
       screen.getByText(/cancel/i).click();
-      expect(setView).toBeCalledWith(View.Items_Read);
+      expect(readItems).toBeCalledWith();
     });
     const itemCancelTests = [
-      [View.Item_Read, View.Item_Update, false],
-      [View.Item_Read, View.Item_Delete, false],
+      View.Item_Update,
+      View.Item_Delete,
     ]
-    it.each(itemCancelTests)('should %s when %s is cancelled', async (expected, view) => {
-      const setView = jest.fn();
-      const setItemIndex = jest.fn();
+    it.each(itemCancelTests)('should read items when %s is cancelled', (view) => {
+      const readItem = jest.fn();
       render(<Main
         view={view}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         itemIndex={0}
-        setItemIndex={setItemIndex}
+        readItem={readItem}
       />);
       screen.getByText(/cancel/i).click();
-      expect(setView).toBeCalledWith(expected);
+      expect(readItem).toBeCalled();
     });
     it('should start to update an item from list', () => {
-      const setView = jest.fn();
-      const setItemIndex = jest.fn();
+      const updateItemStart = jest.fn();
       render(<Main
         view={View.Items_Read}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
-        setItemIndex={setItemIndex}
         groupIndex={0}
+        updateItemStart={updateItemStart}
       />);
       screen.getAllByRole('button', { name: /update value/i })[2].click();
-      expect(setView).toBeCalledWith(View.Item_Update);
-      expect(setItemIndex).toBeCalledWith(2);
+      expect(updateItemStart).toBeCalledWith(2);
     });
     it('should start to update an item', () => {
-      const setView = jest.fn();
-      const setItemIndex = jest.fn();
+      const updateItemStart = jest.fn();
       render(<Main
         view={View.Item_Read}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
-        setItemIndex={setItemIndex}
         groupIndex={0}
         itemIndex={2}
+        updateItemStart={updateItemStart}
       />);
       screen.getByRole('button', { name: /edit/i }).click();
-      expect(setView).toBeCalledWith(View.Item_Update);
-      expect(setItemIndex).toBeCalledWith(2);
+      expect(updateItemStart).toBeCalledWith(2);
     });
     it('should update an item', () => {
-      const setView = jest.fn();
-      const setGroups = jest.fn();
+      const updateItemEnd = jest.fn();
       const expected = '[iC-EDITED]'
       render(<Main
         view={View.Item_Update}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC', lat: 3, lng: 1 }] }]}
-        setGroups={setGroups}
         groupIndex={0}
         itemIndex={2}
+        updateItemEnd={updateItemEnd}
       />);
       fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: expected } });
       screen.getByRole('button', { name: /update item/i }).click();
-      expect(setView).toBeCalledWith(View.Item_Read);
-      expect(setGroups).toBeCalledWith([{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: expected, lat: 3, lng: 1 }] }]);
+      expect(updateItemEnd).toBeCalledWith(2, expected, 3, 1);
     });
     it('should start to delete an item from list', () => {
-      const setView = jest.fn();
-      const setItemIndex = jest.fn();
+      const deleteItemStart = jest.fn();
       render(<Main
         view={View.Items_Read}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
-        setItemIndex={setItemIndex}
         groupIndex={0}
+        deleteItemStart={deleteItemStart}
       />);
       screen.getAllByRole('button', { name: /delete value/i })[1].click();
-      expect(setView).toBeCalledWith(View.Item_Delete);
-      expect(setItemIndex).toBeCalledWith(1);
+      expect(deleteItemStart).toBeCalledWith(1);
     });
     it('should start to delete an item', () => {
-      const setView = jest.fn();
-      const setItemIndex = jest.fn();
+      const deleteItemStart = jest.fn();
       render(<Main
         view={View.Item_Read}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
-        setItemIndex={setItemIndex}
         groupIndex={0}
         itemIndex={1}
+        deleteItemStart={deleteItemStart}
       />);
       screen.getByRole('button', { name: /delete/i }).click();
-      expect(setView).toBeCalledWith(View.Item_Delete);
-      expect(setItemIndex).toBeCalledWith(1);
+      expect(deleteItemStart).toBeCalledWith(1);
     });
     it('should delete an item', () => {
-      const setView = jest.fn();
-      const setGroups = jest.fn();
+      const deleteItemEnd = jest.fn();
       render(<Main
         view={View.Item_Delete}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
-        setGroups={setGroups}
         groupIndex={0}
         itemIndex={1}
+        deleteItemEnd={deleteItemEnd}
       />);
       screen.getByRole('button', { name: /delete item/i }).click();
-      expect(setView).toBeCalledWith(View.Items_Read);
-      expect(setGroups).toBeCalledWith([{ name: 'g', items: [{ name: 'iA' }, { name: 'iC' }] }]);
+      expect(deleteItemEnd).toBeCalledWith(1);
     });
     it('should move an item up', () => {
-      const setView = jest.fn();
-      const setGroups = jest.fn();
+      const moveItemUp = jest.fn();
       render(<Main
         view={View.Items_Read}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
-        setGroups={setGroups}
         groupIndex={0}
+        moveItemUp={moveItemUp}
       />);
-      screen.getAllByRole('button', { name: /move up/i })[1].click(); // first item cannot be moved up
-      expect(setView).toBeCalledWith(View.Items_Read);
-      expect(setGroups).toBeCalledWith([{ name: 'g', items: [{ name: 'iA' }, { name: 'iC' }, { name: 'iB' }] }]);
+      screen.getAllByRole('button', { name: /move up/i })[0].click(); // first item cannot be moved up
+      expect(moveItemUp).toBeCalledWith(1);
     });
     it('should move an item down', () => {
-      const setView = jest.fn();
-      const setGroups = jest.fn();
+      const moveItemDown = jest.fn();
       render(<Main
         view={View.Items_Read}
-        setView={setView}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
-        setGroups={setGroups}
         groupIndex={0}
+        moveItemDown={moveItemDown}
       />);
-      screen.getAllByRole('button', { name: /move down/i })[0].click();
-      expect(setView).toBeCalledWith(View.Items_Read);
-      expect(setGroups).toBeCalledWith([{ name: 'g', items: [{ name: 'iB' }, { name: 'iA' }, { name: 'iC' }] }]);
+      screen.getAllByRole('button', { name: /move down/i })[1].click();
+      expect(moveItemDown).toBeCalledWith(1);
     });
   });
   describe('settings toggling', () => {
