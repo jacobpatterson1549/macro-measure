@@ -59,12 +59,15 @@ describe('LocalStorageSettings', () => {
         });
     });
     describe('getISO8601Digits', () => {
-        it('should only contain digits and UTC (Zulu) timezone (Z)', () => {
-            const epochMilliseconds = Date.UTC(2021, 5, 1, 17, 22, 30, 554); // 2021-06-01T17:22:30.554Z
+        const tests = [
+            ['should only contain digits and UTC (Zulu) timezone (Z)', Date.UTC(2021, 5, 1, 17, 22, 30, 554), '20210601172230554Z'],
+            ['should end in Z even if date is not in GMT', Date.parse('Tue Jun 01 2021 12:36:26 GMT-0700'), '20210601193626000Z'],
+            ['show always end in Z, even for the current date', new Date().getTime(), /Z$/],
+        ];
+        it.each(tests)('%s', (name, epochMilliseconds, expected) => {
             const date = new Date(epochMilliseconds);
             const actual = _getISO8601Digits(date);
-            const expected = '20210601172230554Z';
-            expect(actual).toBe(expected);
+            expect(actual).toMatch(expected);
         });
     });
 });
