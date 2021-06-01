@@ -15,10 +15,10 @@ describe('View', () => {
   });
   it.each(views)('should have desired flags when view is id:%s', (view) => {
     expect(View.isCreate(view)).toBe([View.Group_Create, View.Item_Create].includes(view));
-    expect(View.isRead(view)).toBe([View.Groups_Read, View.Items_Read, View.Item_Read].includes(view));
+    expect(View.isRead(view)).toBe([View.Group_Read_List, View.Item_Read_List, View.Item_Read].includes(view));
     expect(View.isUpdate(view)).toBe([View.Group_Update, View.Item_Update].includes(view));
     expect(View.isDelete(view)).toBe([View.Group_Delete, View.Item_Delete].includes(view));
-    expect(View.hasGroup(view)).toBe([View.Item_Create, View.Item_Read, View.Item_Update, View.Item_Delete, View.Items_Read,].includes(view));
+    expect(View.hasGroup(view)).toBe([View.Item_Create, View.Item_Read, View.Item_Read_List, View.Item_Update, View.Item_Delete].includes(view));
     expect(View.needsGPS(view)).toBe([View.Item_Read, View.Item_Create].includes(view));
   })
 });

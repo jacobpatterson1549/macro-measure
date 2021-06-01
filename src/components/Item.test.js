@@ -31,7 +31,7 @@ describe('Item', () => {
                 view={view}
                 name={name}
             />);
-            const element = screen.queryByTitle('items list')
+            const element = screen.queryByTitle('item list')
             expect(element.textContent).toBe(expected);
         });
         describe('read action', () => {

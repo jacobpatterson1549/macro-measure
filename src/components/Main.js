@@ -62,13 +62,13 @@ const getMain = (props) => {
                     createStart={props.createItemStart}
                     createEnd={props.createItemEnd}
                     read={props.readItem}
-                    readItems={props.readItems}
+                    readItemList={props.readItemList}
                     updateStart={props.updateItemStart}
                     updateEnd={props.updateItemEnd}
                     deleteStart={props.deleteItemStart}
                     deleteEnd={props.deleteItemEnd}
                 />);
-        case View.Items_Read:
+        case View.Item_Read_List:
             const values = (props.groups && props.groups.length !== 0) ? props.groups[props.groupIndex].items : [];
             return (
                 <NameList
@@ -87,7 +87,7 @@ const getMain = (props) => {
         case View.Group_Create:
         case View.Group_Update:
         case View.Group_Delete:
-        case View.Groups_Read:
+        case View.Group_Read_List:
         default:
             return (
                 <NameList
@@ -104,7 +104,7 @@ const getMain = (props) => {
                     deleteEnd={props.deleteGroupEnd}
                     moveUp={props.moveGroupUp}
                     moveDown={props.moveGroupDown}
-                    cancel={props.readGroups}
+                    cancel={props.readGroupList}
                 />
             );
     }

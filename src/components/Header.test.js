@@ -6,7 +6,7 @@ import { View } from '../utils/View';
 describe('Header', () => {
     describe('items', () => {
         const titleParts = [
-            ['groups', View.Groups_Read],
+            ['groups', View.Group_Read_List],
             ['about', View.About],
             ['help', View.Help],
             ['settings', View.Settings],
@@ -29,8 +29,8 @@ describe('Header', () => {
     const groupNames = [
         ['[Groups]', null, null],
         ['[Groups]', View.Settings, 'any'],
-        ['[Groups]', View.Groups_Read, 'ignore'],
-        ['groupA', View.Items_Read, 'groupA'],
+        ['[Groups]', View.Group_Read_List, 'ignore'],
+        ['groupA', View.Item_Read_List, 'groupA'],
         ['groupB', View.Item_Create, 'groupB'],
         ['groupC', View.Item_Read, 'groupC'],
         ['groupD', View.Item_Update, 'groupD'],

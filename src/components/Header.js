@@ -4,7 +4,7 @@ import { View } from '../utils/View';
 
 export const Header = ({ view, setView, groups, groupIndex }) => (
     <header className="Header">
-        {getHeaderItem(setView, groupName(view, groups, groupIndex), 'groups list', View.Groups_Read)}
+        {getHeaderItem(setView, groupName(view, groups, groupIndex), 'groups list', View.Group_Read_List)}
         {getHeaderItem(setView, 'ⓘ', 'about page', View.About)}
         {getHeaderItem(setView, '?', 'help page', View.Help)}
         {getHeaderItem(setView, '⚙', 'edit settings', View.Settings)}
@@ -16,7 +16,7 @@ const showGroupNameViews = [
     View.Item_Read,
     View.Item_Update,
     View.Item_Delete,
-    View.Items_Read,
+    View.Item_Read_List,
 ];
 
 const groupName = (view, groups, groupIndex) => (

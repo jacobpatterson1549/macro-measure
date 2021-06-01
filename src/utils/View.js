@@ -11,13 +11,13 @@ const views = {
     Settings: 3,
     Item_Create: 4,
     Item_Read: 5,
-    Item_Update: 6,
-    Item_Delete: 7,
-    Items_Read: 8,
+    Item_Read_List: 6,
+    Item_Update: 7,
+    Item_Delete: 8,
     Group_Create: 9,
-    Group_Update: 10,
-    Group_Delete: 11,
-    Groups_Read: 12,
+    Group_Read_List: 10,
+    Group_Update: 11,
+    Group_Delete: 12,
 };
 
 const flags = {
@@ -28,11 +28,11 @@ const flags = {
     [views.Item_Read]: READ | HAS_GROUP | NEEDS_GPS,
     [views.Item_Update]: UPDATE | HAS_GROUP,
     [views.Item_Delete]: DELETE | HAS_GROUP,
-    [views.Items_Read]: READ | HAS_GROUP,
+    [views.Item_Read_List]: READ | HAS_GROUP,
     [views.Group_Create]: CREATE,
     [views.Group_Update]: UPDATE,
     [views.Group_Delete]: DELETE,
-    [views.Groups_Read]: READ,
+    [views.Group_Read_List]: READ,
 };
 
 const viewFuncs = {

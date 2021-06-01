@@ -8,7 +8,7 @@ import { useLocalStorage } from '../utils/LocalStorage';
 import { View } from '../utils/View';
 
 export const Root = (props) => {
-  const [view, setView] = useLocalStorage('view', View.Groups_Read);
+  const [view, setView] = useLocalStorage('view', View.Group_Read_List);
   const [groups, setGroups] = useLocalStorage('groups', []);
   const [groupIndex, setGroupIndex] = useLocalStorage('groupIndex', 0);
   const [itemIndex, setItemIndex] = useLocalStorage('itemIndex', 0);
@@ -43,7 +43,7 @@ const render = (props) => (
           createGroupStart={groupUtils.createGroupStart}
           createGroupEnd={groupUtils.createGroupEnd}
           readGroup={groupUtils.readGroup}
-          readGroups={groupUtils.readGroups}
+          readGroupList={groupUtils.readGroupList}
           updateGroupStart={groupUtils.updateGroupStart}
           updateGroupEnd={groupUtils.updateGroupEnd}
           deleteGroupStart={groupUtils.deleteGroupStart}
@@ -54,7 +54,7 @@ const render = (props) => (
           createItemStart={groupUtils.createItemStart}
           createItemEnd={groupUtils.createItemEnd}
           readItem={groupUtils.readItem}
-          readItems={groupUtils.readItems}
+          readItemList={groupUtils.readItemList}
           updateItemStart={groupUtils.updateItemStart}
           updateItemEnd={groupUtils.updateItemEnd}
           deleteItemStart={groupUtils.deleteItemStart}

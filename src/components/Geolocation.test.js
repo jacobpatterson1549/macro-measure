@@ -36,7 +36,7 @@ describe('Geolocation', () => {
             [View.Item_Read, true],
             [View.Item_Update, false],
             [View.Item_Delete, false],
-            [View.Items_Read, false],
+            [View.Item_Read_List, false],
         ];
         it.each(viewTests)('should watch position when view is %s: %s', (view, expected) => {
             navigator.geolocation.watchPosition = jest.fn();

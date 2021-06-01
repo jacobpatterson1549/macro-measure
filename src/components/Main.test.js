@@ -21,7 +21,7 @@ describe('Main', () => {
     it('should start to create a group', () => {
       const createGroupStart = jest.fn();
       render(<Main
-        view={View.Groups_Read}
+        view={View.Group_Read_List}
         createGroupStart={createGroupStart}
         groups={[]}
       />);
@@ -43,7 +43,7 @@ describe('Main', () => {
     it('should read a group', () => {
       const readGroup = jest.fn();
       render(<Main
-        view={View.Groups_Read}
+        view={View.Group_Read_List}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
         readGroup={readGroup}
       />);
@@ -51,19 +51,19 @@ describe('Main', () => {
       expect(readGroup).toBeCalled();
     });
     it.each([View.Group_Create, View.Group_Update, View.Group_Delete])('should read groups when %s is cancelled', (view) => {
-      const readGroups = jest.fn();
+      const readGroupList = jest.fn();
       render(<Main
         view={view}
         groups={[]}
-        readGroups={readGroups}
+        readGroupList={readGroupList}
       />);
       screen.getByText(/cancel/i).click();
-      expect(readGroups).toBeCalled();
+      expect(readGroupList).toBeCalled();
     });
     it('should start to update a group', () => {
       const updateGroupStart = jest.fn();
       render(<Main
-        view={View.Groups_Read}
+        view={View.Group_Read_List}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
         updateGroupStart={updateGroupStart}
       />);
@@ -86,7 +86,7 @@ describe('Main', () => {
     it('should start to delete a group', () => {
       const deleteGroupStart = jest.fn();
       render(<Main
-        view={View.Groups_Read}
+        view={View.Group_Read_List}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
         deleteGroupStart={deleteGroupStart}
       />);
@@ -107,7 +107,7 @@ describe('Main', () => {
     it('should move a group up', () => {
       const moveGroupUp = jest.fn();
       render(<Main
-        view={View.Groups_Read}
+        view={View.Group_Read_List}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
         moveGroupUp={moveGroupUp}
       />);
@@ -117,7 +117,7 @@ describe('Main', () => {
     it('should move a group down', () => {
       const moveGroupDown = jest.fn();
       render(<Main
-        view={View.Groups_Read}
+        view={View.Group_Read_List}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
         moveGroupDown={moveGroupDown}
       />);
@@ -133,7 +133,7 @@ describe('Main', () => {
     it('should start to create an item from list', () => {
       const createItemStart = jest.fn();
       render(<Main
-        view={View.Items_Read}
+        view={View.Item_Read_List}
         groups={[{ name: 'g', items: [] }]}
         groupIndex={0}
         createItemStart={createItemStart}
@@ -170,7 +170,7 @@ describe('Main', () => {
     it('should read an item', () => {
       const readItem = jest.fn();
       render(<Main
-        view={View.Items_Read}
+        view={View.Item_Read_List}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         readItem={readItem}
@@ -195,16 +195,16 @@ describe('Main', () => {
       expect(readItem).toBeCalledWith(expected);
     });
     it('should read items when item create is cancelled', async () => {
-      const readItems = jest.fn();
+      const readItemList = jest.fn();
       render(<Main
         view={View.Item_Create}
         groups={[]}
         groupIndex={0}
-        readItems={readItems}
+        readItemList={readItemList}
       />);
       await mockGeolocation(); // TODO: cancel should never be disabled for item create, do not combine with tests below because should go back to list
       screen.getByText(/cancel/i).click();
-      expect(readItems).toBeCalledWith();
+      expect(readItemList).toBeCalledWith();
     });
     const itemCancelTests = [
       View.Item_Update,
@@ -225,7 +225,7 @@ describe('Main', () => {
     it('should start to update an item from list', () => {
       const updateItemStart = jest.fn();
       render(<Main
-        view={View.Items_Read}
+        view={View.Item_Read_List}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         updateItemStart={updateItemStart}
@@ -262,7 +262,7 @@ describe('Main', () => {
     it('should start to delete an item from list', () => {
       const deleteItemStart = jest.fn();
       render(<Main
-        view={View.Items_Read}
+        view={View.Item_Read_List}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         deleteItemStart={deleteItemStart}
@@ -297,7 +297,7 @@ describe('Main', () => {
     it('should move an item up', () => {
       const moveItemUp = jest.fn();
       render(<Main
-        view={View.Items_Read}
+        view={View.Item_Read_List}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         moveItemUp={moveItemUp}
@@ -308,7 +308,7 @@ describe('Main', () => {
     it('should move an item down', () => {
       const moveItemDown = jest.fn();
       render(<Main
-        view={View.Items_Read}
+        view={View.Item_Read_List}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         moveItemDown={moveItemDown}
