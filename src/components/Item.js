@@ -133,7 +133,7 @@ const getAction = (props) => {
         case View.Item_Create:
         case View.Item_Update:
             const [handleSubmit, submitDisabled, updateLatLngDisabled, actionName, updateIndex, handleCancel, submitValue] = (View.isCreate(props.view))
-                ? [handleCreateEnd(props.createEnd, props.formName, props.geolocation.latLng), !props.geolocation.latLng, true, 'Create Item', -1, props.readItems, 'Create Item']
+                ? [handleCreateEnd(props.createEnd, props.formName, props.geolocation.latLng), !props.geolocation.latLng, true, 'Create Item', -1, handleReadItems(props.readItems), 'Create Item']
                 : [handleUpdateEnd(props.updateEnd, props.index, props.formName, props.formLat, props.formLng), false, false, ('Update ' + props.name), props.index, handleRead(props.read, props.index, 0), 'Update Item'];
             return (
                 <Form onSubmit={handleSubmit}>
@@ -209,6 +209,10 @@ const handleCreateEnd = (createEnd, formName, latLng) => () => (
 
 const handleRead = (read, index, delta) => () => (
     read(index + delta)
+);
+
+const handleReadItems = (readItems) => () => (
+    readItems()
 );
 
 const handleUpdateStart = (updateStart, index) => () => (
