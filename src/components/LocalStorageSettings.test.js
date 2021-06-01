@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
-import { getISO8601Digits, LocalStorageSettings } from './LocalStorageSettings';
+import { LocalStorageSettings, _getISO8601Digits } from './LocalStorageSettings';
 
 import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 
@@ -62,7 +62,7 @@ describe('LocalStorageSettings', () => {
         it('should only contain digits and UTC (Zulu) timezone (Z)', () => {
             const epochMilliseconds = Date.UTC(2021, 5, 1, 17, 22, 30, 554); // 2021-06-01T17:22:30.554Z
             const date = new Date(epochMilliseconds);
-            const actual = getISO8601Digits(date);
+            const actual = _getISO8601Digits(date);
             const expected = '20210601172230554Z';
             expect(actual).toBe(expected);
         });

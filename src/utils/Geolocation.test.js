@@ -1,4 +1,4 @@
-import { moveLatLngTo, getDistanceHeading, toMeters, fromMeters } from './Geolocation';
+import { moveLatLngTo, getDistanceHeading, _toMeters, _fromMeters } from './Geolocation';
 
 describe('Geolocation', () => {
     describe('LatLng calculations', () => {
@@ -67,7 +67,7 @@ describe('Geolocation', () => {
         ];
         const decimalPrecisionDigits = 10;
         it.each(conversions)('should convert %d %s %d meters', (distance, unit, expected) => {
-            const m = toMeters(distance, unit);
+            const m = _toMeters(distance, unit);
             if (expected === expected) {
                 expect(m).toBeCloseTo(expected, decimalPrecisionDigits);
             } else {
@@ -75,8 +75,8 @@ describe('Geolocation', () => {
             }
         });
         it.each(conversions)('should convert back to %d %s when at %d meters', (distance, unit, expected) => {
-            const m = toMeters(distance, unit);
-            const actual = fromMeters(m, unit);
+            const m = _toMeters(distance, unit);
+            const actual = _fromMeters(m, unit);
             if (expected === expected) {
                 expect(actual).toBeCloseTo(distance, decimalPrecisionDigits);
             } else {

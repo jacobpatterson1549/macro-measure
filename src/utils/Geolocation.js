@@ -4,7 +4,7 @@ export const moveLatLngTo = (latLng, distance, unit, heading) => {
     if (!isValid(latLng)) {
         return {};
     }
-    const amountMeters = toMeters(distance, unit);
+    const amountMeters = _toMeters(distance, unit);
     const headingDistance = { heading: heading, distance: amountMeters };
     return roundLatLng(moveTo(latLng, headingDistance));
 };
@@ -14,7 +14,7 @@ export const getDistanceHeading = (latLng1, latLng2, unit) => {
         return {};
     }
     const distanceHeading = headingDistanceTo(latLng1, latLng2);
-    const distance = round(fromMeters(distanceHeading.distance, unit), 1);
+    const distance = round(_fromMeters(distanceHeading.distance, unit), 1);
     return {
         distance: round(distance, 1),
         heading: round(distanceHeading.heading, 1),
@@ -35,14 +35,14 @@ export const roundLatLng = (latLng) => (
     }
 );
 
-export const toMeters = (distance, unit, invert) => ( // exported for testing
+export const _toMeters = (distance, unit, invert) => ( // exported for testing
     (invert)
         ? distance / metersRatio(unit)
         : distance * metersRatio(unit)
 );
 
-export const fromMeters = (distance, unit) => ( // exported for testing
-    toMeters(distance, unit, true)
+export const _fromMeters = (distance, unit) => ( // exported for testing
+    _toMeters(distance, unit, true)
 );
 
 const isValid = (latLng) => (

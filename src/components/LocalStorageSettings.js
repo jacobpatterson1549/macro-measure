@@ -31,7 +31,7 @@ const exportStorage = (setExportLink) => () => {
     const allJSON = getLocalStorage();
     const file = new Blob([allJSON], { type: jsonMimeType })
     const url = URL.createObjectURL(file);
-    const filename = `macro_measure_backup_${getISO8601Digits(new Date())}.json`;
+    const filename = `macro_measure_backup_${_getISO8601Digits(new Date())}.json`;
     const anchor = (<a href={url} download={filename}>{filename}</a>);
     setExportLink(anchor);
 };
@@ -52,7 +52,7 @@ const reload = () => {
     window.location.reload(); // force all states to be refreshed
 }
 
-export const getISO8601Digits = (date) => ( // exported for testing
+export const _getISO8601Digits = (date) => ( // exported for testing
     date.toISOString().replace(/[^\dZ]/g, '')
 );
 
