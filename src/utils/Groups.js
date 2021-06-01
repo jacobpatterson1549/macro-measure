@@ -1,88 +1,90 @@
-// groups
-export const createGroup = (groups, name) => {
-  groups = deepCopy(groups);
-  const group = {
-    name: name,
-    items: [],
-  };
-  groups.push(group);
-  return groups;
-};
-
-export const updateGroup = (groups, index, name) => {
-  if (index >= 0 && index < groups.length) {
+export const Groups = {
+  // groups
+  createGroup: (groups, name) => {
     groups = deepCopy(groups);
-    const group = groups[index];
-    group.name = name;
-  }
-  return groups;
-};
-
-export const moveGroupUp = (groups, index) => {
-  return moveGroup(groups, index, -1);
-};
-
-export const moveGroupDown = (groups, index) => {
-  return moveGroup(groups, index, +1);
-};
-
-export const deleteGroup = (groups, index) => {
-  if (index >= 0 && index < groups.length) {
-    groups = deepCopy(groups);
-    groups.splice(index, 1);
-  }
-  return groups;
-};
-
-// items
-export const createItem = (groups, groupIndex, name, lat, lng) => {
-  if (groupIndex >= 0 && groupIndex < groups.length) {
-    groups = deepCopy(groups);
-    const group = groups[groupIndex];
-    const items = group.items;
-    const item = {
-      "name": name,
-      "lat": lat,
-      "lng": lng,
+    const group = {
+      name: name,
+      items: [],
     };
-    items.push(item);
-  }
-  return groups;
-};
+    groups.push(group);
+    return groups;
+  },
 
-export const updateItem = (groups, groupIndex, index, name, lat, lng) => {
-  if (groupIndex >= 0 && groupIndex < groups.length) {
-    groups = deepCopy(groups);
-    const group = groups[groupIndex];
-    const items = group.items;
-    if (index >= 0 && index < items.length) {
-      const item = items[index];
-      item.name = name;
-      item.lat = lat;
-      item.lng = lng;
+  updateGroup: (groups, index, name) => {
+    if (index >= 0 && index < groups.length) {
+      groups = deepCopy(groups);
+      const group = groups[index];
+      group.name = name;
     }
-  }
-  return groups;
-};
+    return groups;
+  },
 
-export const moveItemUp = (groups, groupIndex, index) => {
-  return moveItem(groups, groupIndex, index, -1);
-};
+  moveGroupUp: (groups, index) => {
+    return moveGroup(groups, index, -1);
+  },
 
-export const moveItemDown = (groups, groupIndex, index) => {
-  return moveItem(groups, groupIndex, index, +1);
-};
+  moveGroupDown: (groups, index) => {
+    return moveGroup(groups, index, +1);
+  },
 
-export const deleteItem = (groups, groupIndex, index) => {
-  if (groupIndex >= 0 && groupIndex < groups.length) {
-    groups = deepCopy(groups);
-    const group = groups[groupIndex];
-    const items = group.items;
-    if (index >= 0 && index < items.length) {
-      items.splice(index, 1);
+  deleteGroup: (groups, index) => {
+    if (index >= 0 && index < groups.length) {
+      groups = deepCopy(groups);
+      groups.splice(index, 1);
     }
-  }
-  return groups;
+    return groups;
+  },
+
+  // items
+  createItem: (groups, groupIndex, name, lat, lng) => {
+    if (groupIndex >= 0 && groupIndex < groups.length) {
+      groups = deepCopy(groups);
+      const group = groups[groupIndex];
+      const items = group.items;
+      const item = {
+        "name": name,
+        "lat": lat,
+        "lng": lng,
+      };
+      items.push(item);
+    }
+    return groups;
+  },
+
+  updateItem: (groups, groupIndex, index, name, lat, lng) => {
+    if (groupIndex >= 0 && groupIndex < groups.length) {
+      groups = deepCopy(groups);
+      const group = groups[groupIndex];
+      const items = group.items;
+      if (index >= 0 && index < items.length) {
+        const item = items[index];
+        item.name = name;
+        item.lat = lat;
+        item.lng = lng;
+      }
+    }
+    return groups;
+  },
+
+  moveItemUp: (groups, groupIndex, index) => {
+    return moveItem(groups, groupIndex, index, -1);
+  },
+
+  moveItemDown: (groups, groupIndex, index) => {
+    return moveItem(groups, groupIndex, index, +1);
+  },
+
+  deleteItem: (groups, groupIndex, index) => {
+    if (groupIndex >= 0 && groupIndex < groups.length) {
+      groups = deepCopy(groups);
+      const group = groups[groupIndex];
+      const items = group.items;
+      if (index >= 0 && index < items.length) {
+        items.splice(index, 1);
+      }
+    }
+    return groups;
+  },
 };
 
 // helpers
