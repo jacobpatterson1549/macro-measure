@@ -75,6 +75,16 @@ export const SubmitInput = ({ value, disabled }) => (
     />
 );
 
+export const Fieldset = ({ caption, disabled, border = true, children }) => (
+    <fieldset className={'Fieldset' + (!border ? ' NoBorder' : '')} disabled={disabled}>
+        {
+            caption &&
+            <legend>{caption}</legend>
+        }
+        {children}
+    </fieldset>
+);
+
 export const Form = ({ onSubmit, children }) => (
     <form className="Form" onSubmit={preventDefault(onSubmit)}>
         {children}

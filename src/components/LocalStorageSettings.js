@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { ButtonInput, FileInput } from './Form';
+import { Fieldset, ButtonInput, FileInput } from './Form';
 
 import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 
@@ -10,8 +10,7 @@ export const LocalStorageSettings = () => {
 };
 
 const render = (exportLink, setExportLink) => (
-    <fieldset>
-        <legend>LocalStorage Settings</legend>
+    <Fieldset caption='LocalStorage Settings'>
         <label>
             <span>Export ALL Saved Data:</span>
             <ButtonInput value="Export File" onClick={exportStorage(setExportLink)} />
@@ -29,7 +28,7 @@ const render = (exportLink, setExportLink) => (
             <span>Reload page and Saved Data:</span>
             <ButtonInput value="Reload" onClick={reload} />
         </label>
-    </fieldset>
+    </Fieldset>
 );
 
 const exportStorage = (setExportLink) => () => {

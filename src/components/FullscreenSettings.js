@@ -1,8 +1,7 @@
-import { ButtonInput, CheckboxInput } from './Form';
+import { Fieldset, ButtonInput, CheckboxInput } from './Form';
 
 export const FullscreenSettings = ({ fullscreen, onLine, installPromptEvent }) => (
-    <fieldset>
-        <legend>Fullscreen Settings</legend>
+    <Fieldset caption='Fullscreen Settings'>
         <label>
             <span>Fullscreen:</span>
             <CheckboxInput checked={fullscreen} onChange={toggleFullscreen} />
@@ -19,7 +18,7 @@ export const FullscreenSettings = ({ fullscreen, onLine, installPromptEvent }) =
                     <span>{onLine ? 'Online:' : 'OFFLINE:'} App updates after online reload.</span>
                 )
         }
-    </fieldset>
+    </Fieldset>
 );
 
 const toggleFullscreen = (toFullscreen) => (

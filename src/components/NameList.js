@@ -1,5 +1,5 @@
 import { NameTable } from './NameTable';
-import { Form, SubmitInput, NameInput, ButtonInput } from './Form';
+import { Form, Fieldset, SubmitInput, NameInput, ButtonInput } from './Form';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 import { View } from '../utils/View';
@@ -32,8 +32,7 @@ const getAction = ({ view, type, values, index, createStart, createEnd, updateEn
             : [handleUpdateEnd(updateEnd, index, name), ('Update ' + value.name), ('Update ' + type), index];
         return (
             <Form onSubmit={handleSubmit}>
-                <fieldset>
-                    <legend>{actionName}</legend>
+                <Fieldset caption={actionName}>
                     <label>
                         <span>Name:</span>
                         <NameInput
@@ -47,20 +46,19 @@ const getAction = ({ view, type, values, index, createStart, createEnd, updateEn
                         <ButtonInput value="Cancel" onClick={cancel} />
                         <SubmitInput value={submitValue} />
                     </div>
-                </fieldset>
+                </Fieldset>
             </Form>
         );
     }
     if (View.isDelete(view)) {
         return (
             <Form onSubmit={handleDeleteEnd(deleteEnd, index)}>
-                <fieldset>
-                    <legend>Delete {value.name}?</legend>
+                <Fieldset caption={'Delete ' + value.name + '?'}>
                     <div>
                         <ButtonInput value="Cancel" onClick={cancel} />
                         <SubmitInput value={'Delete ' + type} />
                     </div>
-                </fieldset>
+                </Fieldset>
             </Form>
         );
     }

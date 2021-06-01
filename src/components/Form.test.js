@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 
-import { Form, SubmitInput, TextInput, NumberInput, NameInput, ButtonInput, CheckboxInput, FileInput, SelectInput, preventDefault } from './Form';
+import { Form, SubmitInput, TextInput, NumberInput, NameInput, ButtonInput, CheckboxInput, FileInput, SelectInput, preventDefault, Fieldset } from './Form';
 
 describe('TextInput', () => {
     it('should have text type', () => {
@@ -290,6 +290,51 @@ describe('SubmitInput', () => {
         render(<SubmitInput disabled={true} />);
         const element = screen.getByRole('button');
         expect(element.disabled).toBeTruthy();
+    });
+});
+
+describe('Fieldset', () => {
+    it('should NOT have legend', () => {
+        render(<Fieldset />);
+        const element = screen.getByRole('group');
+        expect(element.childElementCount).toBe(0);
+    });
+    it('should have legend', () => {
+        const expected = '[some legend]';
+        render(<Fieldset caption={expected} />);
+        const element = screen.getByRole('group', { name: expected });
+        expect(element).toBeInTheDocument();
+    });
+    it('should NOT be disabled', () => {
+        render(<Fieldset />);
+        const element = screen.getByRole('group');
+        expect(element.disabled).toBeFalsy();
+    });
+    it('should be disabled', () => {
+        render(<Fieldset disabled={true} />);
+        const element = screen.getByRole('group');
+        expect(element.disabled).toBeTruthy();
+    });
+    it('should have children', () => {
+        render(
+            <Fieldset>
+                <label>A</label>
+                <label>B</label>
+                <label>C</label>
+            </Fieldset>
+        );
+        const element = screen.getByRole('group');
+        expect(element.childElementCount).toBe(3);
+    });
+    it('should have a default border', () => {
+        render(<Fieldset />);
+        const element = screen.getByRole('group');
+        expect(element.classList.contains('NoBorder')).toBeFalsy();
+    });
+    it('should NOT have a border', () => {
+        render(<Fieldset border={false} />);
+        const element = screen.getByRole('group');
+        expect(element.classList.contains('NoBorder')).toBeTruthy();
     });
 });
 

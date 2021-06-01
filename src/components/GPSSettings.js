@@ -1,8 +1,7 @@
-import { CheckboxInput, SelectInput } from './Form';
+import { Fieldset, CheckboxInput, SelectInput } from './Form';
 
 export const GPSSettings = ({ distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS }) => (
-    <fieldset>
-        <legend>GPS Settings</legend>
+    <Fieldset caption='GPS Settings'>
         <label>
             <span>Distance Unit:</span>
             <SelectInput value={distanceUnit} values={distanceUnits} onChange={setDistanceUnit} />
@@ -11,7 +10,7 @@ export const GPSSettings = ({ distanceUnit, setDistanceUnit, highAccuracyGPS, se
             <span>High Accuracy GPS:</span>
             <CheckboxInput checked={highAccuracyGPS} onChange={setHighAccuracyGPS} />
         </label>
-    </fieldset>
+    </Fieldset>
 );
 
 export const DefaultDistanceUnit = 'm';

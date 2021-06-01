@@ -1,3 +1,11 @@
-.Form > *, fieldset > * {
+.Form > *, .Fieldset > * {
     display: block;
+}
+
+.Fieldset * {
+    padding: .1em;
+}
+
+.Fieldset .NoBorder {
+    border: 0;
 }

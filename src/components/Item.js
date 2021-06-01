@@ -4,7 +4,7 @@ import './Item.css';
 
 import { Map } from './Map';
 import { Geolocation } from './Geolocation';
-import { Form, SubmitInput, NameInput, TextInput, NumberInput, ButtonInput } from './Form';
+import { Form, Fieldset, SubmitInput, NameInput, TextInput, NumberInput, ButtonInput } from './Form';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/Geolocation';
@@ -137,8 +137,7 @@ const getAction = (props) => {
                 : [handleUpdateEnd(props.updateEnd, props.index, props.formName, props.formLat, props.formLng), true, false, ('Update ' + props.name), props.index, handleRead(props.read, props.index, 0), 'Update Item'];
             return (
                 <Form onSubmit={handleSubmit}>
-                    <fieldset>
-                        <legend>{actionName}</legend>
+                    <Fieldset caption={actionName}>
                         <label>
                             <span>Name</span>
                             <NameInput
@@ -148,7 +147,7 @@ const getAction = (props) => {
                                 updateIndex={updateIndex}
                             />
                         </label>
-                        <fieldset disabled={!hasLatLng}>
+                        <Fieldset disabled={!hasLatLng} border={false}>
                             <label>
                                 <span>Latitude</span>
                                 <ButtonInput onClick={handleUpdateLatLng(Heading.N, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="+(N)" disabled={updateLatLngDisabled} />
@@ -165,24 +164,23 @@ const getAction = (props) => {
                                 <span>Move Amount ({props.distanceUnit})</span>
                                 <NumberInput value={props.moveAmount} onChange={props.setMoveAmount} min="0" max="1000" />
                             </label>
-                        </fieldset>
+                        </Fieldset>
                         <div>
                             <ButtonInput value="cancel" onClick={handleCancel} />
                             <SubmitInput value={submitValue} disabled={!hasLatLng} />
                         </div>
-                    </fieldset>
+                    </Fieldset>
                 </Form>
             );
         case View.Item_Delete:
             return (
                 <Form onSubmit={handleDeleteEnd(props.deleteEnd, props.index)}>
-                    <fieldset>
-                        <legend>Delete {props.name}</legend>
+                    <Fieldset caption={'Delete ' + props.name}>
                         <div>
                             <ButtonInput value="Cancel" onClick={handleRead(props.read, props.index, 0)} />
                             <SubmitInput value={"Delete item"} />
                         </div>
-                    </fieldset>
+                    </Fieldset>
                 </Form>
             );
         case View.Item_Read:
