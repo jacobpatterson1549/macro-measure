@@ -20,11 +20,11 @@ const render = (props) => (
             moveUp={props.moveUp}
             moveDown={props.moveDown}
         />
-        {getActions(props)}
+        {getAction(props)}
     </div>
 );
 
-const getActions = ({ view, type, values, index, createStart, createEnd, updateEnd, deleteEnd, cancel, name, setName }) => {
+const getAction = ({ view, type, values, index, createStart, createEnd, updateEnd, deleteEnd, cancel, name, setName }) => {
     const value = (values && values.length !== 0) ? values[index] : {};
     if (View.isCreate(view) || View.isUpdate(view)) {
         const [handleSubmit, actionName, submitValue, updateIndex] = View.isCreate(view)
