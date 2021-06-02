@@ -17,7 +17,7 @@ describe('Header', () => {
             const headerElement = screen.getByTitle(re);
             expect(headerElement).toBeInTheDocument();
         });
-        it.each(titleParts)(' should have %s header element that is clickable', (titlePart, expected) => {
+        it.each(titleParts)('should have %s header element that is clickable', (titlePart, expected) => {
             const handleClick = jest.fn();
             render(<Header setView={handleClick} />);
             const re = new RegExp(titlePart);

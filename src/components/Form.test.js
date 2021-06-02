@@ -63,7 +63,7 @@ describe('NumberInput', () => {
         const element = screen.getByRole('spinbutton');
         expect(element.min).toBe("7");
     });
-    it('should set min', () => {
+    it('should set max', () => {
         render(<NumberInput min={7} max={9} />);
         const element = screen.getByRole('spinbutton');
         expect(element.max).toBe("9");
@@ -373,13 +373,11 @@ describe('Form', () => {
         expect(element.value).toBe(expected);
     });
     it('should not have disabled submit button', () => {
-        const expected = 'Submit';
         render(<Form />);
         const element = screen.getByRole('button');
         expect(element.disabled).toBeFalsy();
     });
     it('should have disable submit button', () => {
-        const expected = 'Submit';
         render(<Form submitDisabled={true} />);
         const element = screen.getByRole('button');
         expect(element.disabled).toBeTruthy();

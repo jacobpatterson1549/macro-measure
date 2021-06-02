@@ -20,7 +20,7 @@ describe('index', () => {
     });
     describe('service worker registration', () => {
         it('should NOT add listener to register service worker when NOT in navigator', () => {
-            navigator = {};
+            delete navigator.serviceWorker;
             require('./index.js');
             expect(window.addEventListener).not.toBeCalled();
         });

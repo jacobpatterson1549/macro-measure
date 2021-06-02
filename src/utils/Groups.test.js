@@ -60,7 +60,7 @@ describe('Groups', () => {
                     const actual = Groups.moveGroupUp(groups, 0);
                     expect(actual).toStrictEqual(expected);
                 });
-                it('should not modify input groups', () => {
+                it('should not modify input groups (moveUp)', () => {
                     const groups = [{ "name": "groupA" }, { "name": "groupB" }];
                     const actual = Groups.moveGroupUp(groups, 1);
                     expect(actual).not.toEqual(groups);
@@ -77,7 +77,7 @@ describe('Groups', () => {
                     const actual = Groups.moveGroupDown(groups, 0);
                     expect(actual).toStrictEqual(expected);
                 });
-                it('should not modify input groups', () => {
+                it('should not modify input groups (moveDown)', () => {
                     const groups = [{ "name": "groupA" }, { "name": "groupB" }];
                     const actual = Groups.moveGroupDown(groups, 0);
                     expect(actual).not.toEqual(groups);
