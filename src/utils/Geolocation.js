@@ -14,10 +14,10 @@ export const getDistanceHeading = (latLng1, latLng2, unit) => {
         return {};
     }
     const distanceHeading = headingDistanceTo(latLng1, latLng2);
-    const distance = round(_fromMeters(distanceHeading.distance, unit), 1);
+    const distance = round(_fromMeters(distanceHeading.distance, unit), 10);
     return {
-        distance: round(distance, 1),
-        heading: round(distanceHeading.heading, 1),
+        distance: round(distance, 10),
+        heading: round(distanceHeading.heading, 10),
     };
 };
 
@@ -30,8 +30,8 @@ export const Heading = {
 
 export const roundLatLng = (latLng) => (
     {
-        lat: round(latLng.lat, 7),
-        lng: round(latLng.lng, 7),
+        lat: round(latLng.lat, 10000000),
+        lng: round(latLng.lng, 10000000),
     }
 );
 
@@ -49,10 +49,9 @@ const isValid = (latLng) => (
     latLng && latLng.lat !== undefined && latLng.lng !== undefined
 );
 
-const round = (value, numDigits) => {
-    const m = Math.pow(10, numDigits);
-    return Math.round(value * m) / m;
-};
+const round = (value, expTenDigits) => ( // log_10(expTenDigits) decimal digits, should be a one followed by 'numDigit' zeros - for three decimals, pass 1000
+    Math.round(value * expTenDigits) / expTenDigits
+);
 
 const metersRatio = (unit) => (
     unit === 'm' ? 1
