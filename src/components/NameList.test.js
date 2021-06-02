@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import { NameList } from './NameList';
+
 import { View } from '../utils/View';
 
 describe('NameList', () => {

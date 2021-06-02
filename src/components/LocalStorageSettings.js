@@ -50,7 +50,7 @@ const resetStorage = () => {
 
 const reload = () => {
     window.location.reload(); // force all states to be refreshed
-}
+};
 
 export const _getISO8601Digits = (date) => ( // exported for testing
     date.toISOString().replace(/[^\dZ]/g, '')

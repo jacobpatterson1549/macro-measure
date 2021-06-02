@@ -63,25 +63,24 @@ describe('Geolocation', () => {
             [1, 'mi', 1609.344],
             [125, 'mi', 201168],
             [3.14159, 'km', 3141.59], // not exact
-            [1, 'cubit', NaN],
         ];
         const decimalPrecisionDigits = 10;
         it.each(conversions)('should convert %d %s %d meters', (distance, unit, expected) => {
             const m = _toMeters(distance, unit);
-            if (expected === expected) {
-                expect(m).toBeCloseTo(expected, decimalPrecisionDigits);
-            } else {
-                expect(m).toBeNaN();
-            }
+            expect(m).toBeCloseTo(expected, decimalPrecisionDigits);
         });
         it.each(conversions)('should convert back to %d %s when at %d meters', (distance, unit, expected) => {
             const m = _toMeters(distance, unit);
             const actual = _fromMeters(m, unit);
-            if (expected === expected) {
-                expect(actual).toBeCloseTo(distance, decimalPrecisionDigits);
-            } else {
-                expect(actual).toBeNaN();
-            }
+            expect(actual).toBeCloseTo(distance, decimalPrecisionDigits);
+        });
+        const nanTests = [
+            ['cubit', 'to', _toMeters],
+            ['nautical mile', 'from', _fromMeters]
+        ]
+        it.each(nanTests)('not convert %s (unknown distance) unit %s meters', (unit, direction, fn) => {
+            const m = fn(0, unit);
+            expect(m).toBeNaN();
         });
     });
 });

@@ -4,7 +4,7 @@ import { View } from '../utils/View';
 
 export const Header = ({ view, setView, groups, groupIndex }) => (
     <header className="Header">
-        {getHeaderItem(setView, groupName(view, groups, groupIndex), 'groups list', View.Group_Read_List)}
+        {getHeaderItem(setView, getGroupName(view, groups, groupIndex), 'groups list', View.Group_Read_List)}
         {getHeaderItem(setView, 'ⓘ', 'about page', View.About)}
         {getHeaderItem(setView, '?', 'help page', View.Help)}
         {getHeaderItem(setView, '⚙', 'edit settings', View.Settings)}
@@ -19,18 +19,18 @@ const showGroupNameViews = [
     View.Item_Read_List,
 ];
 
-const groupName = (view, groups, groupIndex) => (
+const getGroupName = (view, groups, groupIndex) => (
     (showGroupNameViews.includes(view) && groups.length !== 0)
         ? groups[groupIndex].name
         : '[Groups]'
 );
 
 const getHeaderItem = (setView, itemName, itemTitle, itemView) => (
-    <button onClick={viewItem(setView, itemView)} title={itemTitle}>
+    <button onClick={handleSetView(setView, itemView)} title={itemTitle}>
         <span>{itemName}</span>
     </button>
 );
 
-const viewItem = (setView, itemView) => () => (
-    setView(itemView)
+const handleSetView = (setView, view) => () => (
+    setView(view)
 );

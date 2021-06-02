@@ -28,8 +28,26 @@ describe('ErrorBoundary', () => {
         expect(screen.queryByText(validComponentText)).toBeInTheDocument();
     });
 
-    const errorMessages = ['MockErrorMessage', '', 0, null, undefined];
-    it.each(errorMessages)('should render when an error exists with message: %s', (message) => {
+    it('should render the error message', () => {
+        const expected = 'MockErrorMessage';
+        const InvalidComponent = () => {
+            throw new Error(expected);
+        };
+        render(
+            <ErrorBoundary>
+                <InvalidComponent />
+            </ErrorBoundary>
+        );
+        expect(screen.queryByText(expected)).toBeInTheDocument();
+    });
+
+    const falsyErrorMessages = [
+        '',
+        0,
+        null,
+        undefined,
+    ];
+    it.each(falsyErrorMessages)('should render when an error exists without a message: %s', (message) => {
         const InvalidComponent = () => {
             throw new Error(message);
         };
@@ -39,8 +57,5 @@ describe('ErrorBoundary', () => {
             </ErrorBoundary>
         );
         expect(screen.queryByText(errorBoundaryText)).toBeInTheDocument();
-        if (message) {
-            expect(screen.queryByText(message)).toBeInTheDocument();
-        }
     });
 });

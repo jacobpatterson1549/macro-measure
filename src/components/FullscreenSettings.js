@@ -1,4 +1,4 @@
-import { Fieldset, Label, ButtonInput, CheckboxInput } from './Form';
+import { Fieldset, Label, CheckboxInput, ButtonInput } from './Form';
 
 export const FullscreenSettings = ({ fullscreen, onLine, installPromptEvent }) => (
     <Fieldset caption="Fullscreen Settings">
