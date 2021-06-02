@@ -77,6 +77,42 @@ describe('Item', () => {
                 expect(screen.getByDisplayValue('2222')).toBeInTheDocument();
             });
         });
+        describe('create action', () => {
+            it('should not show map when geolocation does not return latLng', () => {
+                render(<Item
+                    view={View.Item_Create}
+                />);
+                const element = screen.queryByText(/waiting for/i);
+                expect(element).toBeInTheDocument();
+            });
+            it('should have disabled submit when geolocation does not return latLng', () => {
+                render(<Item
+                    view={View.Item_Create}
+                />);
+                const element = screen.getByRole('button', { name: /create item/i });
+                expect(element.disabled).toBeTruthy();
+            });
+            it('should show map when geolocation does not return latLng', async () => {
+                navigator.geolocation.watchPosition = jest.fn();
+                render(<Item
+                    view={View.Item_Create}
+                />);
+                const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
+                await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
+                const element = screen.queryByText(/waiting for/i);
+                expect(element).not.toBeInTheDocument();
+            });
+            it('should have disabled submit when geolocation does not return latLng', async () => {
+                navigator.geolocation.watchPosition = jest.fn();
+                render(<Item
+                    view={View.Item_Create}
+                />);
+                const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
+                await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
+                const element = screen.getByRole('button', { name: /create item/i });
+                expect(element.disabled).toBeFalsy();
+            });
+        });
     });
     describe('getMap', () => {
         let oldGeolocation;

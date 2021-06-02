@@ -115,7 +115,7 @@ const getMap = (props) => {
             : (View.isUpdate(props.view)) ? props.formLatLng
                 : props.item;
     if (!itemLatLng) {
-        return ( // TODO: test this (when creating before geolocation is initialized)
+        return (
             <p>Waiting for GPS...</p>
         );
     }
