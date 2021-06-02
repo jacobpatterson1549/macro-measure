@@ -11,16 +11,8 @@ export const Header = ({ view, setView, groups, groupIndex }) => (
     </header>
 );
 
-const showGroupNameViews = [
-    View.Item_Create,
-    View.Item_Read,
-    View.Item_Update,
-    View.Item_Delete,
-    View.Item_Read_List,
-];
-
 const getGroupName = (view, groups, groupIndex) => (
-    (showGroupNameViews.includes(view) && groups.length !== 0)
+    (View.hasGroup(view) && groups.length !== 0)
         ? groups[groupIndex].name
         : '[Groups]'
 );

@@ -7,7 +7,7 @@ export const Geolocation = ({ render, view, highAccuracyGPS }) => {
     const watchID = useRef(null);
     const [latLng, setLatLng] = useState(null);
     useEffect(() => {
-        if (!watchID.current && locationViews.includes(view)) {
+        if (!watchID.current && View.needsGPS(view)) {
             startWatch(watchID, setLatLng, highAccuracyGPS);
         }
         return () => {
@@ -48,11 +48,6 @@ const handleSuccess = (setLatLng) => (geolocationPosition) => {
 const handleError = (setLatLng) => () => {
     setLatLng(null);
 };
-
-const locationViews = [
-    View.Item_Read,
-    View.Item_Create,
-];
 
 const getGeolocation = () => (
     window.navigator.geolocation
