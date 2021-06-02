@@ -3,40 +3,45 @@ import { useState, useEffect } from 'react';
 const storage = window.localStorage;
 
 export const useLocalStorage = (key, defaultValue) => {
-    const [value, setValue] = useState(() => {
-        const storageValue = storage.getItem(key);
-        return (storageValue)
-            ? JSON.parse(storageValue)
-            : defaultValue;
-    });
-    useEffect(() => {
-        const valueJSON = JSON.stringify(value);
-        storage.setItem(key, valueJSON);
-    }, [key, value]);
+    const [value, setValue] = useState(() => (
+        JSON.parse(
+            storage.getItem(key)
+            || JSON.stringify(defaultValue))
+    ));
+    useEffect(() => (
+        storage.setItem(
+            key,
+            JSON.stringify(value))
+    ), [key, value]);
     return [value, setValue];
-}
-
-export const clearLocalStorage = () => {
-    storage.clear();
-}
-
-export const getLocalStorage = () => {
-    const all = {};
-    for (let i = 0; i < storage.length; i++) {
-        const key = localStorage.key(i);
-        const value = storage.getItem(key);
-        const valueJSON = JSON.parse(value);
-        all[key] = valueJSON;
-    }
-    const localStorageJSON = JSON.stringify(all);
-    return localStorageJSON;
 };
 
-export const setLocalStorage = (localStorageJSON) => {
-    const all = JSON.parse(localStorageJSON);
-    const allEntries = Object.entries(all);
-    allEntries.forEach(([key, value]) => {
-        const valueJSON = JSON.stringify(value);
-        localStorage.setItem(key, valueJSON);
-    });
-};
+export const clearLocalStorage = () => (
+    storage.clear()
+);
+
+export const getLocalStorage = () => (
+    JSON.stringify(
+        Object.fromEntries(
+            Array.from(Array(storage.length).keys()) // [0 .. storage.length)
+                .map(
+                    (i) => (
+                        storage.key(i)))
+                .reduce(
+                    (map, key) => (
+                        map.set(
+                            key,
+                            JSON.parse(storage.getItem(key)))),
+                    new Map())
+                .entries()))
+);
+
+export const setLocalStorage = (localStorageJSON) => (
+    Object.entries(
+        JSON.parse(localStorageJSON))
+        .forEach(
+            ([key, value]) => (
+                storage.setItem(
+                    key,
+                    JSON.stringify(value))))
+);
