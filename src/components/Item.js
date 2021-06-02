@@ -157,13 +157,13 @@ const getAction = (props) => {
                         </Label>
                         <Fieldset disabled={!hasLatLng} border={false}>
                             <Label caption="Latitude">
-                                <ButtonInput onClick={handleUpdateLatLng(Heading.N, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="+(N)" disabled={updateLatLngDisabled} />
-                                <ButtonInput onClick={handleUpdateLatLng(Heading.S, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="-(S)" disabled={updateLatLngDisabled} />
+                                {getMoveLatLngButton(Heading.S, '-(S)', updateLatLngDisabled, props)}
+                                {getMoveLatLngButton(Heading.N, '+(N)', updateLatLngDisabled, props)}
                                 <TextInput value={props.formLat} disabled />
                             </Label>
                             <Label caption="Longitude">
-                                <ButtonInput onClick={handleUpdateLatLng(Heading.W, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="-(W)" disabled={updateLatLngDisabled} />
-                                <ButtonInput onClick={handleUpdateLatLng(Heading.E, props.moveAmount, props.formLat, props.setFormLat, props.formLng, props.setFormLng, props.distanceUnit)} value="+(E)" disabled={updateLatLngDisabled} />
+                                {getMoveLatLngButton(Heading.W, '-(W)', updateLatLngDisabled, props)}
+                                {getMoveLatLngButton(Heading.E, '+(E)', updateLatLngDisabled, props)}
                                 <TextInput value={props.formLng} disabled />
                             </Label>
                             <Label caption={`Move Amount (${props.distanceUnit})`}>
@@ -198,6 +198,14 @@ const getAction = (props) => {
             );
     }
 };
+
+const getMoveLatLngButton = (heading, value, disabled, { moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit }) => (
+    <ButtonInput
+        onClick={handleUpdateLatLng(heading, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit)}
+        value={value}
+        disabled={disabled}
+    />
+);
 
 const handleCreateStart = (createStart) => () => (
     createStart()
