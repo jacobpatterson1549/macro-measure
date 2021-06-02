@@ -11,14 +11,14 @@ import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/Geolocation'
 import { View } from '../utils/View';
 
 export const Item = (props) => {
+    const item = props.item || newItem();
     const [moveAmount, setMoveAmount] = useLocalStorage('moveAmount', 1);
-    const [formName, setFormName] = useState(props.name);
-    const [formLat, setFormLat] = useState(props.lat);
-    const [formLng, setFormLng] = useState(props.lng);
-    return render({ ...props, moveAmount, setMoveAmount, formName, setFormName, formLat, setFormLat, formLng, setFormLng });
+    const [formName, setFormName] = useLocalStorage('itemInputName', item.name || newItem().name); // same name as NameList.js
+    const [formLatLng, setFormLatLng] = useState(item);
+    return render({ ...props, item, moveAmount, setMoveAmount, formName, setFormName, formLatLng, setFormLatLng });
 };
 
-export const newItem = () => ({
+const newItem = () => ({
     name: '[New Item]',
     lat: '[current]',
     lng: '[current]',
@@ -29,8 +29,8 @@ const render = (props) => (
         view={props.view}
         highAccuracyGPS={props.highAccuracyGPS}
         render={geolocation => {
-            const distanceHeading = (View.isRead(props.view) && geolocation.latLng !== null)
-                ? getDistanceHeading({ lat: props.lat, lng: props.lng }, geolocation.latLng, props.distanceUnit)
+            const distanceHeading = (View.isRead(props.view) && geolocation.latLng !== null) && props.item
+                ? getDistanceHeading(props.item, geolocation.latLng, props.distanceUnit)
                 : null;
             return renderItem({ ...props, geolocation, distanceHeading });
         }}
@@ -53,7 +53,7 @@ const renderItem = (props) => (
 
 const getHeader = (props) => {
     const prevDisabled = props.index <= 0;
-    const headerName = (View.isCreate(props.view)) ? '[Add Item]' : props.name;
+    const headerName = (View.isCreate(props.view)) ? '[Add Item]' : props.item.name;
     const nextDisabled = !props.items || props.index + 1 >= props.items.length
     const showEdit = View.isRead(props.view);
     return (
@@ -110,11 +110,17 @@ const getMap = (props) => {
             <p>[Map disabled]</p>
         );
     }
-    const [itemLat, itemLng]
-        = (View.isCreate(props.view)) ? (props.geolocation.latLng ? [props.geolocation.latLng.lat, props.geolocation.latLng.lng] : [null, null])
-            : (View.isUpdate(props.view)) ? [props.formLat, props.formLng] : [props.lat, props.lng];
-    const item = { name: props.name, lat: itemLat, lng: itemLng };
-    const [device, distanceHeading] = (props.distanceHeading)
+    const itemLatLng
+        = (View.isCreate(props.view)) ? props.geolocation.latLng
+            : (View.isUpdate(props.view)) ? props.formLatLng
+                : props.item;
+    if (!itemLatLng) {
+        return ( // TODO: test this (when creating before geolocation is initialized)
+            <p>Waiting for GPS...</p>
+        );
+    }
+    const item = { name: props.item.name, ...itemLatLng };
+    const [device, distanceHeading] = (props.geolocation && props.distanceHeading)
         ? [props.geolocation.latLng, props.distanceHeading]
         : [];
     return (
@@ -138,7 +144,7 @@ const getAction = (props) => {
         case View.Item_Update:
             const [handleSubmit, hasLatLng, updateLatLngDisabled, actionName, updateIndex, handleCancel, submitValue] = (View.isCreate(props.view))
                 ? [handleCreateEnd(props.createEnd, props.formName, props.geolocation.latLng), !!props.geolocation.latLng, true, 'Create Item', -1, handleReadItemList(props.readItemList), 'Create Item']
-                : [handleUpdateEnd(props.updateEnd, props.index, props.formName, props.formLat, props.formLng), true, false, ('Update ' + props.name), props.index, handleRead(props.read, props.index, 0), 'Update Item'];
+                : [handleUpdateEnd(props.updateEnd, props.index, props.formName, props.formLatLng), true, false, ('Update ' + props.item.name), props.index, handleRead(props.read, props.index, 0), 'Update Item'];
             return (
                 <Form
                     onSubmit={handleSubmit}
@@ -159,12 +165,12 @@ const getAction = (props) => {
                             <Label caption="Latitude">
                                 {getMoveLatLngButton(Heading.S, '-(S)', updateLatLngDisabled, props)}
                                 {getMoveLatLngButton(Heading.N, '+(N)', updateLatLngDisabled, props)}
-                                <TextInput value={props.formLat} disabled />
+                                <TextInput value={props.formLatLng.lat} disabled />
                             </Label>
                             <Label caption="Longitude">
                                 {getMoveLatLngButton(Heading.W, '-(W)', updateLatLngDisabled, props)}
                                 {getMoveLatLngButton(Heading.E, '+(E)', updateLatLngDisabled, props)}
-                                <TextInput value={props.formLng} disabled />
+                                <TextInput value={props.formLatLng.lng} disabled />
                             </Label>
                             <Label caption={`Move Amount (${props.distanceUnit})`}>
                                 <NumberInput value={props.moveAmount} onChange={props.setMoveAmount} min="0" max="1000" />
@@ -180,7 +186,7 @@ const getAction = (props) => {
                     submitValue="Delete item"
                     onCancel={handleRead(props.read, props.index, 0)}
                 >
-                    <Fieldset caption={'Delete ' + props.name} />
+                    <Fieldset caption={'Delete ' + props.item.name} />
                 </Form>
             );
         case View.Item_Read:
@@ -199,9 +205,9 @@ const getAction = (props) => {
     }
 };
 
-const getMoveLatLngButton = (heading, value, disabled, { moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit }) => (
+const getMoveLatLngButton = (heading, value, disabled, { moveAmount, formLatLng, setFormLatLng, distanceUnit }) => (
     <ButtonInput
-        onClick={handleUpdateLatLng(heading, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit)}
+        onClick={handleUpdateLatLng(heading, moveAmount, formLatLng, setFormLatLng, distanceUnit)}
         value={value}
         disabled={disabled}
     />
@@ -227,8 +233,8 @@ const handleUpdateStart = (updateStart, index) => () => (
     updateStart(index)
 );
 
-const handleUpdateEnd = (updateEnd, index, formName, formLat, formLng) => () => (
-    updateEnd(index, formName, formLat, formLng)
+const handleUpdateEnd = (updateEnd, index, formName, formLatLng) => () => (
+    updateEnd(index, formName, formLatLng.lat, formLatLng.lng)
 );
 
 const handleDeleteStart = (deleteStart, index) => () => (
@@ -239,8 +245,7 @@ const handleDeleteEnd = (deleteEnd, index) => () => (
     deleteEnd(index)
 );
 
-const handleUpdateLatLng = (heading, moveAmount, formLat, setFormLat, formLng, setFormLng, distanceUnit) => () => {
-    const formLatLng = moveLatLngTo({ lat: formLat, lng: formLng }, moveAmount, distanceUnit, heading);
-    setFormLat(formLatLng.lat);
-    setFormLng(formLatLng.lng);
+const handleUpdateLatLng = (heading, moveAmount, formLatLng, setFormLatLng, distanceUnit) => () => {
+    const aoeu = moveLatLngTo(formLatLng, moveAmount, distanceUnit, heading);
+    setFormLatLng(aoeu);
 };

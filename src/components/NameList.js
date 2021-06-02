@@ -70,7 +70,7 @@ const getAction = ({ view, type, values, index, createStart, createEnd, updateEn
 };
 
 const getLocalStorageNameKey = (type) => (
-    type + 'Name'
+    type + 'InputName' // same name as Item.js
 );
 
 const handleCreateStart = (createStart, setName) => () => {

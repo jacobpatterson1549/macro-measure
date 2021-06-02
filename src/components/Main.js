@@ -5,7 +5,7 @@ import { DefaultDistanceUnit } from './GPSSettings';
 import { About } from './About';
 import { Help } from './Help';
 import { NameList } from './NameList';
-import { Item, newItem } from './Item';
+import { Item } from './Item';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 import { View } from '../utils/View';
@@ -48,15 +48,13 @@ const getMain = (props) => {
         case View.Item_Update:
         case View.Item_Delete:
             const items = (props.groups && props.groups.length !== 0) ? props.groups[props.groupIndex].items : [];
-            const item = (View.isCreate(props.view) || items.length === 0) ? newItem() : items[props.itemIndex];
+            const item = (!View.isCreate(props.view) && items.length !== 0) ? items[props.itemIndex] : null;
             return (
                 <Item key={props.itemIndex}
                     view={props.view}
                     items={items}
                     index={props.itemIndex}
-                    name={item.name}
-                    lat={item.lat}
-                    lng={item.lng}
+                    item={item}
                     distanceUnit={props.distanceUnit}
                     highAccuracyGPS={props.highAccuracyGPS}
                     createStart={props.createItemStart}

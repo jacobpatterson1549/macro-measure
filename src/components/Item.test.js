@@ -6,7 +6,12 @@ import { View } from '../utils/View';
 
 describe('Item', () => {
     describe('View', () => {
-        it.each(['create item', 'update item', 'delete item'])('should have button with title: %s', (expected) => {
+        const actionButtonNames = [
+            'create item',
+            'update item',
+            'delete item',
+        ];
+        it.each(actionButtonNames)('should have button with title: %s', (expected) => {
             render(<Item view={View.Item_Read} />);
             const element = screen.getByRole('button', { name: expected });
             expect(element).toBeInTheDocument();
@@ -20,7 +25,7 @@ describe('Item', () => {
         it.each(captionTests)('should have title of %s when view is %s and item name is %s', (expected, view, name) => {
             render(<Item
                 view={view}
-                name={name}
+                item={{ name: name }}
             />);
             const element = screen.queryByTitle('item list')
             expect(element.textContent).toBe(expected);
@@ -41,8 +46,7 @@ describe('Item', () => {
                 render(<Item
                     view={View.Item_Read}
                     distanceUnit={expected}
-                    lat={7}
-                    lng={9}
+                    item={{ lat: 7, lng: 9 }}
                 />);
                 const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
                 await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
@@ -55,8 +59,7 @@ describe('Item', () => {
                 render(<Item
                     view={View.Item_Read}
                     distanceUnit={expected}
-                    lat={7}
-                    lng={9}
+                    item={{ lat: 7, lng: 9 }}
                 />);
                 const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
                 await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
@@ -68,8 +71,7 @@ describe('Item', () => {
             it('should set form item latLng', () => {
                 render(<Item
                     view={View.Item_Update}
-                    lat={1111}
-                    lng={2222}
+                    item={{ lat: 1111, lng: 2222 }}
                 />);
                 expect(screen.getByDisplayValue('1111')).toBeInTheDocument();
                 expect(screen.getByDisplayValue('2222')).toBeInTheDocument();
@@ -92,6 +94,7 @@ describe('Item', () => {
             navigator.geolocation.watchPosition = jest.fn();
             render(<Item
                 view={View.Item_Read}
+                item={{ lat: 0, lng: 0 }}
             />);
             const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
             await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
@@ -105,19 +108,17 @@ describe('Item', () => {
     });
     describe('updateLatLng', () => {
         const latLngTests = [
-            [8.9831528, 0, '+(N)'],
-            [-8.9831528, 0, '-(S)'],
-            [0, -8.9831528, '-(W)'],
-            [0, +8.9831528, '+(E)'],
+            [+0.014457, 0, '+(N)'],
+            [-0.014457, 0, '-(S)'],
+            [0, -0.014457, '-(W)'],
+            [0, +0.014457, '+(E)'],
         ];
         it.each(latLngTests)('should update latLng to [%s,%s] when %s button is clicked', async (lat, lng, direction) => {
             navigator.geolocation.watchPosition = jest.fn();
-            window.localStorage.getItem.mockReturnValue(1000); // moveAmount
             render(<Item
                 view={View.Item_Update}
-                lat={0}
-                lng={0}
-                distanceUnit='km'
+                item={{ name: 'ZERO', lat: 0, lng: 0 }}
+                distanceUnit='mi' // moveAmount defaults to 1
             />);
             const element = screen.getByRole('button', { name: direction });
             element.click();
