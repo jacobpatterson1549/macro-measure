@@ -238,7 +238,7 @@ describe('Main', () => {
         itemIndex={2}
         updateItemStart={updateItemStart}
       />);
-      screen.getByRole('button', { name: /edit/i }).click();
+      screen.getByRole('button', { name: /update item/i }).click();
       expect(updateItemStart).toBeCalledWith(2);
     });
     it('should update an item', () => {

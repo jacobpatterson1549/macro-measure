@@ -82,7 +82,7 @@ const getHeader = (props) => {
                 <div className="row">
                     <button
                         onClick={handleUpdateStart(props.updateStart, props.index)}
-                        title="edit item"
+                        title="update item"
                     >
                         <span>Edit...</span>
                     </button>

@@ -6,19 +6,10 @@ import { View } from '../utils/View';
 
 describe('Item', () => {
     describe('View', () => {
-        const viewTests = [
-            ['Create', View.Item_Create],
-            ['Update', View.Item_Read],
-            ['Delete', View.Item_Update],
-            ['Create', View.Item_Delete],
-        ];
-        it.each(viewTests)('should have button of %s when view is %s', (expected, view) => {
-            render(<Item
-                view={view}
-            />);
-            const re = new RegExp(expected, 'i');
-            const element = screen.queryByRole('button', { name: re });
-            expect(element).toBeInTheDocument
+        it.each(['create item', 'update item', 'delete item'])('should have button with title: %s', (expected) => {
+            render(<Item view={View.Item_Read} />);
+            const element = screen.getByRole('button', { name: expected });
+            expect(element).toBeInTheDocument();
         });
         const captionTests = [
             ['[Add Item]', View.Item_Create, '[New Item]'],
