@@ -13,3 +13,10 @@
 .Label *:first-child:after {
     content: ":";
 }
+
+.Form .ActionButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 1vmin;
+}
