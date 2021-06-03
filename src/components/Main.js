@@ -52,7 +52,9 @@ const getMain = (props) => {
         case View.Item_Update:
         case View.Item_Delete:
         case View.Item_Read_List:
-            const items = getItems(props);
+            const items = (props.groups && props.groups.length !== 0)
+                ? props.groups[props.groupIndex].items
+                : [];
             return (
                 <Item key={props.itemIndex}
                     view={props.view}
@@ -98,9 +100,3 @@ const getMain = (props) => {
             );
     }
 };
-
-const getItems = ({ groups, groupIndex }) => (
-    (groups && groups.length !== 0)
-        ? groups[groupIndex].items
-        : []
-)
