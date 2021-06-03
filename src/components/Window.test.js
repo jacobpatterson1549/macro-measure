@@ -13,33 +13,41 @@ describe('Window', () => {
             }
         </div>
     );
-    const tests = [
-        [true, true],
-        [true, false],
-        [false, true],
-        [false, false],
-    ];
     describe('fullscreen', () => {
-        it.each(tests)('should initially be fullscreen=%s then transition to fullscreen=%s', (initial, transition) => {
-            document.fullscreenElement = initial ? {} : null;
+        const tests = [
+            [true, {}],
+            [false, null],
+        ];
+        it.each(tests)('should initially be fullscreen=%s', (initial, initialFullscreenElement) => {
+            document.fullscreenElement = initialFullscreenElement;
             render(<Window render={win => (<MockApp win={win} />)} />);
             const element = screen.getByTitle('fullscreen');
             expect(element.textContent).toBe(String(initial));
+        });
+        it.each(tests)('should transition to fullscreen=%s', (transition, transitionFullscreenElement) => {
+            render(<Window render={win => (<MockApp win={win} />)} />);
+            const element = screen.getByTitle('fullscreen');
             const event = createEvent('fullscreenchange', window);
-            document.fullscreenElement = transition ? {} : null;
+            document.fullscreenElement = transitionFullscreenElement;
             fireEvent(window, event);
             expect(element.textContent).toBe(String(transition));
         });
     });
     describe('onLine', () => {
-        it.each(tests)('should initially be onLine=%s then transition to onLine=%s', (initial, transition) => {
+        const tests = [
+            [true, true, 'online'],
+            [true, false, 'offline'],
+            [false, true, 'online'],
+            [false, false, 'offline'],
+        ];
+        it.each(tests)('should initially be onLine=%s then transition to onLine=%s when %s event is fired', (initial, expected, eventName) => {
             window.navigator.onLine = initial;
             render(<Window render={win => (<MockApp win={win} />)} />);
             const element = screen.getByTitle('onLine');
             expect(element.textContent).toBe(String(initial));
-            const event = createEvent(transition ? 'online' : 'offline', window);
+            const event = createEvent(eventName, window);
             fireEvent(window, event);
-            expect(element.textContent).toBe(String(transition));
+            expect(element.textContent).toBe(String(expected));
         });
     });
     describe('promptInstall', () => {

@@ -60,12 +60,12 @@ describe('FullscreenSettings', () => {
         });
         describe('click handlers', () => {
             const acceptedTests = [
-                ['accepted', true],
-                ['dismissed', false],
-                ['not accepted', false],
-                [null, false],
+                [1, 'accepted'],
+                [0, 'dismissed'],
+                [0, 'not'],
+                [0, null],
             ]
-            it.each(acceptedTests)('should handle install prompt when "%s" is the choiceResult of the prompt: reload expected: %s', async (accepted, expected) => {
+            it.each(acceptedTests)('should reload %d times when choiceResult of install prompt is "%s"', async (expected, accepted) => {
                 const installPromptEvent = {
                     prompt: jest.fn(),
                     userChoice: { outcome: accepted },
@@ -74,7 +74,7 @@ describe('FullscreenSettings', () => {
                 const element = screen.queryByRole('button');
                 fireEvent.click(element);
                 await waitFor(expect(installPromptEvent.prompt).toBeCalled);
-                expect(window.location.reload).toBeCalledTimes(expected ? 1 : 0);
+                expect(window.location.reload).toBeCalledTimes(expected);
             });
         });
     });

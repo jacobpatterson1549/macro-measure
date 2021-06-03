@@ -30,20 +30,20 @@ describe('Geolocation', () => {
     );
     describe('views', () => {
         const viewTests = [
-            [View.Item_Create, true],
-            [View.Item_Read, true],
-            [View.Item_Update, false],
-            [View.Item_Delete, false],
-            [View.Item_Read_List, false],
+            [1, View.Item_Create],
+            [1, View.Item_Read],
+            [0, View.Item_Update],
+            [0, View.Item_Delete],
+            [0, View.Item_Read_List],
         ];
-        it.each(viewTests)('should watch position when view is %s: %s', (view, expected) => {
+        it.each(viewTests)('should watch position %d times when view is %s', (expected, view) => {
             navigator.geolocation.watchPosition = jest.fn();
             render(<Geolocation
                 view={view}
                 setGPSOn={jest.fn()}
                 render={position => <MockApp position={position} />}
             />);
-            expect(navigator.geolocation.watchPosition).toBeCalledTimes(expected ? 1 : 0);
+            expect(navigator.geolocation.watchPosition).toBeCalledTimes(expected);
         });
     });
     it('should not watch position if geolocation is falsy', () => {

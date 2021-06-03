@@ -134,18 +134,17 @@ describe('NameInput', () => {
         expect(selectFn).toBeCalled();
     });
     const uniqueNameTests = [
-        [true, [{ name: 'a' }, { name: 'c' }], -1, 'b'],
-        [false, [{ name: 'a' }, { name: 'c' }], -1, 'c'],
-        [true, [{ name: 'a' }, { name: 'c' }], 1, 'c'],
+        [true, [{ name: 'a' }, { name: 'c' }], -1, 'b', ''],
+        [false, [{ name: 'a' }, { name: 'c' }], -1, 'c', expect.stringMatching(/./)],
+        [true, [{ name: 'a' }, { name: 'c' }], 1, 'c', ''],
     ];
-    it.each(uniqueNameTests)('should have valid = %s when values are %s, the update index is %d, and the new name is %s', (expectedValid, values, updateIndex, name) => {
+    it.each(uniqueNameTests)('should have valid = %s when values are %s, the update index is %d, and the new name is %s', (expectedValid, values, updateIndex, name, expected) => {
         const setCustomValidity = jest.fn();
         const onChange = jest.fn();
-        const expectedMatcher = expectedValid ? '' : expect.stringMatching(/./);
         render(<NameInput values={values} updateIndex={updateIndex} onChange={onChange} />);
         const element = screen.getByRole('textbox');
         fireEvent.change(element, { target: { value: name, setCustomValidity: setCustomValidity } });
-        expect(setCustomValidity).toHaveBeenCalledWith(expectedMatcher);
+        expect(setCustomValidity).toHaveBeenCalledWith(expected);
     });
     it('should be required', () => {
         render(<NameInput />);
