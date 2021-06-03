@@ -12,7 +12,7 @@ describe('NameList', () => {
             ['Delete', View.Group_Delete],
             ['Create', View.Group_Read_List],
         ];
-        it.each(viewTests)('should have only button of %s when view is %s', (expected, view) => {
+        it.each(viewTests)('should have one button of %s when view is %s', (expected, view) => {
             render(<NameList
                 type={'test'}
                 view={view}
