@@ -202,7 +202,7 @@ const getAction = (props) => {
             return (
                 <div className="distance">
                     <span>{String(props.distanceHeading.distance)}</span>
-                    <span> {props.distanceUnit}</span>
+                    <span className="unit"> {props.distanceUnit}</span>
                 </div>
             );
     }
