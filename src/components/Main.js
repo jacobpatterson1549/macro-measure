@@ -13,7 +13,8 @@ import { View } from '../utils/View';
 export const Main = (props) => {
     const [distanceUnit, setDistanceUnit] = useLocalStorage('distanceUnit', DefaultDistanceUnit);
     const [highAccuracyGPS, setHighAccuracyGPS] = useLocalStorage('highAccuracyGPS', false);
-    return render({ ...props, distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS });
+    const state = { distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS };
+    return render({ ...props, ...state });
 }
 
 const render = (props) => (

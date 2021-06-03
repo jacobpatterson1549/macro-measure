@@ -15,7 +15,8 @@ export const Item = (props) => {
     const [moveAmount, setMoveAmount] = useLocalStorage('moveAmount', 1);
     const [formName, setFormName] = useLocalStorage('itemInputName', item.name || newItem().name); // same name as NameList.js
     const [formLatLng, setFormLatLng] = useState(item);
-    return render({ ...props, item, moveAmount, setMoveAmount, formName, setFormName, formLatLng, setFormLatLng });
+    const state = { item, moveAmount, setMoveAmount, formName, setFormName, formLatLng, setFormLatLng };
+    return render({ ...props, ...state });
 };
 
 const newItem = () => ({
@@ -33,7 +34,8 @@ const render = (props) => (
             const distanceHeading = (View.isRead(props.view) && geolocation.latLng !== null) && props.item
                 ? getDistanceHeading(props.item, geolocation.latLng, props.distanceUnit)
                 : null;
-            return renderItem({ ...props, geolocation, distanceHeading });
+            const state = { geolocation, distanceHeading };
+            return renderItem({ ...props, ...state });
         }}
     />
 );
@@ -247,6 +249,5 @@ const handleDeleteEnd = (deleteEnd, index) => () => (
 );
 
 const handleUpdateLatLng = (heading, moveAmount, formLatLng, setFormLatLng, distanceUnit) => () => {
-    const aoeu = moveLatLngTo(formLatLng, moveAmount, distanceUnit, heading);
-    setFormLatLng(aoeu);
+    setFormLatLng(moveLatLngTo(formLatLng, moveAmount, distanceUnit, heading));
 };
