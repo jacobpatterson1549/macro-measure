@@ -1,5 +1,7 @@
+import './NameTable.css';
+
 export const NameTable = ({ type, values, read, update, deleteValue, moveUp, moveDown }) => (
-    <table>
+    <table className="Table">
         <caption>{type} Values</caption>
         <thead>
             <tr>
@@ -24,7 +26,7 @@ const getTableBody = (values, read, update, deleteValue, moveUp, moveDown) => (
 
 const tableRows = (values, read, update, deleteValue, moveUp, moveDown) => (
     values.map((value, index) => (
-        <tr key={value.name}>
+        <tr key={value.name} className="Row">
             {tableCell(value.name, 'read value', true, read, index)}
             {tableCell('▲', 'move up', index > 0, moveUp, index)}
             {tableCell('▼', 'move down', index + 1 < values.length, moveDown, index)}
@@ -34,10 +36,10 @@ const tableRows = (values, read, update, deleteValue, moveUp, moveDown) => (
     )));
 
 const tableCell = (value, title, isVisible, fn, index) => (
-    <td>
+    <td className="Cell">
         {
             isVisible &&
-            <button onClick={onClick(fn, index)} title={title}>
+            <button onClick={onClick(fn, index)} title={title} className="FakeButton">
                 <span>{value}</span>
             </button>
         }

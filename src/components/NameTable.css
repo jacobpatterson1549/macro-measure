@@ -1,0 +1,15 @@
+.Table .Row:nth-of-type(even) {
+    background: #d3d3d3a0;
+}
+
+.Table .Cell {
+    padding-top: 2vmin;
+    padding-bottom: 2vmin;
+    padding-left: 1vmin;
+    padding-right: 1vmin;
+}
+
+.Table .Cell * {
+    cursor: pointer;
+    font-size: 5vmin;
+}

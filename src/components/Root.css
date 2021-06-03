@@ -16,3 +16,10 @@
 .Root > *:not(:first-child):not(:last-child) {
     flex-grow: 1;
 }
+
+.FakeButton {
+    border: 0;
+    background: inherit;
+    color: inherit;
+    cursor: pointer;
+}

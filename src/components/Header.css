@@ -7,10 +7,6 @@
 .Header * {
     font-size: 8vmin;
     margin-left: 1vw;
-    border: 0;
-    background: inherit;
-    color: inherit;
-    cursor: pointer;
 }
 
 .Header > *:first-child {

@@ -18,7 +18,7 @@ const getGroupName = (view, groups, groupIndex) => (
 );
 
 const getHeaderItem = (setView, itemName, itemTitle, itemView) => (
-    <button onClick={handleSetView(setView, itemView)} title={itemTitle}>
+    <button onClick={handleSetView(setView, itemView)} title={itemTitle} className="FakeButton">
         <span>{itemName}</span>
     </button>
 );
