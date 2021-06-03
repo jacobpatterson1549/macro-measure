@@ -4,12 +4,15 @@
     padding-right: 1vw;
     height: 100vh;
     color: red;
+    display: flex;
+    flex-direction: column;
 }
 
-.Root > *:first-child {
-    height: 10vh;
+.Root > *:first-child,
+.Root > *:last-child {
+    flex-shrink: 0;
 }
 
-.Root > *:not(:first-child) {
-    height: 85vh;
+.Root > *:not(:first-child):not(:last-child) {
+    flex-grow: 1;
 }

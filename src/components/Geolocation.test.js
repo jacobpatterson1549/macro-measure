@@ -40,6 +40,7 @@ describe('Geolocation', () => {
             navigator.geolocation.watchPosition = jest.fn();
             render(<Geolocation
                 view={view}
+                setGPSOn={jest.fn()}
                 render={position => <MockApp position={position} />}
             />);
             expect(navigator.geolocation.watchPosition).toBeCalledTimes(expected ? 1 : 0);
@@ -49,6 +50,7 @@ describe('Geolocation', () => {
         navigator.geolocation = null; // will crash if watchPosition is called
         render(<Geolocation
             view={View.Item_Read}
+            setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
         const element = screen.queryByTitle('position');
@@ -58,6 +60,7 @@ describe('Geolocation', () => {
         navigator.geolocation = null; // will crash if watchPosition is called
         const { unmount } = render(<Geolocation
             view={View.Item_Read}
+            setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
         unmount();
@@ -68,6 +71,7 @@ describe('Geolocation', () => {
             render(<Geolocation
                 view={View.Item_Read}
                 highAccuracyGPS={state}
+                setGPSOn={jest.fn()}
                 render={position => <MockApp position={position} />}
             />);
             expect(navigator.geolocation.watchPosition.mock.calls[0][2].enableHighAccuracy).toBe(state);
@@ -77,6 +81,7 @@ describe('Geolocation', () => {
         navigator.geolocation.watchPosition = jest.fn();
         render(<Geolocation
             view={View.Item_Read}
+            setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
         const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
@@ -87,6 +92,7 @@ describe('Geolocation', () => {
         navigator.geolocation.watchPosition = jest.fn();
         render(<Geolocation
             view={View.Item_Read}
+            setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
         const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
@@ -101,6 +107,7 @@ describe('Geolocation', () => {
         navigator.geolocation.watchPosition = jest.fn();
         render(<Geolocation
             view={View.Item_Read}
+            setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
         const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
@@ -111,6 +118,7 @@ describe('Geolocation', () => {
         navigator.geolocation.watchPosition = jest.fn();
         render(<Geolocation
             view={View.Item_Read}
+            setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
         const [successCallback, errorCallback] = navigator.geolocation.watchPosition.mock.calls[0];
@@ -119,6 +127,23 @@ describe('Geolocation', () => {
             errorCallback({ message: 'unavailable', code: 2 });
         });
         expect(screen.queryByTitle('position')).not.toBeInTheDocument();
+    });
+    it('should clear watch when error occurs', async () => {
+        navigator.geolocation = {
+            watchPosition: jest.fn(),
+            clearWatch: jest.fn(),
+        };
+        render(<Geolocation
+            view={View.Item_Read}
+            setGPSOn={jest.fn()}
+            render={position => <MockApp position={position} />}
+        />);
+        const [successCallback, errorCallback] = navigator.geolocation.watchPosition.mock.calls[0];
+        await waitFor(() => {
+            successCallback({ coords: { latitude: 7, longitude: -9, } });
+            errorCallback({ message: 'unavailable', code: 2 });
+        });
+        expect(navigator.geolocation.clearWatch).toBeCalledTimes(2); // 1 to start watch, 1 on error
     });
     describe('valid', () => {
         const validTests = [
@@ -129,10 +154,34 @@ describe('Geolocation', () => {
             navigator.geolocation = geolocation;
             render(<Geolocation
                 view={'do not show latLng, but geolocation should still be valid'}
+                setGPSOn={jest.fn()}
                 render={position => <MockApp position={position} />}
             />);
             const element = screen.queryByTitle('valid');
             expect(element.textContent).toBe(String(expected));
+        });
+    });
+    describe('setGPSOn', () => {
+        it('should set GPS on', () => {
+            const setGPSOn = jest.fn();
+            navigator.geolocation.watchPosition = jest.fn();
+            render(<Geolocation
+                view={View.Item_Read}
+                setGPSOn={setGPSOn}
+                render={position => <MockApp position={position} />}
+            />);
+            const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
+            expect(setGPSOn.mock.calls).toEqual([[false], [true]]); // stop before starting
+        });
+        it('should set GPS off', () => {
+            const setGPSOn = jest.fn();
+            const { unmount } = render(<Geolocation
+                view={View.Item_Read}
+                setGPSOn={setGPSOn}
+                render={position => <MockApp position={position} />}
+            />);
+            unmount();
+            expect(setGPSOn.mock.calls).toEqual([[false], [true], [false]]); // stop before starting then stop when unmounting
         });
     });
 });

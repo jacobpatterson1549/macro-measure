@@ -3,17 +3,17 @@ import { useState, useRef, useEffect } from 'react';
 import { roundLatLng } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
-export const Geolocation = ({ render, view, highAccuracyGPS }) => {
+export const Geolocation = ({ render, view, highAccuracyGPS, setGPSOn }) => {
     const watchID = useRef(null);
     const [latLng, setLatLng] = useState(null);
     useEffect(() => {
-        if (!watchID.current && View.needsGPS(view)) {
-            startWatch(watchID, setLatLng, highAccuracyGPS);
+        if (!watchID.current && View.needsGPS(view) && getGeolocation()) {
+            startWatch(watchID, highAccuracyGPS, setLatLng, setGPSOn);
         }
         return () => {
-            stopWatch(watchID);
+            stopWatch(watchID, setGPSOn);
         };
-    }, [view, highAccuracyGPS]);
+    }, [view, highAccuracyGPS, setGPSOn]);
     const props = {
         valid: !!getGeolocation(),
         latLng: latLng,
@@ -21,19 +21,21 @@ export const Geolocation = ({ render, view, highAccuracyGPS }) => {
     return render(props);
 };
 
-const startWatch = (watchID, setLatLng, highAccuracyGPS) => {
-    stopWatch(watchID);
+const startWatch = (watchID, highAccuracyGPS, setLatLng, setGPSOn) => {
+    stopWatch(watchID, setGPSOn);
     const success = handleSuccess(setLatLng);
-    const error = handleError(setLatLng);
+    const error = handleError(setLatLng, watchID, setGPSOn);
     const options = {
         enableHighAccuracy: highAccuracyGPS,
     };
-    watchID.current = getGeolocation()?.watchPosition(success, error, options);
+    watchID.current = getGeolocation().watchPosition(success, error, options);
+    setGPSOn(true);
 };
 
-const stopWatch = (watchID) => {
+const stopWatch = (watchID, setGPSOn) => {
     getGeolocation()?.clearWatch(watchID.current);
     watchID.current = null;
+    setGPSOn(false);
 };
 
 const handleSuccess = (setLatLng) => (geolocationPosition) => {
@@ -45,8 +47,9 @@ const handleSuccess = (setLatLng) => (geolocationPosition) => {
     setLatLng(roundedPosition);
 };
 
-const handleError = (setLatLng) => () => {
+const handleError = (setLatLng, watchID, setGPSOn) => () => {
     setLatLng(null);
+    stopWatch(watchID, setGPSOn);
 };
 
 const getGeolocation = () => (

@@ -28,6 +28,7 @@ const render = (props) => (
     <Geolocation
         view={props.view}
         highAccuracyGPS={props.highAccuracyGPS}
+        setGPSOn={props.setGPSOn}
         render={geolocation => {
             const distanceHeading = (View.isRead(props.view) && geolocation.latLng !== null) && props.item
                 ? getDistanceHeading(props.item, geolocation.latLng, props.distanceUnit)

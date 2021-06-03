@@ -65,6 +65,7 @@ const getMain = (props) => {
                     updateEnd={props.updateItemEnd}
                     deleteStart={props.deleteItemStart}
                     deleteEnd={props.deleteItemEnd}
+                    setGPSOn={props.setGPSOn}
                 />);
         case View.Item_Read_List:
             const values = (props.groups && props.groups.length !== 0) ? props.groups[props.groupIndex].items : [];

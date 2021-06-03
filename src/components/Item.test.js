@@ -12,7 +12,10 @@ describe('Item', () => {
             'delete item',
         ];
         it.each(actionButtonNames)('should have button with title: %s', (expected) => {
-            render(<Item view={View.Item_Read} />);
+            render(<Item
+                view={View.Item_Read}
+                setGPSOn={jest.fn()}
+            />);
             const element = screen.getByRole('button', { name: expected });
             expect(element).toBeInTheDocument();
         });
@@ -26,6 +29,7 @@ describe('Item', () => {
             render(<Item
                 view={view}
                 item={{ name: name }}
+                setGPSOn={jest.fn()}
             />);
             const element = screen.queryByTitle('item list')
             expect(element.textContent).toBe(expected);
@@ -35,6 +39,7 @@ describe('Item', () => {
                 render(<Item
                     view={View.Item_Read}
                     distanceUnit={null}
+                    setGPSOn={jest.fn()}
                 />);
                 const re = new RegExp('getting location', 'i');
                 const element = screen.queryByText(re);
@@ -47,6 +52,7 @@ describe('Item', () => {
                     view={View.Item_Read}
                     distanceUnit={expected}
                     item={{ lat: 7, lng: 9 }}
+                    setGPSOn={jest.fn()}
                 />);
                 const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
                 await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
@@ -60,6 +66,7 @@ describe('Item', () => {
                     view={View.Item_Read}
                     distanceUnit={expected}
                     item={{ lat: 7, lng: 9 }}
+                    setGPSOn={jest.fn()}
                 />);
                 const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
                 await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
@@ -72,6 +79,7 @@ describe('Item', () => {
                 render(<Item
                     view={View.Item_Update}
                     item={{ lat: 1111, lng: 2222 }}
+                    setGPSOn={jest.fn()}
                 />);
                 expect(screen.getByDisplayValue('1111')).toBeInTheDocument();
                 expect(screen.getByDisplayValue('2222')).toBeInTheDocument();
@@ -81,6 +89,7 @@ describe('Item', () => {
             it('should not show map when geolocation does not return latLng', () => {
                 render(<Item
                     view={View.Item_Create}
+                    setGPSOn={jest.fn()}
                 />);
                 const element = screen.queryByText(/waiting for/i);
                 expect(element).toBeInTheDocument();
@@ -88,6 +97,7 @@ describe('Item', () => {
             it('should have disabled submit when geolocation does not return latLng', () => {
                 render(<Item
                     view={View.Item_Create}
+                    setGPSOn={jest.fn()}
                 />);
                 const element = screen.getByRole('button', { name: /create item/i });
                 expect(element.disabled).toBeTruthy();
@@ -96,6 +106,7 @@ describe('Item', () => {
                 navigator.geolocation.watchPosition = jest.fn();
                 render(<Item
                     view={View.Item_Create}
+                    setGPSOn={jest.fn()}
                 />);
                 const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
                 await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
@@ -106,6 +117,7 @@ describe('Item', () => {
                 navigator.geolocation.watchPosition = jest.fn();
                 render(<Item
                     view={View.Item_Create}
+                    setGPSOn={jest.fn()}
                 />);
                 const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
                 await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
@@ -113,53 +125,55 @@ describe('Item', () => {
                 expect(element.disabled).toBeFalsy();
             });
         });
-    });
-    describe('getMap', () => {
-        let oldGeolocation;
-        beforeEach(() => {
-            oldGeolocation = navigator.geolocation;
+        describe('getMap', () => {
+            let oldGeolocation;
+            beforeEach(() => {
+                oldGeolocation = navigator.geolocation;
+            });
+            afterEach(() => {
+                navigator.geolocation = oldGeolocation;
+            });
+            it('should have map when currentLatLng is null', () => {
+                render(<Item setGPSOn={jest.fn()} />);
+                expect(screen.queryByRole('img')).toBeInTheDocument();
+            });
+            it('should have map', async () => {
+                navigator.geolocation.watchPosition = jest.fn();
+                render(<Item
+                    view={View.Item_Read}
+                    item={{ lat: 0, lng: 0 }}
+                    setGPSOn={jest.fn()}
+                />);
+                const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
+                await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
+                expect(screen.queryByRole('img')).toBeInTheDocument();
+            });
+            it('should say map disabled when it does not have geolocation', () => {
+                navigator.geolocation = null;
+                render(<Item setGPSOn={jest.fn()} />);
+                expect(screen.queryByText(/map disabled/i)).toBeInTheDocument();
+            });
         });
-        afterEach(() => {
-            navigator.geolocation = oldGeolocation;
-        });
-        it('should have map when currentLatLng is null', () => {
-            render(<Item />);
-            expect(screen.queryByRole('img')).toBeInTheDocument();
-        });
-        it('should have map', async () => {
-            navigator.geolocation.watchPosition = jest.fn();
-            render(<Item
-                view={View.Item_Read}
-                item={{ lat: 0, lng: 0 }}
-            />);
-            const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
-            await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
-            expect(screen.queryByRole('img')).toBeInTheDocument();
-        });
-        it('should say map disabled when it does not have geolocation', () => {
-            navigator.geolocation = null;
-            render(<Item />);
-            expect(screen.queryByText(/map disabled/i)).toBeInTheDocument();
-        });
-    });
-    describe('updateLatLng', () => {
-        const latLngTests = [
-            [+0.014457, 0, '+(N)'],
-            [-0.014457, 0, '-(S)'],
-            [0, -0.014457, '-(W)'],
-            [0, +0.014457, '+(E)'],
-        ];
-        it.each(latLngTests)('should update latLng to [%s,%s] when %s button is clicked', async (lat, lng, direction) => {
-            navigator.geolocation.watchPosition = jest.fn();
-            render(<Item
-                view={View.Item_Update}
-                item={{ name: 'ZERO', lat: 0, lng: 0 }}
-                distanceUnit='mi' // moveAmount defaults to 1
-            />);
-            const element = screen.getByRole('button', { name: direction });
-            element.click();
-            expect(screen.getByDisplayValue(lat)).toBeInTheDocument();
-            expect(screen.getByDisplayValue(lng)).toBeInTheDocument();
+        describe('updateLatLng', () => {
+            const latLngTests = [
+                [+0.014457, 0, '+(N)'],
+                [-0.014457, 0, '-(S)'],
+                [0, -0.014457, '-(W)'],
+                [0, +0.014457, '+(E)'],
+            ];
+            it.each(latLngTests)('should update latLng to [%s,%s] when %s button is clicked', async (lat, lng, direction) => {
+                navigator.geolocation.watchPosition = jest.fn();
+                render(<Item
+                    view={View.Item_Update}
+                    item={{ name: 'ZERO', lat: 0, lng: 0 }}
+                    distanceUnit='mi' // moveAmount defaults to 1
+                    setGPSOn={jest.fn()}
+                />);
+                const element = screen.getByRole('button', { name: direction });
+                element.click();
+                expect(screen.getByDisplayValue(lat)).toBeInTheDocument();
+                expect(screen.getByDisplayValue(lng)).toBeInTheDocument();
+            });
         });
     });
 });

@@ -8,7 +8,12 @@ describe('Main', () => {
   describe('views', () => {
     const views = Object.values(View).filter(Number.isInteger);
     it.each(views)('should render with view id=%s', (view) => {
-      render(<Main view={view} />);
+      render(
+        <Main
+          view={view}
+          setGPSOn={jest.fn()}
+        />
+      );
     });
     it('should render default view if view is unknown (or outdated)', () => {
       render(<Main view={'settings'} />);
@@ -145,6 +150,7 @@ describe('Main', () => {
         groupIndex={0}
         itemIndex={1}
         createItemStart={createItemStart}
+        setGPSOn={jest.fn()}
       />);
       screen.getByRole('button', { name: /create item/i }).click();
       expect(createItemStart).toBeCalled();
@@ -157,6 +163,7 @@ describe('Main', () => {
         groups={[{ name: 'g', items: [] }]}
         groupIndex={0}
         createItemEnd={createItemEnd}
+        setGPSOn={jest.fn()}
       />);
       fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: expected } });
       const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
@@ -171,7 +178,8 @@ describe('Main', () => {
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         readItem={readItem}
-      />);
+        setGPSOn={jest.fn()}
+        />);
       screen.getByText('iB').click();
       expect(readItem).toBeCalledWith(1);
     });
@@ -187,6 +195,7 @@ describe('Main', () => {
         groupIndex={0}
         itemIndex={1}
         readItem={readItem}
+        setGPSOn={jest.fn()}
       />);
       screen.getByRole('button', { name: buttonName }).click();
       expect(readItem).toBeCalledWith(expected);
@@ -198,6 +207,7 @@ describe('Main', () => {
         groups={[]}
         groupIndex={0}
         readItemList={readItemList}
+        setGPSOn={jest.fn()}
       />);
       screen.getByText(/cancel/i).click();
       expect(readItemList).toBeCalledWith();
@@ -214,7 +224,8 @@ describe('Main', () => {
         groupIndex={0}
         itemIndex={0}
         readItem={readItem}
-      />);
+        setGPSOn={jest.fn()}
+        />);
       screen.getByText(/cancel/i).click();
       expect(readItem).toBeCalled();
     });
@@ -237,6 +248,7 @@ describe('Main', () => {
         groupIndex={0}
         itemIndex={2}
         updateItemStart={updateItemStart}
+        setGPSOn={jest.fn()}
       />);
       screen.getByRole('button', { name: /update item/i }).click();
       expect(updateItemStart).toBeCalledWith(2);
@@ -250,7 +262,8 @@ describe('Main', () => {
         groupIndex={0}
         itemIndex={2}
         updateItemEnd={updateItemEnd}
-      />);
+        setGPSOn={jest.fn()}
+        />);
       fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: expected } });
       screen.getByRole('button', { name: /update item/i }).click();
       expect(updateItemEnd).toBeCalledWith(2, expected, 3, 1);
@@ -262,7 +275,8 @@ describe('Main', () => {
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         deleteItemStart={deleteItemStart}
-      />);
+        setGPSOn={jest.fn()}
+        />);
       screen.getAllByRole('button', { name: /delete value/i })[1].click();
       expect(deleteItemStart).toBeCalledWith(1);
     });
@@ -274,6 +288,7 @@ describe('Main', () => {
         groupIndex={0}
         itemIndex={1}
         deleteItemStart={deleteItemStart}
+        setGPSOn={jest.fn()}
       />);
       screen.getByRole('button', { name: /delete/i }).click();
       expect(deleteItemStart).toBeCalledWith(1);
@@ -286,7 +301,8 @@ describe('Main', () => {
         groupIndex={0}
         itemIndex={1}
         deleteItemEnd={deleteItemEnd}
-      />);
+        setGPSOn={jest.fn()}
+        />);
       screen.getByRole('button', { name: /delete item/i }).click();
       expect(deleteItemEnd).toBeCalledWith(1);
     });
