@@ -124,104 +124,93 @@ const getHeader = (props) => {
 };
 
 const getMap = (props) => {
-    if (!props.geolocation.valid) {
-        return (
-            <p>[Map disabled]</p>
-        );
-    }
     const [itemName, itemLatLng] = (View.isCreate(props.view))
         ? ['Item', props.geolocation.latLng]
-        : [props.items[props.index].name, props.latLng];
-    if (!itemLatLng) {
-        return (
-            <p>Waiting for GPS...</p>
-        );
-    }
+        : (props.items) ? [props.items[props.index].name, props.latLng]
+            : [null];
     const item = { name: itemName, ...itemLatLng };
-    const [device, distanceHeading] = (props.geolocation && props.distanceHeading)
+    const [device, distanceHeading] = (props.geolocation.valid && props.distanceHeading)
         ? [props.geolocation.latLng, props.distanceHeading]
         : [];
-    return (
-        <Map
-            item={item}
-            device={device}
-            distanceHeading={distanceHeading}
-            distanceUnit={props.distanceUnit}
-        />
-    );
+    return (!props.geolocation.valid) ? (<p>[Map disabled]</p>)
+        : (!itemLatLng) ? (<p>Waiting for GPS...</p>)
+            : (
+                <Map
+                    item={item}
+                    device={device}
+                    distanceHeading={distanceHeading}
+                    distanceUnit={props.distanceUnit}
+                />
+            );
 };
 
-const getAction = (props) => {
-    if (!props.geolocation.valid) {
-        return (
-            <span>Cannot get location</span>
-        );
-    }
-    switch (props.view) {
-        case View.Item_Create:
-        case View.Item_Update:
-            const [handleSubmit, hasLatLng, updateLatLngDisabled, actionName, updateIndex, handleCancel, submitValue] = (View.isCreate(props.view))
-                ? [handleCreateEnd(props), !!props.geolocation.latLng, true, 'Create Item', -1, handleReadItemList(props), 'Create Item']
-                : [handleUpdateEnd(props), true, false, ('Update ' + props.items[props.index].name), props.index, handleRead(0, props), 'Update Item'];
-            return (
-                <Form
-                    onSubmit={handleSubmit}
-                    submitValue={submitValue}
-                    submitDisabled={!hasLatLng}
-                    onCancel={handleCancel}
-                >
-                    <Fieldset caption={actionName}>
-                        <Label caption="Name">
-                            <NameInput
-                                value={props.name}
-                                values={props.items}
-                                onChange={props.setName}
-                                updateIndex={updateIndex}
-                            />
-                        </Label>
-                        <Fieldset disabled={!hasLatLng} border={false}>
-                            <Label caption="Latitude">
-                                {getMoveLatLngButton(Heading.S, '-(S)', updateLatLngDisabled, props)}
-                                {getMoveLatLngButton(Heading.N, '+(N)', updateLatLngDisabled, props)}
-                                <TextInput value={props.latLng.lat} disabled />
-                            </Label>
-                            <Label caption="Longitude">
-                                {getMoveLatLngButton(Heading.W, '-(W)', updateLatLngDisabled, props)}
-                                {getMoveLatLngButton(Heading.E, '+(E)', updateLatLngDisabled, props)}
-                                <TextInput value={props.latLng.lng} disabled />
-                            </Label>
-                            <Label caption={`Move Amount (${props.distanceUnit})`}>
-                                <NumberInput value={props.moveAmount} onChange={props.setMoveAmount} min="0" max="1000" />
-                            </Label>
-                        </Fieldset>
-                    </Fieldset>
-                </Form>
-            );
-        case View.Item_Delete:
-            return (
-                <Form
-                    onSubmit={handleDeleteEnd(props)}
-                    submitValue="Delete item"
-                    onCancel={handleRead(0, props)}
-                >
-                    <Fieldset caption={'Delete ' + props.items[props.index].name} />
-                </Form>
-            );
-        case View.Item_Read:
-        default:
-            if (!props.geolocation.latLng) {
-                return (
-                    <span>Getting location...</span>
-                );
-            }
-            return (
-                <div className="distance">
-                    <span>{String(props.distanceHeading.distance)}</span>
-                    <span className="unit"> {props.distanceUnit}</span>
-                </div>
-            );
-    }
-};
+const getAction = (props) => (
+    (!props.geolocation.valid) ? (<span>Cannot get location</span>)
+        : View.isCreate(props.view) || View.isUpdate(props.view) ? getCreateOrUpdateAction(props)
+            : View.isDelete(props.view) ? getDeleteAction(props)
+                : getReadAction(props)
+);
+
+const getCreateOrUpdateAction = (props) => {
+    const [handleSubmit, hasLatLng, updateLatLngDisabled, actionName, updateIndex, handleCancel, submitValue] = (View.isCreate(props.view))
+        ? [handleCreateEnd(props), !!props.geolocation.latLng, true, 'Create Item', -1, handleReadItemList(props), 'Create Item']
+        : [handleUpdateEnd(props), true, false, ('Update ' + props.items[props.index].name), props.index, handleRead(0, props), 'Update Item'];
+    return (
+        <Form
+            onSubmit={handleSubmit}
+            submitValue={submitValue}
+            submitDisabled={!hasLatLng}
+            onCancel={handleCancel}
+        >
+            <Fieldset caption={actionName}>
+                <Label caption="Name">
+                    <NameInput
+                        value={props.name}
+                        values={props.items}
+                        onChange={props.setName}
+                        updateIndex={updateIndex}
+                    />
+                </Label>
+                <Fieldset disabled={!hasLatLng} border={false}>
+                    <Label caption="Latitude">
+                        {getMoveLatLngButton(Heading.S, '-(S)', updateLatLngDisabled, props)}
+                        {getMoveLatLngButton(Heading.N, '+(N)', updateLatLngDisabled, props)}
+                        <TextInput value={props.latLng.lat} disabled />
+                    </Label>
+                    <Label caption="Longitude">
+                        {getMoveLatLngButton(Heading.W, '-(W)', updateLatLngDisabled, props)}
+                        {getMoveLatLngButton(Heading.E, '+(E)', updateLatLngDisabled, props)}
+                        <TextInput value={props.latLng.lng} disabled />
+                    </Label>
+                    <Label caption={`Move Amount (${props.distanceUnit})`}>
+                        <NumberInput value={props.moveAmount} onChange={props.setMoveAmount} min="0" max="1000" />
+                    </Label>
+                </Fieldset>
+            </Fieldset>
+        </Form>
+    );
+}
+
+const getDeleteAction = (props) => (
+    <Form
+        onSubmit={handleDeleteEnd(props)}
+        submitValue="Delete item"
+        onCancel={handleRead(0, props)}
+    >
+        <Fieldset caption={'Delete ' + props.items[props.index].name} />
+    </Form>
+);
+
+const getReadAction = (props) => (
+    (!props.geolocation.latLng)
+        ? (<span>Getting location...</span>)
+        : (
+            <div className="distance">
+                <span>{String(props.distanceHeading.distance)}</span>
+                <span className="unit"> {props.distanceUnit}</span>
+            </div>
+        )
+);
 
 const getMoveLatLngButton = (heading, value, disabled, { moveAmount, latLng, setLatLng, distanceUnit }) => (
     <ButtonInput

@@ -23,80 +23,74 @@ const render = (props) => (
     </main>
 );
 
-const getMain = (props) => {
-    switch (props.view) {
-        case View.About:
-            return (
-                <About
-                />
-            );
-        case View.Help:
-            return (
-                <Help
-                />
-            );
-        case View.Settings:
-            return (
-                <Settings
-                    distanceUnit={props.distanceUnit}
-                    setDistanceUnit={props.setDistanceUnit}
-                    highAccuracyGPS={props.highAccuracyGPS}
-                    setHighAccuracyGPS={props.setHighAccuracyGPS}
-                    fullscreen={props.fullscreen}
-                    onLine={props.onLine}
-                    installPromptEvent={props.installPromptEvent}
-                />
-            );
-        case View.Item_Create:
-        case View.Item_Read:
-        case View.Item_Update:
-        case View.Item_Delete:
-        case View.Item_Read_List:
-            const items = (props.groups && props.groups.length !== 0)
-                ? props.groups[props.groupIndex].items
-                : [];
-            return (
-                <Item key={props.itemIndex}
-                    view={props.view}
-                    items={items}
-                    index={props.itemIndex}
-                    distanceUnit={props.distanceUnit}
-                    highAccuracyGPS={props.highAccuracyGPS}
-                    createStart={props.createItemStart}
-                    createEnd={props.createItemEnd}
-                    read={props.readItem}
-                    readItemList={props.readItemList}
-                    updateStart={props.updateItemStart}
-                    updateEnd={props.updateItemEnd}
-                    deleteStart={props.deleteItemStart}
-                    deleteEnd={props.deleteItemEnd}
-                    setGPSOn={props.setGPSOn}
-                    moveUp={props.moveItemUp}
-                    moveDown={props.moveItemDown}
-                />
-            );
-        case View.Group_Create:
-        case View.Group_Update:
-        case View.Group_Delete:
-        case View.Group_Read_List:
-        default:
-            return (
-                <NameList
-                    type="group"
-                    values={props.groups}
-                    index={props.groupIndex}
-                    view={props.view}
-                    createStart={props.createGroupStart}
-                    createEnd={props.createGroupEnd}
-                    read={props.readGroup}
-                    updateStart={props.updateGroupStart}
-                    updateEnd={props.updateGroupEnd}
-                    deleteStart={props.deleteGroupStart}
-                    deleteEnd={props.deleteGroupEnd}
-                    moveUp={props.moveGroupUp}
-                    moveDown={props.moveGroupDown}
-                    cancel={props.readGroupList}
-                />
-            );
-    }
-};
+const getMain = (props) => (
+    props.view === View.About ? getAboutView(props)
+        : props.view === View.Help ? getHelpView(props)
+            : props.view === View.Settings ? getSettingsView(props)
+                : View.isItem(props.view) ? getItemsView(props)
+                    : getGroupsView(props)
+);
+
+const getAboutView = (props) => (
+    <About />
+);
+
+const getHelpView = (props) => (
+    <Help />
+);
+
+const getSettingsView = (props) => (
+    <Settings
+        distanceUnit={props.distanceUnit}
+        setDistanceUnit={props.setDistanceUnit}
+        highAccuracyGPS={props.highAccuracyGPS}
+        setHighAccuracyGPS={props.setHighAccuracyGPS}
+        fullscreen={props.fullscreen}
+        onLine={props.onLine}
+        installPromptEvent={props.installPromptEvent}
+    />
+);
+
+const getItemsView = (props) => (
+    <Item key={props.itemIndex}
+        view={props.view}
+        items={getItemsFromGroups(props)}
+        index={props.itemIndex}
+        distanceUnit={props.distanceUnit}
+        highAccuracyGPS={props.highAccuracyGPS}
+        createStart={props.createItemStart}
+        createEnd={props.createItemEnd}
+        read={props.readItem}
+        readItemList={props.readItemList}
+        updateStart={props.updateItemStart}
+        updateEnd={props.updateItemEnd}
+        deleteStart={props.deleteItemStart}
+        deleteEnd={props.deleteItemEnd}
+        setGPSOn={props.setGPSOn}
+        moveUp={props.moveItemUp}
+        moveDown={props.moveItemDown}
+    />
+);
+
+const getGroupsView = (props) => (
+    <NameList
+        type="group"
+        values={props.groups}
+        index={props.groupIndex}
+        view={props.view}
+        createStart={props.createGroupStart}
+        createEnd={props.createGroupEnd}
+        read={props.readGroup}
+        updateStart={props.updateGroupStart}
+        updateEnd={props.updateGroupEnd}
+        deleteStart={props.deleteGroupStart}
+        deleteEnd={props.deleteGroupEnd}
+        moveUp={props.moveGroupUp}
+        moveDown={props.moveGroupDown}
+        cancel={props.readGroupList}
+    />
+);
+
+const getItemsFromGroups = ({ groups, groupIndex }) => (
+    (groups && groups.length !== 0) ? groups[groupIndex].items : []
+);
