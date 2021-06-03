@@ -3,18 +3,21 @@
     flex-direction: column;
     align-items: center;
     height: 100%;
-    width: 90%;
+}
+
+.Item > *:first-child,
+.Item > *:last-child {
+    flex-shrink: 0;
 }
 
 .Item > *:not(:first-child):not(:last-child) {
-    margin-top: auto;
-    margin-bottom: auto;
+    flex-grow: 1;
+    width: 100%;
 }
 
 .Item-Header {
     display: flex;
     flex-direction: column;
-    width: 100%;
 }
 
 .Item-Header .row {
