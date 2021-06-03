@@ -41,6 +41,19 @@ describe('LocalStorage', () => {
             fireEvent.click(element);
             expect(window.localStorage.setItem).toBeCalledWith(key, expectedJSON);
         });
+        it('should setItem five times when clicked five times', () => {
+            const before = 'this should not be saved';
+            const expected = 'test3';
+            const expectedJSON = `"${expected}"`;
+            render(<MockComponent defaultValue={before} clickValue={expected} />);
+            const element = screen.getByText(before);
+            fireEvent.click(element);
+            fireEvent.click(element);
+            fireEvent.click(element);
+            fireEvent.click(element);
+            fireEvent.click(element);
+            expect(window.localStorage.setItem).toBeCalledTimes(5);
+        });
     });
     describe('clearLocalStorage', () => {
         it('should call clear on localStorage', () => {

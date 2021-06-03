@@ -33,7 +33,6 @@ describe('NameList', () => {
                 const element = screen.getByRole('button', { name: /test/ });
                 fireEvent.click(element);
                 expect(createStart).toBeCalled();
-                expect(localStorage.setItem.mock.calls[1][1]).toMatch(/new/i);
             });
             it('should start updating when the edit button is clicked', () => {
                 const updateStart = jest.fn();
@@ -43,7 +42,6 @@ describe('NameList', () => {
                 const element = elements[1];
                 fireEvent.click(element);
                 expect(updateStart).toBeCalled();
-                expect(localStorage.setItem.mock.calls[1][1]).toBe('"b"');
             });
             it('should start deleting when the delete button is clicked', () => {
                 const deleteStart = jest.fn();
@@ -53,7 +51,6 @@ describe('NameList', () => {
                 const element = elements[2];
                 fireEvent.click(element);
                 expect(deleteStart).toBeCalled();
-                expect(localStorage.setItem.mock.calls[1][1]).toBe('"c"');
             });
         });
         describe('finish', () => {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 const storage = window.localStorage;
 
@@ -8,12 +8,7 @@ export const useLocalStorage = (key, defaultValue) => {
             storage.getItem(key)
             || JSON.stringify(defaultValue))
     ));
-    useEffect(() => (
-        storage.setItem(
-            key,
-            JSON.stringify(value))
-    ), [key, value]);
-    return [value, setValue];
+    return [value, handleSetValue(key, setValue)];
 };
 
 export const clearLocalStorage = () => (
@@ -45,3 +40,10 @@ export const setLocalStorage = (localStorageJSON) => (
                     key,
                     JSON.stringify(value))))
 );
+
+const handleSetValue = (key, setValue) => (value) => {
+    storage.setItem(
+        key,
+        JSON.stringify(value));
+    setValue(value);
+};
