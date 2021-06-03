@@ -28,11 +28,13 @@ const getMain = (props) => {
         case View.About:
             return (
                 <About
-                />);
+                />
+            );
         case View.Help:
             return (
                 <Help
-                />);
+                />
+            );
         case View.Settings:
             return (
                 <Settings
@@ -43,19 +45,19 @@ const getMain = (props) => {
                     fullscreen={props.fullscreen}
                     onLine={props.onLine}
                     installPromptEvent={props.installPromptEvent}
-                />);
+                />
+            );
         case View.Item_Create:
         case View.Item_Read:
         case View.Item_Update:
         case View.Item_Delete:
-            const items = (props.groups && props.groups.length !== 0) ? props.groups[props.groupIndex].items : [];
-            const item = (!View.isCreate(props.view) && items.length !== 0) ? items[props.itemIndex] : null;
+        case View.Item_Read_List:
+            const items = getItems(props);
             return (
                 <Item key={props.itemIndex}
                     view={props.view}
                     items={items}
                     index={props.itemIndex}
-                    item={item}
                     distanceUnit={props.distanceUnit}
                     highAccuracyGPS={props.highAccuracyGPS}
                     createStart={props.createItemStart}
@@ -67,19 +69,6 @@ const getMain = (props) => {
                     deleteStart={props.deleteItemStart}
                     deleteEnd={props.deleteItemEnd}
                     setGPSOn={props.setGPSOn}
-                />);
-        case View.Item_Read_List:
-            const values = (props.groups && props.groups.length !== 0) ? props.groups[props.groupIndex].items : [];
-            return (
-                <NameList
-                    type="item"
-                    values={values}
-                    index={props.itemIndex}
-                    view={props.view}
-                    createStart={props.createItemStart}
-                    read={props.readItem}
-                    updateStart={props.updateItemStart}
-                    deleteStart={props.deleteItemStart}
                     moveUp={props.moveItemUp}
                     moveDown={props.moveItemDown}
                 />
@@ -109,3 +98,9 @@ const getMain = (props) => {
             );
     }
 };
+
+const getItems = ({ groups, groupIndex }) => (
+    (groups && groups.length !== 0)
+        ? groups[groupIndex].items
+        : []
+)

@@ -11,6 +11,9 @@ describe('Main', () => {
       render(
         <Main
           view={view}
+          groups={[{ name: 'mg?m', items: [{ name: 'mi?m' }] }]}
+          groupIndex={0}
+          itemIndex={0}
           setGPSOn={jest.fn()}
         />
       );
@@ -179,7 +182,7 @@ describe('Main', () => {
         groupIndex={0}
         readItem={readItem}
         setGPSOn={jest.fn()}
-        />);
+      />);
       screen.getByText('iB').click();
       expect(readItem).toBeCalledWith(1);
     });
@@ -225,7 +228,7 @@ describe('Main', () => {
         itemIndex={0}
         readItem={readItem}
         setGPSOn={jest.fn()}
-        />);
+      />);
       screen.getByText(/cancel/i).click();
       expect(readItem).toBeCalled();
     });
@@ -256,17 +259,18 @@ describe('Main', () => {
     it('should update an item', () => {
       const updateItemEnd = jest.fn();
       const expected = '[iC-EDITED]'
+      window.localStorage.getItem.mockImplementation((key) => key === 'itemInputLatLng' ? '{"lat":3,"lng":1}' : null);
       render(<Main
         view={View.Item_Update}
-        groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC', lat: 3, lng: 1 }] }]}
+        groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC', lat: 3, lng: 1 }] }]} // the latLng is read from the state
         groupIndex={0}
         itemIndex={2}
         updateItemEnd={updateItemEnd}
         setGPSOn={jest.fn()}
-        />);
+      />);
       fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: expected } });
       screen.getByRole('button', { name: /update item/i }).click();
-      expect(updateItemEnd).toBeCalledWith(2, expected, 3, 1);
+      expect(updateItemEnd).toBeCalledWith(2, expected, 3, 1); // TODO: move position, ensure the changed values are called here
     });
     it('should start to delete an item from list', () => {
       const deleteItemStart = jest.fn();
@@ -276,7 +280,7 @@ describe('Main', () => {
         groupIndex={0}
         deleteItemStart={deleteItemStart}
         setGPSOn={jest.fn()}
-        />);
+      />);
       screen.getAllByRole('button', { name: /delete value/i })[1].click();
       expect(deleteItemStart).toBeCalledWith(1);
     });
@@ -302,7 +306,7 @@ describe('Main', () => {
         itemIndex={1}
         deleteItemEnd={deleteItemEnd}
         setGPSOn={jest.fn()}
-        />);
+      />);
       screen.getByRole('button', { name: /delete item/i }).click();
       expect(deleteItemEnd).toBeCalledWith(1);
     });

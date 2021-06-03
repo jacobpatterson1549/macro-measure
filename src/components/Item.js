@@ -1,46 +1,59 @@
-import { useState } from 'react';
-
 import './Item.css';
 
 import { Map } from './Map';
 import { Geolocation } from './Geolocation';
 import { Form, Fieldset, Label, NameInput, TextInput, NumberInput, ButtonInput } from './Form';
+import { NameList } from './NameList';
 
 import { useLocalStorage } from '../utils/LocalStorage';
-import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/Geolocation';
+import { getDistanceHeading, moveLatLngTo, Heading, roundLatLng as latLngOnly } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
 export const Item = (props) => {
-    const item = props.item || newItem();
     const [moveAmount, setMoveAmount] = useLocalStorage('moveAmount', 1);
-    const [formName, setFormName] = useLocalStorage('itemInputName', item.name || newItem().name); // same name as NameList.js
-    const [formLatLng, setFormLatLng] = useState(item);
-    const state = { item, moveAmount, setMoveAmount, formName, setFormName, formLatLng, setFormLatLng };
+    const [name, setName] = useLocalStorage('itemInputName', '?'); // same name as NameList.js
+    const [latLng, setLatLng] = useLocalStorage('itemInputLatLng', { lat: 0, lng: 0 });
+    const state = { moveAmount, setMoveAmount, name, setName, latLng, setLatLng };
     return render({ ...props, ...state });
 };
 
-const newItem = () => ({
-    name: '[New Item]',
-    lat: '[current]',
-    lng: '[current]',
-});
-
 const render = (props) => (
+    (props.view === View.Item_Read_List)
+        ? renderItemList(props)
+        : renderItem(props)
+);
+
+const renderItemList = (props) => (
+    <NameList
+        type="item"
+        values={props.items}
+        index={props.index}
+        view={props.view}
+        createStart={handleCreateStart(props)}
+        read={props.read}
+        updateStart={handleUpdateStartFromList(props)}
+        deleteStart={handleDeleteStartFromList(props)}
+        moveUp={props.moveUp}
+        moveDown={props.moveDown}
+    />
+);
+
+const renderItem = (props) => (
     <Geolocation
         view={props.view}
         highAccuracyGPS={props.highAccuracyGPS}
         setGPSOn={props.setGPSOn}
         render={geolocation => {
-            const distanceHeading = (View.isRead(props.view) && geolocation.latLng !== null) && props.item
-                ? getDistanceHeading(props.item, geolocation.latLng, props.distanceUnit)
+            const distanceHeading = (View.isRead(props.view) && geolocation.latLng !== null)
+                ? getDistanceHeading(props.latLng, geolocation.latLng, props.distanceUnit)
                 : null;
             const state = { geolocation, distanceHeading };
-            return renderItem({ ...props, ...state });
+            return renderItemHelper({ ...props, ...state });
         }}
     />
 );
 
-const renderItem = (props) => (
+const renderItemHelper = (props) => (
     <div className="Item">
         <div className="Item-Header">
             {getHeader(props)}
@@ -48,7 +61,7 @@ const renderItem = (props) => (
         <div role="img">
             {getMap(props)}
         </div>
-        <div>
+        <div className="Actions">
             {getAction(props)}
         </div>
     </div>
@@ -56,7 +69,10 @@ const renderItem = (props) => (
 
 const getHeader = (props) => {
     const prevDisabled = props.index <= 0;
-    const headerName = (View.isCreate(props.view)) ? '[Add Item]' : props.item.name;
+    const headerName
+        = (View.isCreate(props.view)) ? '[Add Item]'
+            : (props.items && props.items.length !== 0) ? props.items[props.index].name
+                : '?';
     const nextDisabled = !props.items || props.index + 1 >= props.items.length
     const showEdit = View.isRead(props.view);
     return (
@@ -64,17 +80,17 @@ const getHeader = (props) => {
             <div className="row">
                 <button className="left arrow"
                     disabled={prevDisabled}
-                    onClick={handleRead(props.read, props.index, -1)}
+                    onClick={handleRead(-1, props)}
                     title="previous item"
                 >
                     <span>◀</span>
                 </button>
-                <button onClick={props.readItemList} title="item list" className="name">
+                <button onClick={handleReadItemList(props)} title="item list" className="name">
                     <span>{headerName}</span>
                 </button>
                 <button className="right arrow"
                     disabled={nextDisabled}
-                    onClick={handleRead(props.read, props.index, +1)}
+                    onClick={handleRead(+1, props)}
                     title="next item"
                 >
                     <span>▶</span>
@@ -84,19 +100,19 @@ const getHeader = (props) => {
                 showEdit &&
                 <div className="row">
                     <button
-                        onClick={handleUpdateStart(props.updateStart, props.index)}
+                        onClick={handleUpdateStart(props)}
                         title="update item"
                     >
                         <span>Edit...</span>
                     </button>
                     <button
-                        onClick={handleDeleteStart(props.deleteStart, props.index)}
+                        onClick={handleDeleteStart(props)}
                         title="delete item"
                     >
                         <span>Delete...</span>
                     </button>
                     <button
-                        onClick={handleCreateStart(props.createStart)}
+                        onClick={handleCreateStart(props)}
                         title="create item"
                     >
                         <span>Add...</span>
@@ -113,16 +129,15 @@ const getMap = (props) => {
             <p>[Map disabled]</p>
         );
     }
-    const itemLatLng
-        = (View.isCreate(props.view)) ? props.geolocation.latLng
-            : (View.isUpdate(props.view)) ? props.formLatLng
-                : props.item;
+    const [itemName, itemLatLng] = (View.isCreate(props.view))
+        ? ['Item', props.geolocation.latLng]
+        : [props.items[props.index].name, props.latLng];
     if (!itemLatLng) {
         return (
             <p>Waiting for GPS...</p>
         );
     }
-    const item = { name: props.item.name, ...itemLatLng };
+    const item = { name: itemName, ...itemLatLng };
     const [device, distanceHeading] = (props.geolocation && props.distanceHeading)
         ? [props.geolocation.latLng, props.distanceHeading]
         : [];
@@ -146,8 +161,8 @@ const getAction = (props) => {
         case View.Item_Create:
         case View.Item_Update:
             const [handleSubmit, hasLatLng, updateLatLngDisabled, actionName, updateIndex, handleCancel, submitValue] = (View.isCreate(props.view))
-                ? [handleCreateEnd(props.createEnd, props.formName, props.geolocation.latLng), !!props.geolocation.latLng, true, 'Create Item', -1, handleReadItemList(props.readItemList), 'Create Item']
-                : [handleUpdateEnd(props.updateEnd, props.index, props.formName, props.formLatLng), true, false, ('Update ' + props.item.name), props.index, handleRead(props.read, props.index, 0), 'Update Item'];
+                ? [handleCreateEnd(props), !!props.geolocation.latLng, true, 'Create Item', -1, handleReadItemList(props), 'Create Item']
+                : [handleUpdateEnd(props), true, false, ('Update ' + props.items[props.index].name), props.index, handleRead(0, props), 'Update Item'];
             return (
                 <Form
                     onSubmit={handleSubmit}
@@ -158,9 +173,9 @@ const getAction = (props) => {
                     <Fieldset caption={actionName}>
                         <Label caption="Name">
                             <NameInput
-                                value={props.formName}
+                                value={props.name}
                                 values={props.items}
-                                onChange={props.setFormName}
+                                onChange={props.setName}
                                 updateIndex={updateIndex}
                             />
                         </Label>
@@ -168,12 +183,12 @@ const getAction = (props) => {
                             <Label caption="Latitude">
                                 {getMoveLatLngButton(Heading.S, '-(S)', updateLatLngDisabled, props)}
                                 {getMoveLatLngButton(Heading.N, '+(N)', updateLatLngDisabled, props)}
-                                <TextInput value={props.formLatLng.lat} disabled />
+                                <TextInput value={props.latLng.lat} disabled />
                             </Label>
                             <Label caption="Longitude">
                                 {getMoveLatLngButton(Heading.W, '-(W)', updateLatLngDisabled, props)}
                                 {getMoveLatLngButton(Heading.E, '+(E)', updateLatLngDisabled, props)}
-                                <TextInput value={props.formLatLng.lng} disabled />
+                                <TextInput value={props.latLng.lng} disabled />
                             </Label>
                             <Label caption={`Move Amount (${props.distanceUnit})`}>
                                 <NumberInput value={props.moveAmount} onChange={props.setMoveAmount} min="0" max="1000" />
@@ -185,11 +200,11 @@ const getAction = (props) => {
         case View.Item_Delete:
             return (
                 <Form
-                    onSubmit={handleDeleteEnd(props.deleteEnd, props.index)}
+                    onSubmit={handleDeleteEnd(props)}
                     submitValue="Delete item"
-                    onCancel={handleRead(props.read, props.index, 0)}
+                    onCancel={handleRead(0, props)}
                 >
-                    <Fieldset caption={'Delete ' + props.item.name} />
+                    <Fieldset caption={'Delete ' + props.items[props.index].name} />
                 </Form>
             );
         case View.Item_Read:
@@ -208,46 +223,60 @@ const getAction = (props) => {
     }
 };
 
-const getMoveLatLngButton = (heading, value, disabled, { moveAmount, formLatLng, setFormLatLng, distanceUnit }) => (
+const getMoveLatLngButton = (heading, value, disabled, { moveAmount, latLng, setLatLng, distanceUnit }) => (
     <ButtonInput
-        onClick={handleUpdateLatLng(heading, moveAmount, formLatLng, setFormLatLng, distanceUnit)}
+        onClick={handleUpdateLatLng(heading, moveAmount, latLng, setLatLng, distanceUnit)}
         value={value}
         disabled={disabled}
     />
 );
 
-const handleCreateStart = (createStart) => () => (
-    createStart()
-);
+const handleCreateStart = ({ createStart, setName, setLatLng }) => () => {
+    setName('[New Item Name]');
+    setLatLng({ lat: '[current]', lng: 'current' });
+    createStart();
+};
 
-const handleCreateEnd = (createEnd, formName, latLng) => () => (
-    createEnd(formName, latLng.lat, latLng.lng)
-);
+const handleCreateEnd = ({ createEnd, name, geolocation, setLatLng }) => () => {
+    setLatLng(geolocation.latLng);
+    createEnd(name, geolocation.latLng.lat, geolocation.latLng.lng); // create with current position
+};
 
-const handleRead = (read, index, delta) => () => (
-    read(index + delta)
-);
+const handleRead = (delta, { read, index }) => () => {
+    read(index + delta);
+};
 
-const handleReadItemList = (readItemList) => () => (
-    readItemList()
-);
+const handleReadItemList = ({ readItemList }) => () => {
+    readItemList();
+};
 
-const handleUpdateStart = (updateStart, index) => () => (
-    updateStart(index)
-);
+const handleUpdateStart = ({ updateStart, items, index, setName, setLatLng }) => () => {
+    const item = items[index]
+    setName(item.name);
+    setLatLng(latLngOnly(item));
+    updateStart(index);
+};
 
-const handleUpdateEnd = (updateEnd, index, formName, formLatLng) => () => (
-    updateEnd(index, formName, formLatLng.lat, formLatLng.lng)
-);
+const handleUpdateStartFromList = ({ updateStart, items, setName, setLatLng }) => (index) => {
+    handleUpdateStart({ updateStart, items, index, setName, setLatLng })();
+};
 
-const handleDeleteStart = (deleteStart, index) => () => (
-    deleteStart(index)
-);
+const handleUpdateEnd = ({ updateEnd, index, name, latLng }) => () => {
+    updateEnd(index, name, latLng.lat, latLng.lng);
+};
 
-const handleDeleteEnd = (deleteEnd, index) => () => (
-    deleteEnd(index)
-);
+const handleDeleteStart = ({ deleteStart, index }) => () => {
+    deleteStart(index);
+};
 
-const handleUpdateLatLng = (heading, moveAmount, formLatLng, setFormLatLng, distanceUnit) => () => {
-    setFormLatLng(moveLatLngTo(formLatLng, moveAmount, distanceUnit, heading));
+const handleDeleteStartFromList = ({ deleteStart }) => (index) => {
+    handleDeleteStart({ deleteStart, index })();
+};
+
+const handleDeleteEnd = ({ deleteEnd, index }) => () => {
+    deleteEnd(index);
+};
+
+const handleUpdateLatLng = (heading, moveAmount, latLng, setLatLng, distanceUnit) => () => {
+    setLatLng(moveLatLngTo(latLng, moveAmount, distanceUnit, heading));
 };

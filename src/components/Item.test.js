@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 
 import { Item } from './Item';
 
@@ -14,6 +14,8 @@ describe('Item', () => {
         it.each(actionButtonNames)('should have button with title: %s', (expected) => {
             render(<Item
                 view={View.Item_Read}
+                items={[{}]}
+                index={0}
                 setGPSOn={jest.fn()}
             />);
             const element = screen.getByRole('button', { name: expected });
@@ -28,7 +30,8 @@ describe('Item', () => {
         it.each(captionTests)('should have title of %s when view is %s and item name is %s', (expected, view, name) => {
             render(<Item
                 view={view}
-                item={{ name: name }}
+                items={[{ name: name }]}
+                index={0}
                 setGPSOn={jest.fn()}
             />);
             const element = screen.queryByTitle('item list')
@@ -38,6 +41,8 @@ describe('Item', () => {
             it('should NOT show distance when reading item without currentLatLng', () => {
                 render(<Item
                     view={View.Item_Read}
+                    items={[{}]}
+                    index={0}
                     distanceUnit={null}
                     setGPSOn={jest.fn()}
                 />);
@@ -48,10 +53,12 @@ describe('Item', () => {
             it('should show distance when reading item with currentLatLng', async () => {
                 navigator.geolocation.watchPosition = jest.fn();
                 const expected = 'km'
+                window.localStorage.getItem.mockImplementation((key) => key === 'itemInputLatLng' ? '{"lat":7,"lng":9}' : null);
                 render(<Item
                     view={View.Item_Read}
+                    items={[{}]} // the latLng is read from the state
+                    index={0}
                     distanceUnit={expected}
-                    item={{ lat: 7, lng: 9 }}
                     setGPSOn={jest.fn()}
                 />);
                 const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
@@ -64,8 +71,9 @@ describe('Item', () => {
                 const expected = 'DISTANCE_UNIT'
                 render(<Item
                     view={View.Item_Read}
+                    items={[{ lat: 7, lng: 9 }]}
+                    index={0}
                     distanceUnit={expected}
-                    item={{ lat: 7, lng: 9 }}
                     setGPSOn={jest.fn()}
                 />);
                 const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
@@ -75,10 +83,12 @@ describe('Item', () => {
             });
         });
         describe('update action', () => {
-            it('should set form item latLng', () => {
+            it('should set form item latLng', async () => {
+                window.localStorage.getItem.mockImplementation((key) => key === 'itemInputLatLng' ? '{"lat":1111,"lng":2222}' : null);
                 render(<Item
                     view={View.Item_Update}
-                    item={{ lat: 1111, lng: 2222 }}
+                    items={[{}]} // the latLng is read from the state
+                    index={0}
                     setGPSOn={jest.fn()}
                 />);
                 expect(screen.getByDisplayValue('1111')).toBeInTheDocument();
@@ -124,6 +134,22 @@ describe('Item', () => {
                 const element = screen.getByRole('button', { name: /create item/i });
                 expect(element.disabled).toBeFalsy();
             });
+            it('should set localStorage when ended', async () => {
+                const createEnd = jest.fn();
+                const expected = '[my custom item name]';
+                render(<Item
+                    view={View.Item_Create}
+                    items={[]}
+                    index={0}
+                    createEnd={createEnd}
+                    setGPSOn={jest.fn()}
+                />);
+                const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
+                await waitFor(() => successCallback({ coords: { latitude: 2, longitude: 4, } }));
+                fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: expected } });
+                screen.getByRole('button', { name: /create item/i }).click();
+                expect(createEnd).toBeCalledWith(expected, 2, 4);
+            });
         });
         describe('getMap', () => {
             let oldGeolocation;
@@ -134,14 +160,19 @@ describe('Item', () => {
                 navigator.geolocation = oldGeolocation;
             });
             it('should have map when currentLatLng is null', () => {
-                render(<Item setGPSOn={jest.fn()} />);
+                render(<Item
+                    items={[{ lat: 7, lng: 9 }]}
+                    index={0}
+                    setGPSOn={jest.fn()}
+                />);
                 expect(screen.queryByRole('img')).toBeInTheDocument();
             });
             it('should have map', async () => {
                 navigator.geolocation.watchPosition = jest.fn();
                 render(<Item
                     view={View.Item_Read}
-                    item={{ lat: 0, lng: 0 }}
+                    items={[{ lat: 0, lng: 0 }]}
+                    index={0}
                     setGPSOn={jest.fn()}
                 />);
                 const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
@@ -165,7 +196,8 @@ describe('Item', () => {
                 navigator.geolocation.watchPosition = jest.fn();
                 render(<Item
                     view={View.Item_Update}
-                    item={{ name: 'ZERO', lat: 0, lng: 0 }}
+                    items={[{ lat: 0, lng: 0 }]}
+                    index={0}
                     distanceUnit='mi' // moveAmount defaults to 1
                     setGPSOn={jest.fn()}
                 />);
