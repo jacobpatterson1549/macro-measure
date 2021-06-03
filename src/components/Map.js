@@ -3,10 +3,9 @@ import './Map.css';
 import { moveLatLngTo } from '../utils/Geolocation';
 
 export const Map = ({ item, device, distanceHeading, distanceUnit }) => {
-    const center = device
-        ? moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading)
-        : item;
-    const heading = distanceHeading?.heading || 0;
+    const [center, heading] = (device && distanceHeading)
+        ? [moveLatLngTo(item, distanceHeading.distance / 2, distanceUnit, distanceHeading.heading), distanceHeading.heading]
+        : [item, 0];
     return render(item, device, center, heading);
 };
 

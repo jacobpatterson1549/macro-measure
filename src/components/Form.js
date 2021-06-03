@@ -103,7 +103,9 @@ export const Form = ({ onSubmit, submitDisabled, submitValue = 'Submit', onCance
 
 export const preventDefault = (callback) => (event) => {
     event.preventDefault();
-    callback?.(event);
+    if (callback) {
+        callback(event);
+    }
 };
 
 const onFocus = (event) => {
