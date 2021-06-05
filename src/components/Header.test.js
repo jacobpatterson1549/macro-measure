@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 
 import { Header } from './Header';
+
 import { View } from '../utils/View';
 
 describe('Header', () => {

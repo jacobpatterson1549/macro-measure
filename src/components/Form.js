@@ -90,7 +90,10 @@ export const Form = ({ onSubmit, submitDisabled, submitValue = 'Submit', onCance
         <div className="ActionButtons">
             {
                 onCancel &&
-                <ButtonInput value="Cancel" onClick={onCancel} />
+                <ButtonInput
+                    value="Cancel"
+                    onClick={onCancel}
+                />
             }
             <input
                 type="submit"

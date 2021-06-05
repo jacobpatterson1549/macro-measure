@@ -1,4 +1,4 @@
-import { Fieldset, Label, CheckboxInput, SelectInput } from './Form';
+import { Fieldset, Label, SelectInput, CheckboxInput } from './Form';
 
 export const GPSSettings = ({ distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS }) => (
     <Fieldset caption="GPS Settings">

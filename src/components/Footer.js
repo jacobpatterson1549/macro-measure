@@ -2,8 +2,17 @@ import './Footer.css';
 
 export const Footer = ({ gpsOn, onLine }) => (
     <footer className="Footer">
-        <span>GPS: <OnOffSpan on={gpsOn} onValue="ON" offValue="OFF" /></span>
-        <OnOffSpan on={onLine} onValue="online" offValue="offline" />
+        <span>GPS: <OnOffSpan
+            on={gpsOn}
+            onValue="ON"
+            offValue="OFF"
+        />
+        </span>
+        <OnOffSpan
+            on={onLine}
+            onValue="online"
+            offValue="offline"
+        />
     </footer>
 );
 
