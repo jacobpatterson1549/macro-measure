@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 
 import { FullscreenSettings } from './FullscreenSettings';
 
@@ -23,8 +23,8 @@ describe('FullscreenSettings', () => {
                 document.body.requestFullscreen = jest.fn().mockReturnValue(() => { });
                 render(root);
                 const element = screen.getByRole('checkbox');
-                fireEvent.click(element);
-                await waitFor(expect(document.body.requestFullscreen).toBeCalled);
+                element.click();
+                expect(document.body.requestFullscreen).toBeCalled();
             });
             it('should cancel fullscreen when clicked', () => {
                 const root = (<FullscreenSettings fullscreen={true} />);
@@ -32,7 +32,7 @@ describe('FullscreenSettings', () => {
                 document.exitFullscreen = jest.fn();
                 render(root);
                 const element = screen.getByRole('checkbox');
-                fireEvent.click(element);
+                element.click();
                 expect(document.exitFullscreen).toBeCalled();
             });
         });
@@ -72,7 +72,7 @@ describe('FullscreenSettings', () => {
                 };
                 render(<FullscreenSettings installPromptEvent={installPromptEvent} />);
                 const element = screen.queryByRole('button');
-                fireEvent.click(element);
+                element.click();
                 await waitFor(expect(installPromptEvent.prompt).toBeCalled);
                 expect(window.location.reload).toBeCalledTimes(expected);
             });

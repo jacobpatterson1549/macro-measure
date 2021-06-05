@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { useLocalStorage, clearLocalStorage, getLocalStorage, setLocalStorage } from './LocalStorage';
 
@@ -38,7 +38,7 @@ describe('LocalStorage', () => {
             const expectedJSON = `"${expected}"`;
             render(<MockComponent defaultValue={before} clickValue={expected} />);
             const element = screen.getByText(before);
-            fireEvent.click(element);
+            element.click();
             expect(window.localStorage.setItem).toBeCalledWith(key, expectedJSON);
         });
         it('should setItem five times when clicked five times', () => {
@@ -46,11 +46,11 @@ describe('LocalStorage', () => {
             const expected = 'test3';
             render(<MockComponent defaultValue={before} clickValue={expected} />);
             const element = screen.getByText(before);
-            fireEvent.click(element);
-            fireEvent.click(element);
-            fireEvent.click(element);
-            fireEvent.click(element);
-            fireEvent.click(element);
+            element.click();
+            element.click();
+            element.click();
+            element.click();
+            element.click();
             expect(window.localStorage.setItem).toBeCalledTimes(5);
         });
     });

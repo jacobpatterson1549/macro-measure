@@ -202,7 +202,7 @@ describe('CheckboxInput', () => {
         const onChange = jest.fn();
         render(<CheckboxInput checked={checked} onChange={onChange} />);
         const element = screen.getByRole('checkbox');
-        element.click();
+        fireEvent.click(element)
         expect(onChange).toBeCalledWith(expected);
     });
 });
@@ -391,7 +391,7 @@ describe('Form', () => {
         const onCancel = jest.fn();
         render(<Form onCancel={onCancel} />);
         const element = screen.getByRole('button', { name: 'Cancel' });
-        element.click();
+        fireEvent.click(element)
         expect(onCancel).toBeCalled();
     });
     it('should NOT disable cancel button when submit button is', () => {

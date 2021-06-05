@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { NameTable } from './NameTable';
 
@@ -37,7 +37,7 @@ describe('NameTable', () => {
             render(<NameTable values={values} read={handler} />);
             const elements = screen.getAllByTitle('read value');
             const element = elements[index];
-            fireEvent.click(element);
+            element.click();
             expect(elements.length).toBe(values.length);
             expect(handler).toBeCalledWith(index);
         });
@@ -47,7 +47,7 @@ describe('NameTable', () => {
             render(<NameTable values={values} moveUp={handler} />);
             const elements = screen.getAllByTitle('move up');
             const element = elements[index];
-            fireEvent.click(element);
+            element.click();
             expect(elements.length).toBe(values.length - 1); // no first move up
             expect(handler).toBeCalledWith(index + 1); // the first row das no move up button
         });
@@ -57,7 +57,7 @@ describe('NameTable', () => {
             render(<NameTable values={values} moveDown={handler} />);
             const elements = screen.getAllByTitle('move down');
             const element = elements[index];
-            fireEvent.click(element);
+            element.click();
             expect(elements.length).toBe(values.length - 1); // no last move down
             expect(handler).toBeCalledWith(index);
         });
@@ -67,7 +67,7 @@ describe('NameTable', () => {
             render(<NameTable values={values} update={handler} />);
             const elements = screen.getAllByTitle('update value');
             const element = elements[index];
-            fireEvent.click(element);
+            element.click();
             expect(elements.length).toBe(values.length);
             expect(handler).toBeCalledWith(index);
         });
@@ -77,7 +77,7 @@ describe('NameTable', () => {
             render(<NameTable values={values} deleteValue={handler} />);
             const elements = screen.getAllByTitle('delete value');
             const element = elements[index];
-            fireEvent.click(element);
+            element.click();
             expect(elements.length).toBe(values.length);
             expect(handler).toBeCalledWith(index);
         });
