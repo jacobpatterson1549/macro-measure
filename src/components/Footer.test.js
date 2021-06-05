@@ -13,7 +13,9 @@ describe('Footer', () => {
     ]
     it.each(elementTests)('should have element with "%s" text when props are %s', (expected, props) => {
         render(<Footer {...props} />);
-        const element = screen.getByText((content, element) => element.textContent === expected);
+        const element = screen.getByText((content, element) => (
+            element.textContent === expected
+        ));
         expect(element).toBeInTheDocument();
     })
 });

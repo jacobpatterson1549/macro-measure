@@ -17,7 +17,13 @@ export const Footer = ({ gpsOn, onLine }) => (
 );
 
 const OnOffSpan = ({ on, onValue, offValue }) => (
-    <span className={onOffClassName(on)}>{on ? onValue : offValue}</span>
+    <span className={onOffClassName(on)}>
+        {
+            on
+                ? onValue
+                : offValue
+        }
+    </span>
 );
 
 const onOffClassName = (value) => (
