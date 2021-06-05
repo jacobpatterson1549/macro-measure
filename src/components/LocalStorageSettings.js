@@ -13,14 +13,14 @@ export const LocalStorageSettings = () => {
 const render = (props) => (
     <Fieldset caption="LocalStorage Settings">
         <Label caption="Export ALL Saved Data">
-            <ButtonInput value="Export File" onClick={exportStorage(props.setExportLink)} />
+            <ButtonInput value="Export File" onClick={handleExportStorage(props.setExportLink)} />
             {props.exportLink}
         </Label>
         <Label caption="Import ALL Saved Data">
-            <FileInput accept={jsonMimeType} onChange={importStorage} />
+            <FileInput accept={jsonMimeType} onChange={handleImportStorage()} />
         </Label>
         <Label caption="Clear ALL Saved Data">
-            <ButtonInput value="Clear" onClick={resetStorage} />
+            <ButtonInput value="Clear" onClick={handleResetStorage()} />
         </Label>
         <Label caption="Reload page and Saved Data">
             <ButtonInput value="Reload" onClick={reload} />
@@ -28,7 +28,7 @@ const render = (props) => (
     </Fieldset>
 );
 
-const exportStorage = (setExportLink) => () => {
+const handleExportStorage = (setExportLink) => () => {
     const allJSON = getLocalStorage();
     const file = new Blob([allJSON], { type: jsonMimeType });
     const url = URL.createObjectURL(file);
@@ -37,14 +37,14 @@ const exportStorage = (setExportLink) => () => {
     setExportLink(anchor);
 };
 
-const importStorage = async (file) => {
+const handleImportStorage = () => async (file) => {
     const allJSON = await file.text();
     clearLocalStorage();
     setLocalStorage(allJSON);
     reload();
 };
 
-const resetStorage = () => {
+const handleResetStorage = () => () => {
     clearLocalStorage();
     reload();
 };

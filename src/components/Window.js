@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { preventDefault } from './Form';
+import { handlePreventDefault } from './Form';
 
 // Window listens to events to provide properties in a Render Prop component
 export const Window = ({ render }) => {
@@ -11,7 +11,7 @@ export const Window = ({ render }) => {
         ['fullscreenchange', handleFullscreenChanged(setFullscreen)],
         ['online', handleOnLineChanged(setOnLine, true)],
         ['offline', handleOnLineChanged(setOnLine, false)],
-        ['beforeinstallprompt', preventDefault(setInstallPromptEvent)],
+        ['beforeinstallprompt', handlePreventDefault(setInstallPromptEvent)],
     ];
     useEffect(() => {
         windowEvents.forEach(([type, listener]) => (window.addEventListener(type, listener)));

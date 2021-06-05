@@ -2,7 +2,7 @@ import './Form.css';
 
 const Input = (props) => ( // private - do not export
     <input
-        onFocus={onFocus}
+        onFocus={handleOnFocus()}
         required={true}
         {...props}
     />
@@ -12,7 +12,7 @@ export const TextInput = ({ value, onChange, disabled }) => (
     <Input
         type="text"
         value={value}
-        onChange={onTextChange(onChange)}
+        onChange={handleOnTextChange(onChange)}
         disabled={disabled}
     />
 );
@@ -21,7 +21,7 @@ export const NumberInput = ({ value, onChange, min, max }) => (
     <Input
         type="number"
         value={value}
-        onChange={onTextChange(onChange)}
+        onChange={handleOnTextChange(onChange)}
         min={min}
         max={max}
     />
@@ -31,7 +31,7 @@ export const NameInput = ({ value, values, onChange, updateIndex }) => (
     <Input
         type="text"
         value={value}
-        onChange={onNameChange(onChange, values, updateIndex)}
+        onChange={handleOnNameChange(onChange, values, updateIndex)}
     />
 );
 
@@ -39,7 +39,7 @@ export const ButtonInput = ({ value, onClick, disabled }) => (
     <input
         type="button"
         value={value}
-        onClick={preventDefault(onClick)}
+        onClick={handlePreventDefault(onClick)}
         disabled={disabled}
     />
 );
@@ -48,7 +48,7 @@ export const CheckboxInput = ({ checked, onChange }) => (
     <input
         type="checkbox"
         checked={checked}
-        onChange={onCheckboxChange(onChange)}
+        onChange={handleOnCheckboxChange(onChange)}
     />
 );
 
@@ -57,12 +57,12 @@ export const FileInput = ({ accept, onChange }) => (
         type="file"
         role="button"
         accept={accept}
-        onChange={onFileChange(onChange)}
+        onChange={handleOnFileChange(onChange)}
     />
 );
 
 export const SelectInput = ({ value, values, onChange }) => (
-    <select value={value} onChange={onTextChange(onChange)}>
+    <select value={value} onChange={handleOnTextChange(onChange)}>
         {getOptions(values)}
     </select>
 );
@@ -85,7 +85,7 @@ export const Fieldset = ({ caption, disabled, border = true, children }) => (
 );
 
 export const Form = ({ onSubmit, submitDisabled, submitValue = 'Submit', onCancel, children }) => (
-    <form className="Form" onSubmit={preventDefault(onSubmit)}>
+    <form className="Form" onSubmit={handlePreventDefault(onSubmit)}>
         {children}
         <div className="ActionButtons">
             {
@@ -104,23 +104,23 @@ export const Form = ({ onSubmit, submitDisabled, submitValue = 'Submit', onCance
     </form>
 );
 
-export const preventDefault = (callback) => (event) => {
+export const handlePreventDefault = (callback) => (event) => {
     event.preventDefault();
     if (callback) {
         callback(event);
     }
 };
 
-const onFocus = (event) => {
+const handleOnFocus = () => (event) => {
     event.target.select();
 }
 
-const onTextChange = (onChange) => (event) => {
+const handleOnTextChange = (onChange) => (event) => {
     const value = event.target.value;
     onChange(value);
 };
 
-const onNameChange = (onChange, values, updateIndex) => (event) => {
+const handleOnNameChange = (onChange, values, updateIndex) => (event) => {
     const nameInput = event.target;
     const name = nameInput.value;
     const unique = isUniqueName(name, values, updateIndex);
@@ -128,12 +128,12 @@ const onNameChange = (onChange, values, updateIndex) => (event) => {
     onChange(name);
 };
 
-const onCheckboxChange = (onChange) => (event) => {
+const handleOnCheckboxChange = (onChange) => (event) => {
     const checked = event.target.checked;
     onChange(checked);
 };
 
-const onFileChange = (onChange) => (event) => {
+const handleOnFileChange = (onChange) => (event) => {
     const file = event.target.files[0];
     onChange(file);
 };

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, createEvent } from '@testing-library/react';
 
-import { Form, TextInput, NumberInput, NameInput, ButtonInput, CheckboxInput, FileInput, SelectInput, preventDefault, Fieldset, Label } from './Form';
+import { Form, TextInput, NumberInput, NameInput, ButtonInput, CheckboxInput, FileInput, SelectInput, handlePreventDefault, Fieldset, Label } from './Form';
 
 describe('TextInput', () => {
     it('should have text type', () => {
@@ -402,17 +402,17 @@ describe('Form', () => {
     });
 });
 
-describe('preventDefault', () => {
+describe('handlePreventDefault', () => {
     it('should call preventDefault', () => {
         const event = { preventDefault: jest.fn() }
-        preventDefault()(event);
+        handlePreventDefault()(event);
         expect(event.preventDefault).toBeCalled();
         // should not crash if callback not provided
     });
     it('should call fn with event', () => {
         const callback = jest.fn();
         const event = { preventDefault: jest.fn() }
-        preventDefault(callback)(event);
+        handlePreventDefault(callback)(event);
         expect(callback).toBeCalledWith(event);
     })
 });

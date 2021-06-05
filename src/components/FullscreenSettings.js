@@ -3,13 +3,13 @@ import { Fieldset, Label, CheckboxInput, ButtonInput } from './Form';
 export const FullscreenSettings = ({ fullscreen, onLine, installPromptEvent }) => (
     <Fieldset caption="Fullscreen Settings">
         <Label caption="Fullscreen">
-            <CheckboxInput checked={fullscreen} onChange={toggleFullscreen} />
+            <CheckboxInput checked={fullscreen} onChange={handleToggleFullscreen()} />
         </Label>
         {
             installPromptEvent
                 ? (
                     <Label caption="Add to Home Screen">
-                        <ButtonInput value="Install" onClick={promptInstall(installPromptEvent)} />
+                        <ButtonInput value="Install" onClick={handlePromptInstall(installPromptEvent)} />
                     </Label>
                 )
                 : (
@@ -19,13 +19,13 @@ export const FullscreenSettings = ({ fullscreen, onLine, installPromptEvent }) =
     </Fieldset>
 );
 
-const toggleFullscreen = (toFullscreen) => (
+const handleToggleFullscreen = () => (toFullscreen) => (
     (toFullscreen)
         ? document.body.requestFullscreen()
         : document.exitFullscreen()
 );
 
-const promptInstall = (installPromptEvent) => async () => {
+const handlePromptInstall = (installPromptEvent) => async () => {
     installPromptEvent.prompt();
     const choiceResult = await installPromptEvent.userChoice;
     if (choiceResult.outcome === 'accepted') {

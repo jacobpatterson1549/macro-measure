@@ -39,13 +39,13 @@ const tableCell = (value, title, isVisible, fn, index) => (
     <td className="Cell">
         {
             isVisible &&
-            <button onClick={onClick(fn, index)} title={title} className="FakeButton">
+            <button onClick={handleOnClick(fn, index)} title={title} className="FakeButton">
                 <span>{value}</span>
             </button>
         }
     </td>
 );
 
-const onClick = (fn, index) => () => (
+const handleOnClick = (fn, index) => () => (
     fn(index)
 );
