@@ -19,12 +19,12 @@ export const Window = ({ render }) => {
             windowEvents.forEach(([type, listener]) => window.removeEventListener(type, listener))
         );
     });
-    const props = {
+    const state = {
         fullscreen: fullscreen,
         onLine: onLine,
         installPromptEvent: installPromptEvent,
     };
-    return render(props);
+    return render({ ...state });
 };
 
 const handleFullscreenChanged = (setFullscreen) => () => (

@@ -3,7 +3,7 @@ import { Groups as GroupUtils } from '../utils/Groups';
 
 // GroupsView contains the groups and functions to change them
 export const Groups = ({ groups, groupIndex, setView, setGroups, setGroupIndex, setItemIndex, render }) => {
-    const props = {
+    const state = {
         // groups
         createGroupStart: handleCreateGroupStart(setView),
         createGroupEnd: handleCreateGroupEnd(setView, setGroups, groups),
@@ -27,7 +27,7 @@ export const Groups = ({ groups, groupIndex, setView, setGroups, setGroupIndex, 
         moveItemUp: handleMoveItemUp(setView, setGroups, groups, groupIndex),
         moveItemDown: handleMoveItemDown(setView, setGroups, groups, groupIndex),
     };
-    return render(props);
+    return render({ ...state });
 };
 
 // groups

@@ -6,14 +6,15 @@ import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/Lo
 
 export const LocalStorageSettings = () => {
     const [exportLink, setExportLink] = useState(null);
-    return render(exportLink, setExportLink);
+    const state = { exportLink, setExportLink };
+    return render({ ...state });
 };
 
-const render = (exportLink, setExportLink) => (
+const render = (props) => (
     <Fieldset caption="LocalStorage Settings">
         <Label caption="Export ALL Saved Data">
-            <ButtonInput value="Export File" onClick={exportStorage(setExportLink)} />
-            {exportLink}
+            <ButtonInput value="Export File" onClick={exportStorage(props.setExportLink)} />
+            {props.exportLink}
         </Label>
         <Label caption="Import ALL Saved Data">
             <FileInput accept={jsonMimeType} onChange={importStorage} />
