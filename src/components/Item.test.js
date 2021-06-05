@@ -123,7 +123,7 @@ describe('Item', () => {
                 const element = screen.queryByText(/waiting for/i);
                 expect(element).not.toBeInTheDocument();
             });
-            it('should have disabled submit when geolocation does not return latLng', async () => {
+            it('should NOT have disabled submit when geolocation returns latLng', async () => {
                 navigator.geolocation.watchPosition = jest.fn();
                 render(<Item
                     view={View.Item_Create}

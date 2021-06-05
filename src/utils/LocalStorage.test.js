@@ -44,7 +44,6 @@ describe('LocalStorage', () => {
         it('should setItem five times when clicked five times', () => {
             const before = 'this should not be saved';
             const expected = 'test3';
-            const expectedJSON = `"${expected}"`;
             render(<MockComponent defaultValue={before} clickValue={expected} />);
             const element = screen.getByText(before);
             fireEvent.click(element);

@@ -170,7 +170,6 @@ describe('Geolocation', () => {
                 setGPSOn={setGPSOn}
                 render={position => <MockApp position={position} />}
             />);
-            const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
             expect(setGPSOn.mock.calls).toEqual([[false], [true]]); // stop before starting
         });
         it('should set GPS off', () => {
