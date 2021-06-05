@@ -33,9 +33,7 @@ const startWatch = (watchID, highAccuracyGPS, setLatLng, setGPSOn) => {
 };
 
 const stopWatch = (watchID, setGPSOn) => {
-    if (getGeolocation()) {
-        getGeolocation().clearWatch(watchID.current);
-    }
+    getGeolocation()?.clearWatch(watchID.current);
     watchID.current = null;
     setGPSOn(false);
 };
