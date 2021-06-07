@@ -52,7 +52,7 @@ const getSettingsView = (props) => (
 );
 
 const getItemsView = (props) => (
-    <Item key={props.itemIndex}
+    <Item
         view={props.view}
         items={getItemsFromGroups(props)}
         index={props.itemIndex}
