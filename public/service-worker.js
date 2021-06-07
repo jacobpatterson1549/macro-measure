@@ -1,4 +1,4 @@
-const cacheName = 'cache-0.1.0';
+const cacheName = '%CACHE_NAME%';
 
 const assets = [
     "./?pwa",
@@ -11,7 +11,7 @@ const assets = [
     "./static/js/bundle.js",
     "./static/js/main.chunk.js",
     "./static/js/vendors~main.chunk.js",
-];
+]; // %ASSET_MANIFEST%
 
 self.addEventListener("install", event => {
     event.waitUntil(
@@ -27,7 +27,6 @@ self.addEventListener("install", event => {
 self.addEventListener("fetch", event => {
     event.respondWith(
         caches.match(event.request).then(response => {
-            console.log(`${event.request.url} matched: ${!!response}`);
             return response || fetch(event.request);
         })
         .catch(error => {
