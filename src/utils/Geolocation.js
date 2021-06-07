@@ -46,7 +46,9 @@ export const _fromMeters = (distance, unit) => ( // exported for testing
 );
 
 const isValid = (latLng) => (
-    latLng && latLng.lat !== undefined && latLng.lng !== undefined
+    latLng
+        && Number.isInteger(parseInt(latLng.lat))
+        && Number.isInteger(parseInt(latLng.lng))
 );
 
 const round = (value, expTenDigits) => ( // log_10(expTenDigits) decimal digits, should be a one followed by 'numDigit' zeros - for three decimals, pass 1000

@@ -30,6 +30,7 @@ describe('Geolocation', () => {
                 {},
                 { lat: 1 },
                 { lng: 1 },
+                { lat: '[current]', lng: '[current]' },
             ];
             const [unit, distance, heading] = ['m', 0, 0];
             it.each(badMoveLatLng)('should return empty object when latLng is %s', (latLng) => {
@@ -39,6 +40,7 @@ describe('Geolocation', () => {
             const badDistanceHeadingLatLngPairs = [
                 [undefined, { lat: 1, lng: 1 }],
                 [{ lat: 1, lng: 1 }, undefined],
+                [{ lat: '[current]', lng: '[current]' }, { lat: 1, lng: 1 }],
             ];
             it.each(badDistanceHeadingLatLngPairs)('should return empty object when latLng1 is %s and latLang2 is %s', (latLng1, latLng2) => {
                 const actual = getDistanceHeading(latLng1, latLng2, unit);
