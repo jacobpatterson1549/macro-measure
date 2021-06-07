@@ -2,13 +2,8 @@ import { render } from 'react-dom';
 
 import './index.css';
 
+import { register as registerSW } from './serviceWorkerRegistration';
 import { App } from './components/App';
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', async () => {
-    const swURL = `${process.env.PUBLIC_URL}/service-worker.js`;
-    navigator.serviceWorker.register(swURL);
-  });
-}
-
+registerSW();
 render(<App />, document.getElementById('root'));
