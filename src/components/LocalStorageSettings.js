@@ -6,7 +6,9 @@ import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/Lo
 
 export const LocalStorageSettings = () => {
     const [exportLink, setExportLink] = useState(null);
-    const state = { exportLink, setExportLink };
+    const state = {
+        exportLink, setExportLink
+    };
     return render({ ...state });
 };
 

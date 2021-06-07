@@ -6,7 +6,9 @@ import { View } from '../utils/View';
 
 export const NameList = (props) => {
     const [name, setName] = useLocalStorage(getLocalStorageNameKey(props.type), '?');
-    const state = { name, setName };
+    const state = {
+        name, setName,
+    };
     return render({ ...props, ...state });
 };
 

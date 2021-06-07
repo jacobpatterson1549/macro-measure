@@ -13,7 +13,11 @@ export const Item = (props) => {
     const [moveAmount, setMoveAmount] = useLocalStorage('moveAmount', 1);
     const [name, setName] = useLocalStorage('itemInputName', '?'); // same name as NameList.js
     const [latLng, setLatLng] = useLocalStorage('itemInputLatLng', { lat: 0, lng: 0 });
-    const state = { moveAmount, setMoveAmount, name, setName, latLng, setLatLng };
+    const state = {
+        moveAmount, setMoveAmount,
+        name, setName,
+        latLng, setLatLng,
+    };
     return render({ ...props, ...state });
 };
 
@@ -47,7 +51,10 @@ const renderItem = (props) => (
             const distanceHeading = (View.isRead(props.view) && geolocation.latLng !== null)
                 ? getDistanceHeading(props.latLng, geolocation.latLng, props.distanceUnit)
                 : null;
-            const state = { geolocation, distanceHeading };
+            const state = {
+                geolocation,
+                distanceHeading,
+            };
             return renderItemHelper({ ...props, ...state });
         }}
     />
