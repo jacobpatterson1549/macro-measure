@@ -30,7 +30,7 @@ const renderItemList = (props) => (
         index={props.index}
         view={props.view}
         createStart={handleCreateStart(props)}
-        read={props.read}
+        read={handleReadFromList(props)}
         updateStart={handleUpdateStartFromList(props)}
         deleteStart={handleDeleteStartFromList(props)}
         moveUp={props.moveUp}
@@ -231,8 +231,16 @@ const handleCreateEnd = ({ createEnd, name, geolocation, setLatLng }) => () => {
     createEnd(name, geolocation.latLng.lat, geolocation.latLng.lng); // create with current position
 };
 
-const handleRead = (delta, { read, index }) => () => {
-    read(index + delta);
+const handleRead = (delta, { read, items, index, setName, setLatLng }) => () => {
+    const index2 = index + delta;
+    const item = items[index2];
+    setName(item.name);
+    setLatLng(latLngOnly(item));
+    read(index2);
+};
+
+const handleReadFromList = ({ read, items, setName, setLatLng }) => (index) => {
+    handleRead(0, { read, items, index, setName, setLatLng })();
 };
 
 const handleReadItemList = ({ readItemList }) => () => {
