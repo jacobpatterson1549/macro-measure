@@ -222,7 +222,7 @@ const getMoveLatLngButton = (heading, value, disabled, { moveAmount, latLng, set
 
 const handleCreateStart = ({ createStart, setName, setLatLng }) => () => {
     setName('[New Item Name]');
-    setLatLng({ lat: '[current]', lng: 'current' });
+    setLatLng({ lat: '[current]', lng: '[current]' });
     createStart();
 };
 
