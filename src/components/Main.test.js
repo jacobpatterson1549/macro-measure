@@ -223,7 +223,7 @@ describe('Main', () => {
       const readItem = jest.fn();
       render(<Main
         view={view}
-        groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
+        groups={[{ name: 'g', items: [{ name: 'iA', lat: 1, lng: 2  }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         itemIndex={0}
         readItem={readItem}
