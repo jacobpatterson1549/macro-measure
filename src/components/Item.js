@@ -78,7 +78,7 @@ const getHeader = (props) => {
     const prevDisabled = props.index <= 0;
     const headerName
         = (View.isCreate(props.view)) ? '[Add Item]'
-            : (props.items && props.items.length !== 0) ? props.items[props.index].name
+            : (props.items?.length) ? props.items[props.index].name
                 : '?';
     const nextDisabled = !props.items || props.index + 1 >= props.items.length
     const showEdit = View.isRead(props.view);

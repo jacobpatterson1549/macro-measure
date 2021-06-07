@@ -75,7 +75,7 @@ const getReadAction = ({ createStart, setName, type }) => (
 );
 
 const getValueName = (values, index) => (
-    (values && values.length !== 0) ? values[index].name : '?'
+    (values?.length) ? values[index].name : '?'
 );
 
 const getLocalStorageNameKey = (type) => (

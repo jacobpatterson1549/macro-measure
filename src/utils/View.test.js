@@ -10,7 +10,7 @@ describe('View', () => {
     });
   });
   it('should not have view with an id of zero', () => {
-    const zeroIdViews = views.filter((viewId) => viewId === 0);
+    const zeroIdViews = views.filter((viewId) => !viewId);
     expect(zeroIdViews.length).toBe(0);
   });
   it.each(views)('should have desired flags when view is id:%s', (viewId) => {

@@ -95,5 +95,5 @@ const getGroupsView = (props) => (
 );
 
 const getItemsFromGroups = ({ groups, groupIndex }) => (
-    (groups && groups.length !== 0) ? groups[groupIndex].items : []
+    (groups?.length) ? groups[groupIndex].items : []
 );

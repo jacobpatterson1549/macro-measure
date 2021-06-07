@@ -12,7 +12,7 @@ export const Header = ({ view, setView, groups, groupIndex }) => (
 );
 
 const getGroupName = (view, groups, groupIndex) => (
-    (View.isItem(view) && groups.length !== 0)
+    (View.isItem(view) && groups.length)
         ? groups[groupIndex].name
         : '[Groups]'
 );

@@ -139,7 +139,7 @@ const handleOnFileChange = (onChange) => (event) => {
 };
 
 const isUniqueName = (name, nameObjects, updateIndex) => (
-    nameObjects.length === 0 || nameObjects
+    !(nameObjects?.length) || nameObjects
         .map((value, i) => (value.name !== name || i === updateIndex))
         .reduce((accumulator, currentValue) => accumulator && currentValue)
 );

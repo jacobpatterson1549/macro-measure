@@ -19,9 +19,11 @@ export const NameTable = ({ type, values, read, update, deleteValue, moveUp, mov
 );
 
 const getTableBody = (values, read, update, deleteValue, moveUp, moveDown) => (
-    (!values || values.length === 0)
-        ? (<tr><td colSpan="5">No values exist.  Create one.</td></tr>)
-        : tableRows(values, read, update, deleteValue, moveUp, moveDown)
+    (values?.length)
+        ? tableRows(values, read, update, deleteValue, moveUp, moveDown)
+        : (
+            <tr><td colSpan="5">No values exist.  Create one.</td></tr>
+        )
 );
 
 const tableRows = (values, read, update, deleteValue, moveUp, moveDown) => (
