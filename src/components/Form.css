@@ -1,4 +1,5 @@
-.Form > *, .Fieldset > * {
+.Fieldset > *,
+.Form > * {
     display: block;
 }
 
@@ -7,6 +8,8 @@
 }
 
 .Fieldset .NoBorder {
+    margin: 0;
+    padding: 0;
     border: 0;
 }
 
