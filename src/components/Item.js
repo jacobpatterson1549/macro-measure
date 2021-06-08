@@ -151,6 +151,7 @@ const getMap = (props) => {
                 <Map
                     item={item}
                     device={device}
+                    accuracy={props.geolocation.accuracy}
                     distanceHeading={distanceHeading}
                     distanceUnit={props.distanceUnit}
                 />

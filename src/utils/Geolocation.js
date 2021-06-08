@@ -35,6 +35,10 @@ export const roundLatLng = (latLng) => (
     }
 );
 
+export const getAccuracy = (distance, unit) => (
+    round(_fromMeters(distance, unit), 10)
+);
+
 export const _toMeters = (distance, unit, invert) => ( // exported for testing
     (invert)
         ? distance / metersRatio(unit)
@@ -47,8 +51,8 @@ export const _fromMeters = (distance, unit) => ( // exported for testing
 
 const isValid = (latLng) => (
     latLng
-        && Number.isInteger(parseInt(latLng.lat))
-        && Number.isInteger(parseInt(latLng.lng))
+    && Number.isInteger(parseInt(latLng.lat))
+    && Number.isInteger(parseInt(latLng.lng))
 );
 
 const round = (value, expTenDigits) => ( // log_10(expTenDigits) decimal digits, should be a one followed by 'numDigit' zeros - for three decimals, pass 1000

@@ -1,4 +1,4 @@
-import { moveLatLngTo, getDistanceHeading, _toMeters, _fromMeters } from './Geolocation';
+import { moveLatLngTo, getDistanceHeading, _toMeters, _fromMeters, getAccuracy } from './Geolocation';
 
 describe('Geolocation', () => {
     describe('LatLng calculations', () => {
@@ -83,6 +83,15 @@ describe('Geolocation', () => {
         it.each(nanTests)('not convert %s (unknown distance) unit %s meters', (unit, direction, fn) => {
             const m = fn(0, unit);
             expect(m).toBeNaN();
+        });
+    });
+    describe('accuracy', () => {
+        it('should get accuracy rounded to one decimal point', () => {
+            const distance = 20;
+            const unit = 'yd'
+            const actual = getAccuracy(distance, unit)
+            const expected = 21.9;
+            expect(actual).toBe(expected);
         });
     });
 });

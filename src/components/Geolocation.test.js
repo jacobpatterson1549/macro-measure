@@ -25,6 +25,10 @@ describe('Geolocation', () => {
                 geolocation.latLng &&
                 <p title="position">[{geolocation.latLng.lat},{geolocation.latLng.lng}]</p>
             }
+            {
+                geolocation.accuracy &&
+                <p title="accuracy">[{geolocation.accuracy}m]</p>
+            }
             <p title="valid">{String(geolocation.valid)}</p>
         </div>
     );
@@ -87,6 +91,17 @@ describe('Geolocation', () => {
         const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
         await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
         expect(screen.queryByTitle('position').textContent).toBe("[7,-9]");
+    });
+    it('should show positions when success is called', async () => {
+        navigator.geolocation.watchPosition = jest.fn();
+        render(<Geolocation
+            view={View.Item_Read}
+            setGPSOn={jest.fn()}
+            render={position => <MockApp position={position} />}
+        />);
+        const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
+        await waitFor(() => successCallback({ coords: { accuracy: 20, } }));
+        expect(screen.queryByTitle('accuracy').textContent).toBe("[20m]");
     });
     it('should show last position when success is called', async () => {
         navigator.geolocation.watchPosition = jest.fn();
