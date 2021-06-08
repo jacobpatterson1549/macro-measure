@@ -28,9 +28,7 @@ const render = (props) => (
 );
 
 const getAction = (props) => (
-    View.isCreate(props.view) || View.isUpdate(props.view) ? getCreateOrUpdateAction(props)
-        : View.isDelete(props.view) ? getDeleteAction(props)
-            : getReadAction(props)
+    (actions[props.view] || getReadAction)(props)
 );
 
 const getCreateOrUpdateAction = ({ view, type, values, index, createEnd, updateEnd, cancel, name, setName }) => {
@@ -103,3 +101,8 @@ const handleDeleteStart = (deleteStart, setName, values) => (index) => {
 const handleDeleteEnd = (deleteEnd, index) => () => {
     deleteEnd(index);
 };
+
+const actions = Object.fromEntries(
+    View.AllIDs
+        .filter((viewId) => View.isCreate(viewId) || View.isUpdate(viewId) || View.isDelete(viewId))
+        .map((viewId) => [viewId, View.isDelete(viewId) ? getDeleteAction : getCreateOrUpdateAction]));

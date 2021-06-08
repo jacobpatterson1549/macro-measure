@@ -29,6 +29,9 @@ const viewFlagsById = Object.fromEntries(
     Object.entries(views)
         .map(([_, view]) => [view[0], view[1]]));
 
+const allIds = Object.values(views)
+    .map((view) => view[0]);
+
 const viewFuncs = {
     isCreate: (viewId) => !!(viewFlagsById[viewId] & CREATE),
     isRead: (viewId) => !!(viewFlagsById[viewId] & READ),
@@ -42,4 +45,5 @@ const viewFuncs = {
 export const View = {
     ...viewIdsByName,
     ...viewFuncs,
+    AllIDs: allIds,
 };

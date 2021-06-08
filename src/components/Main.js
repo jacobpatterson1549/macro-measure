@@ -27,11 +27,7 @@ const render = (props) => (
 );
 
 const getMain = (props) => (
-    props.view === View.About ? getAboutView(props)
-        : props.view === View.Help ? getHelpView(props)
-            : props.view === View.Settings ? getSettingsView(props)
-                : View.isItem(props.view) ? getItemsView(props)
-                    : getGroupsView(props)
+    (mainViews[props.view] || getGroupsView)(props)
 );
 
 const getAboutView = (props) => (
@@ -97,3 +93,11 @@ const getGroupsView = (props) => (
 const getItems = ({ groups, groupIndex }) => (
     (groups?.length) ? groups[groupIndex].items : []
 );
+
+const mainViews = Object.fromEntries(
+    View.AllIDs
+        .filter(View.isItem)
+        .map((viewId) => [viewId, getItemsView]));
+mainViews[View.About] = getAboutView;
+mainViews[View.Help] = getHelpView;
+mainViews[View.Settings] = getSettingsView;

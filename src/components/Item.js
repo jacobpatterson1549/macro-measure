@@ -159,10 +159,9 @@ const getMap = (props) => {
 };
 
 const getAction = (props) => (
-    (!props.geolocation.valid) ? (<span>Cannot get location</span>)
-        : View.isCreate(props.view) || View.isUpdate(props.view) ? getCreateOrUpdateAction(props)
-            : View.isDelete(props.view) ? getDeleteAction(props)
-                : getReadAction(props)
+    (!props.geolocation.valid)
+        ? (<span>Cannot get location</span>)
+        : (actions[props.view] || getReadAction)(props)
 );
 
 const getCreateOrUpdateAction = (props) => {
@@ -304,3 +303,8 @@ const handleDeleteEnd = ({ deleteEnd, index }) => () => {
 const handleUpdateLatLng = (heading, moveAmount, latLng, setLatLng, distanceUnit) => () => {
     setLatLng(moveLatLngTo(latLng, moveAmount, distanceUnit, heading));
 };
+
+const actions = Object.fromEntries(
+    View.AllIDs
+        .filter((viewId) => View.isCreate(viewId) || View.isUpdate(viewId) || View.isDelete(viewId))
+        .map((viewId) => [viewId, View.isDelete(viewId) ? getDeleteAction : getCreateOrUpdateAction]));
