@@ -39,17 +39,17 @@ const getCreateOrUpdateAction = ({ view, type, values, index, createEnd, updateE
         : [handleUpdateEnd(updateEnd, index, name), ('Update ' + getValueName(values, index)), ('Update ' + type), index];
     return (
         <Form
-            onSubmit={handleSubmit}
             submitValue={submitValue}
             onCancel={cancel}
+            onSubmit={handleSubmit}
         >
             <Fieldset caption={actionName}>
                 <Label caption="Name">
                     <NameInput
                         value={name}
                         values={values}
-                        onChange={setName}
                         isUniqueName={updateIndex}
+                        onChange={setName}
                     />
                 </Label>
             </Fieldset>
@@ -59,9 +59,9 @@ const getCreateOrUpdateAction = ({ view, type, values, index, createEnd, updateE
 
 const getDeleteAction = ({ deleteEnd, values, index, type, cancel }) => (
     <Form
-        onSubmit={handleDeleteEnd(deleteEnd, index)}
         submitValue={'Delete ' + type}
         onCancel={cancel}
+        onSubmit={handleDeleteEnd(deleteEnd, index)}
     >
         <Fieldset caption={'Delete ' + getValueName(values, index)} />
     </Form>
@@ -69,8 +69,8 @@ const getDeleteAction = ({ deleteEnd, values, index, type, cancel }) => (
 
 const getReadAction = ({ createStart, setName, type }) => (
     <Form
-        onSubmit={handleCreateStart(createStart, setName)}
         submitValue={'Create ' + type}
+        onSubmit={handleCreateStart(createStart, setName)}
     />
 );
 

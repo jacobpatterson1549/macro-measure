@@ -62,7 +62,10 @@ export const FileInput = ({ accept, onChange }) => (
 );
 
 export const SelectInput = ({ value, values, onChange }) => (
-    <select value={value} onChange={handleOnTextChange(onChange)}>
+    <select
+        value={value}
+        onChange={handleOnTextChange(onChange)}
+    >
         {getOptions(values)}
     </select>
 );
@@ -75,7 +78,10 @@ export const Label = ({ caption, children }) => (
 );
 
 export const Fieldset = ({ caption, disabled, border = true, children }) => (
-    <fieldset className={'Fieldset' + (!border ? ' NoBorder' : '')} disabled={disabled}>
+    <fieldset
+        className={'Fieldset' + (!border ? ' NoBorder' : '')}
+        disabled={disabled}
+    >
         {
             caption &&
             <legend>{caption}</legend>
@@ -85,7 +91,10 @@ export const Fieldset = ({ caption, disabled, border = true, children }) => (
 );
 
 export const Form = ({ onSubmit, submitDisabled, submitValue = 'Submit', onCancel, children }) => (
-    <form className="Form" onSubmit={handlePreventDefault(onSubmit)}>
+    <form
+        className="Form"
+        onSubmit={handlePreventDefault(onSubmit)}
+    >
         {children}
         <div className="ActionButtons">
             {

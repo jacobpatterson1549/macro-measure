@@ -15,17 +15,29 @@ export const LocalStorageSettings = () => {
 const render = (props) => (
     <Fieldset caption="LocalStorage Settings">
         <Label caption="Export ALL Saved Data">
-            <ButtonInput value="Export File" onClick={handleExportStorage(props.setExportLink)} />
+            <ButtonInput
+                value="Export File"
+                onClick={handleExportStorage(props.setExportLink)}
+            />
             {props.exportLink}
         </Label>
         <Label caption="Import ALL Saved Data">
-            <FileInput accept={jsonMimeType} onChange={handleImportStorage()} />
+            <FileInput
+                accept={jsonMimeType}
+                onChange={handleImportStorage()}
+            />
         </Label>
         <Label caption="Clear ALL Saved Data">
-            <ButtonInput value="Clear" onClick={handleResetStorage()} />
+            <ButtonInput
+                value="Clear"
+                onClick={handleResetStorage()}
+            />
         </Label>
         <Label caption="Reload page and Saved Data">
-            <ButtonInput value="Reload" onClick={reload} />
+            <ButtonInput
+                value="Reload"
+                onClick={reload}
+            />
         </Label>
     </Fieldset>
 );

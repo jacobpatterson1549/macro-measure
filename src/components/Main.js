@@ -57,7 +57,7 @@ const getSettingsView = (props) => (
 const getItemsView = (props) => (
     <Item
         view={props.view}
-        items={getItemsFromGroups(props)}
+        items={getItems(props)}
         index={props.itemIndex}
         distanceUnit={props.distanceUnit}
         highAccuracyGPS={props.highAccuracyGPS}
@@ -94,6 +94,6 @@ const getGroupsView = (props) => (
     />
 );
 
-const getItemsFromGroups = ({ groups, groupIndex }) => (
+const getItems = ({ groups, groupIndex }) => (
     (groups?.length) ? groups[groupIndex].items : []
 );

@@ -28,7 +28,10 @@ const getTableBody = ({ values, read, update, deleteValue, moveUp, moveDown }) =
 
 const tableRows = (values, read, update, deleteValue, moveUp, moveDown) => (
     values.map((value, index) => (
-        <tr key={value.name} className="Row">
+        <tr
+            className="Row"
+            key={value.name}
+        >
             {tableCell(value.name, 'read value', true, read, index)}
             {tableCell('▲', 'move up', index > 0, moveUp, index)}
             {tableCell('▼', 'move down', index + 1 < values.length, moveDown, index)}
@@ -41,7 +44,10 @@ const tableCell = (value, title, isVisible, fn, index) => (
     <td className="Cell">
         {
             isVisible &&
-            <button onClick={handleOnClick(fn, index)} title={title} className="FakeButton">
+            <button
+                title={title} className="FakeButton"
+                onClick={handleOnClick(fn, index)}
+            >
                 <span>{value}</span>
             </button>
         }

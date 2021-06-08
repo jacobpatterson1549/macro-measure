@@ -85,20 +85,26 @@ const getHeader = (props) => {
     return (
         <>
             <div className="row">
-                <button className="left arrow"
+                <button
+                    className="left arrow"
+                    title="previous item"
                     disabled={prevDisabled}
                     onClick={handleRead(-1, props)}
-                    title="previous item"
                 >
                     <span>◀</span>
                 </button>
-                <button onClick={handleReadItemList(props)} title="item list" className="name">
+                <button
+                    className="name"
+                    title="item list"
+                    onClick={handleReadItemList(props)}
+                >
                     <span>{headerName}</span>
                 </button>
-                <button className="right arrow"
+                <button
+                    className="right arrow"
+                    title="next item"
                     disabled={nextDisabled}
                     onClick={handleRead(+1, props)}
-                    title="next item"
                 >
                     <span>▶</span>
                 </button>
@@ -107,20 +113,20 @@ const getHeader = (props) => {
                 showEdit &&
                 <div className="row">
                     <button
-                        onClick={handleUpdateStart(props)}
                         title="update item"
+                        onClick={handleUpdateStart(props)}
                     >
                         <span>Edit...</span>
                     </button>
                     <button
-                        onClick={handleDeleteStart(props)}
                         title="delete item"
+                        onClick={handleDeleteStart(props)}
                     >
                         <span>Delete...</span>
                     </button>
                     <button
-                        onClick={handleCreateStart(props)}
                         title="create item"
+                        onClick={handleCreateStart(props)}
                     >
                         <span>Add...</span>
                     </button>
@@ -164,33 +170,44 @@ const getCreateOrUpdateAction = (props) => {
         : [handleUpdateEnd(props), true, false, ('Update ' + props.items[props.index].name), props.index, handleRead(0, props), 'Update Item'];
     return (
         <Form
-            onSubmit={handleSubmit}
             submitValue={submitValue}
             submitDisabled={!hasLatLng}
             onCancel={handleCancel}
+            onSubmit={handleSubmit}
         >
             <Fieldset caption={actionName}>
                 <Label caption="Name">
                     <NameInput
                         value={props.name}
                         values={props.items}
-                        onChange={props.setName}
                         updateIndex={updateIndex}
+                        onChange={props.setName}
                     />
                 </Label>
                 <Fieldset disabled={!hasLatLng} border={false}>
                     <Label caption="Latitude">
                         {getMoveLatLngButton(Heading.S, '-(S)', updateLatLngDisabled, props)}
                         {getMoveLatLngButton(Heading.N, '+(N)', updateLatLngDisabled, props)}
-                        <TextInput value={props.latLng.lat} disabled />
+                        <TextInput
+                            value={props.latLng.lat}
+                            disabled
+                        />
                     </Label>
                     <Label caption="Longitude">
                         {getMoveLatLngButton(Heading.W, '-(W)', updateLatLngDisabled, props)}
                         {getMoveLatLngButton(Heading.E, '+(E)', updateLatLngDisabled, props)}
-                        <TextInput value={props.latLng.lng} disabled />
+                        <TextInput
+                            value={props.latLng.lng}
+                            disabled
+                        />
                     </Label>
                     <Label caption={`Move Amount (${props.distanceUnit})`}>
-                        <NumberInput value={props.moveAmount} onChange={props.setMoveAmount} min="0" max="1000" />
+                        <NumberInput
+                            value={props.moveAmount}
+                            min="0"
+                            max="1000"
+                            onChange={props.setMoveAmount}
+                        />
                     </Label>
                 </Fieldset>
             </Fieldset>
@@ -200,9 +217,9 @@ const getCreateOrUpdateAction = (props) => {
 
 const getDeleteAction = (props) => (
     <Form
-        onSubmit={handleDeleteEnd(props)}
         submitValue="Delete item"
         onCancel={handleRead(0, props)}
+        onSubmit={handleDeleteEnd(props)}
     >
         <Fieldset caption={'Delete ' + props.items[props.index].name} />
     </Form>
@@ -210,7 +227,9 @@ const getDeleteAction = (props) => (
 
 const getReadAction = (props) => (
     (!props.geolocation.latLng)
-        ? (<span>Getting location...</span>)
+        ? (
+            <span>Getting location...</span>
+        )
         : (
             <div className="distance">
                 <span>{String(props.distanceHeading.distance)}</span>
@@ -221,9 +240,9 @@ const getReadAction = (props) => (
 
 const getMoveLatLngButton = (heading, value, disabled, { moveAmount, latLng, setLatLng, distanceUnit }) => (
     <ButtonInput
-        onClick={handleUpdateLatLng(heading, moveAmount, latLng, setLatLng, distanceUnit)}
         value={value}
         disabled={disabled}
+        onClick={handleUpdateLatLng(heading, moveAmount, latLng, setLatLng, distanceUnit)}
     />
 );
 
