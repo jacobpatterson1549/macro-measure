@@ -15,7 +15,7 @@ export const Root = (props) => {
   const [groups, setGroups] = useLocalStorage('groups', []);
   const [groupIndex, setGroupIndex] = useLocalStorage('groupIndex', 0);
   const [itemIndex, setItemIndex] = useLocalStorage('itemIndex', 0);
-  const [gpsOn, setGPSOn] = useState('gpsOn', false);
+  const [gpsOn, setGPSOn] = useState(false);
   const state = {
     view, setView,
     groups, setGroups,

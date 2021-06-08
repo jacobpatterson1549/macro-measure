@@ -8,4 +8,11 @@ describe('Root', () => {
     const linkElement = screen.getByText('?');
     expect(linkElement).toBeInTheDocument();
   });
+  it('should default gpsOn to false', () => {
+    render(<Root />);
+    const element = screen.getByText((content, element) => (
+      element.textContent === 'GPS: OFF'
+    ));
+    expect(element).toBeInTheDocument();
+  });
 });
