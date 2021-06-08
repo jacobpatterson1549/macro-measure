@@ -3,22 +3,22 @@ import { useState, useRef, useEffect } from 'react';
 import { roundLatLng } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
-export const Geolocation = ({ render, view, highAccuracyGPS, setGPSOn }) => {
+export const Geolocation = (props) => {
     const watchID = useRef(null);
     const [latLng, setLatLng] = useState(null);
     useEffect(() => {
-        if (!watchID.current && View.needsGPS(view) && getGeolocation()) {
-            startWatch(watchID, highAccuracyGPS, setLatLng, setGPSOn);
+        if (!watchID.current && View.needsGPS(props.view) && getGeolocation()) {
+            startWatch(watchID, props.highAccuracyGPS, setLatLng, props.setGPSOn);
         }
         return () => {
-            stopWatch(watchID, setGPSOn);
+            stopWatch(watchID, props.setGPSOn);
         };
-    }, [view, highAccuracyGPS, setGPSOn]);
+    }, [props.view, props.highAccuracyGPS, props.setGPSOn]);
     const state = {
         valid: !!getGeolocation(),
         latLng: latLng,
     };
-    return render({ ...state });
+    return props.render({ ...state });
 };
 
 const startWatch = (watchID, highAccuracyGPS, setLatLng, setGPSOn) => {

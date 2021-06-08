@@ -2,12 +2,12 @@ import './Header.css';
 
 import { View } from '../utils/View';
 
-export const Header = ({ view, setView, groups, groupIndex }) => (
+export const Header = (props) => (
     <header className="Header">
-        {getHeaderItem(setView, getGroupName(view, groups, groupIndex), 'groups list', View.Group_Read_List)}
-        {getHeaderItem(setView, 'ⓘ', 'about page', View.About)}
-        {getHeaderItem(setView, '?', 'help page', View.Help)}
-        {getHeaderItem(setView, '⚙', 'edit settings', View.Settings)}
+        {getHeaderItem(props.setView, getGroupName(props.view, props.groups, props.groupIndex), 'groups list', View.Group_Read_List)}
+        {getHeaderItem(props.setView, 'ⓘ', 'about page', View.About)}
+        {getHeaderItem(props.setView, '?', 'help page', View.Help)}
+        {getHeaderItem(props.setView, '⚙', 'edit settings', View.Settings)}
     </header>
 );
 

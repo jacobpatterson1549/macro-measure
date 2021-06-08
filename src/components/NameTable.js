@@ -1,8 +1,8 @@
 import './NameTable.css';
 
-export const NameTable = ({ type, values, read, update, deleteValue, moveUp, moveDown }) => (
+export const NameTable = (props) => (
     <table className="Table">
-        <caption>{type} Values</caption>
+        <caption>{props.type} Values</caption>
         <thead>
             <tr>
                 <th scope="col" title="Name of Value">Name</th>
@@ -13,12 +13,12 @@ export const NameTable = ({ type, values, read, update, deleteValue, moveUp, mov
             </tr>
         </thead>
         <tbody>
-            {getTableBody(values, read, update, deleteValue, moveUp, moveDown)}
+            {getTableBody(props)}
         </tbody>
     </table>
 );
 
-const getTableBody = (values, read, update, deleteValue, moveUp, moveDown) => (
+const getTableBody = ({ values, read, update, deleteValue, moveUp, moveDown }) => (
     (values?.length)
         ? tableRows(values, read, update, deleteValue, moveUp, moveDown)
         : (

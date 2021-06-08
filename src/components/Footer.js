@@ -1,27 +1,27 @@
 import './Footer.css';
 
-export const Footer = ({ gpsOn, onLine }) => (
+export const Footer = (props) => (
     <footer className="Footer">
         <span>GPS: <OnOffSpan
-            on={gpsOn}
+            on={props.gpsOn}
             onValue="ON"
             offValue="OFF"
         />
         </span>
         <OnOffSpan
-            on={onLine}
+            on={props.onLine}
             onValue="online"
             offValue="offline"
         />
     </footer>
 );
 
-const OnOffSpan = ({ on, onValue, offValue }) => (
-    <span className={onOffClassName(on)}>
+const OnOffSpan = (props) => (
+    <span className={onOffClassName(props.on)}>
         {
-            on
-                ? onValue
-                : offValue
+            props.on
+                ? props.onValue
+                : props.offValue
         }
     </span>
 );

@@ -1,12 +1,12 @@
 import { Fieldset, Label, SelectInput, CheckboxInput } from './Form';
 
-export const GPSSettings = ({ distanceUnit, setDistanceUnit, highAccuracyGPS, setHighAccuracyGPS }) => (
+export const GPSSettings = (props) => (
     <Fieldset caption="GPS Settings">
         <Label caption="Distance Unit">
-            <SelectInput value={distanceUnit} values={distanceUnits} onChange={setDistanceUnit} />
+            <SelectInput value={props.distanceUnit} values={distanceUnits} onChange={props.setDistanceUnit} />
         </Label>
         <Label caption="High Accuracy GPS">
-            <CheckboxInput checked={highAccuracyGPS} onChange={setHighAccuracyGPS} />
+            <CheckboxInput checked={props.highAccuracyGPS} onChange={props.setHighAccuracyGPS} />
         </Label>
     </Fieldset>
 );

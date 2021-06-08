@@ -1,19 +1,19 @@
 import { Fieldset, Label, CheckboxInput, ButtonInput } from './Form';
 
-export const FullscreenSettings = ({ fullscreen, onLine, installPromptEvent }) => (
+export const FullscreenSettings = (props) => (
     <Fieldset caption="Fullscreen Settings">
         <Label caption="Fullscreen">
-            <CheckboxInput checked={fullscreen} onChange={handleToggleFullscreen()} />
+            <CheckboxInput checked={props.fullscreen} onChange={handleToggleFullscreen()} />
         </Label>
         {
-            installPromptEvent
+            props.installPromptEvent
                 ? (
                     <Label caption="Add to Home Screen">
-                        <ButtonInput value="Install" onClick={handlePromptInstall(installPromptEvent)} />
+                        <ButtonInput value="Install" onClick={handlePromptInstall(props.installPromptEvent)} />
                     </Label>
                 )
                 : (
-                    <span>{onLine ? 'Online:' : 'OFFLINE:'} App updates after online reload.</span>
+                    <span>{props.onLine ? 'Online:' : 'OFFLINE:'} App updates after online reload.</span>
                 )
         }
     </Fieldset>

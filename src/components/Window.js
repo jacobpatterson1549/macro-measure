@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { handlePreventDefault } from './Form';
 
 // Window listens to events to provide properties in a Render Prop component
-export const Window = ({ render }) => {
+export const Window = (props) => {
     const [fullscreen, setFullscreen] = useState(isFullscreen());
     const [onLine, setOnLine] = useState(window.navigator.onLine);
     const [installPromptEvent, setInstallPromptEvent] = useState(null);
@@ -24,7 +24,7 @@ export const Window = ({ render }) => {
         onLine: onLine,
         installPromptEvent: installPromptEvent,
     };
-    return render({ ...state });
+    return props.render({ ...state });
 };
 
 const handleFullscreenChanged = (setFullscreen) => () => (

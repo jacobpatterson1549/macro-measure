@@ -1,33 +1,32 @@
 import { View } from '../utils/View';
 import { Groups as GroupUtils } from '../utils/Groups';
 
-// GroupsView contains the groups and functions to change them
-export const Groups = ({ groups, groupIndex, setView, setGroups, setGroupIndex, setItemIndex, render }) => {
+export const Groups = (props) => {
     const state = {
         // groups
-        createGroupStart: handleCreateGroupStart(setView),
-        createGroupEnd: handleCreateGroupEnd(setView, setGroups, groups),
-        readGroup: handleReadGroup(setView, setGroupIndex),
-        readGroupList: handleReadGroupList(setView),
-        updateGroupStart: handleUpdateGroupStart(setView, setGroupIndex),
-        updateGroupEnd: handleUpdateGroupEnd(setView, setGroups, groups),
-        deleteGroupStart: handleDeleteGroupStart(setView, setGroupIndex),
-        deleteGroupEnd: handleDeleteGroupEnd(setView, setGroups, groups),
-        moveGroupUp: handleMoveGroupUp(setView, setGroups, groups),
-        moveGroupDown: handleMoveGroupDown(setView, setGroups, groups),
+        createGroupStart: handleCreateGroupStart(props.setView),
+        createGroupEnd: handleCreateGroupEnd(props.setView, props.setGroups, props.groups),
+        readGroup: handleReadGroup(props.setView, props.setGroupIndex),
+        readGroupList: handleReadGroupList(props.setView),
+        updateGroupStart: handleUpdateGroupStart(props.setView, props.setGroupIndex),
+        updateGroupEnd: handleUpdateGroupEnd(props.setView, props.setGroups, props.groups),
+        deleteGroupStart: handleDeleteGroupStart(props.setView, props.setGroupIndex),
+        deleteGroupEnd: handleDeleteGroupEnd(props.setView, props.setGroups, props.groups),
+        moveGroupUp: handleMoveGroupUp(props.setView, props.setGroups, props.groups),
+        moveGroupDown: handleMoveGroupDown(props.setView, props.setGroups, props.groups),
         // items
-        createItemStart: handleCreateItemStart(setView, setItemIndex, groups, groupIndex),
-        createItemEnd: handleCreateItemEnd(setView, setGroups, groups, groupIndex),
-        readItem: handleReadItem(setView, setItemIndex),
-        readItemList: handleReadItemList(setView),
-        updateItemStart: handleUpdateItemStart(setView, setItemIndex),
-        updateItemEnd: handleUpdateItemEnd(setView, setGroups, groups, groupIndex),
-        deleteItemStart: handleDeleteItemStart(setView, setItemIndex),
-        deleteItemEnd: handleDeleteItemEnd(setView, setGroups, groups, groupIndex),
-        moveItemUp: handleMoveItemUp(setView, setGroups, groups, groupIndex),
-        moveItemDown: handleMoveItemDown(setView, setGroups, groups, groupIndex),
+        createItemStart: handleCreateItemStart(props.setView, props.setItemIndex, props.groups, props.groupIndex),
+        createItemEnd: handleCreateItemEnd(props.setView, props.setGroups, props.groups, props.groupIndex),
+        readItem: handleReadItem(props.setView, props.setItemIndex),
+        readItemList: handleReadItemList(props.setView),
+        updateItemStart: handleUpdateItemStart(props.setView, props.setItemIndex),
+        updateItemEnd: handleUpdateItemEnd(props.setView, props.setGroups, props.groups, props.groupIndex),
+        deleteItemStart: handleDeleteItemStart(props.setView, props.setItemIndex),
+        deleteItemEnd: handleDeleteItemEnd(props.setView, props.setGroups, props.groups, props.groupIndex),
+        moveItemUp: handleMoveItemUp(props.setView, props.setGroups, props.groups, props.groupIndex),
+        moveItemDown: handleMoveItemDown(props.setView, props.setGroups, props.groups, props.groupIndex),
     };
-    return render({ ...state });
+    return props.render({ ...state });
 };
 
 // groups
