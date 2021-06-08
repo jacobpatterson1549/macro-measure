@@ -8,24 +8,29 @@ export const FullscreenSettings = (props) => (
                 onChange={handleToggleFullscreen()}
             />
         </Label>
-        {
-            props.installPromptEvent
-                ? (
-                    <Label caption="Add to Home Screen">
-                        <ButtonInput
-                            value="Install"
-                            onClick={handlePromptInstall(props.installPromptEvent)}
-                        />
-                    </Label>
-                )
-                : (
-                    <div>
-                        <span>{props.onLine ? 'Online:' : 'OFFLINE:'}</span>
-                        <span> App updates after online reload.</span>
-                    </div>
-                )
-        }
+        {getAddToHomeScreen(props)}
     </Fieldset>
+);
+
+const getAddToHomeScreen = ({ installPromptEvent, onLine} ) => (
+    installPromptEvent
+    ? (
+        <Label caption="Add to Home Screen">
+            <ButtonInput
+                value="Install"
+                onClick={handlePromptInstall(installPromptEvent)}
+            />
+        </Label>
+    )
+    : (
+        <div>
+            <span>App updates when restarting after a reload.</span>
+            {
+                !onLine &&
+                <span>Currently offline.  Go online to reload.</span>
+            }
+        </div>
+    )
 );
 
 const handleToggleFullscreen = () => (toFullscreen) => (

@@ -48,14 +48,14 @@ describe('FullscreenSettings', () => {
             it('should show reload root button when is installed and online', () => {
                 render(<FullscreenSettings onLine={true} />);
                 expect(screen.queryByRole('button', { name: 'Install' })).not.toBeInTheDocument();
-                expect(screen.queryByText(/^online/i)).toBeInTheDocument();
-                expect(screen.queryByText(/^offline/i)).not.toBeInTheDocument();
+                expect(screen.queryByText(/online/i)).not.toBeInTheDocument();
+                expect(screen.queryByText(/offline/i)).not.toBeInTheDocument();
             });
             it('should show prompt to go online when is installed and is not online', () => {
                 render(<FullscreenSettings onLine={false} />);
                 expect(screen.queryByRole('button', { name: 'Install' })).not.toBeInTheDocument();
-                expect(screen.queryByText(/^online/i)).not.toBeInTheDocument();
-                expect(screen.queryByText(/^offline/i)).toBeInTheDocument();
+                expect(screen.queryByText(/online/i)).toBeInTheDocument();
+                expect(screen.queryByText(/offline/i)).toBeInTheDocument();
             });
         });
         describe('click handlers', () => {
