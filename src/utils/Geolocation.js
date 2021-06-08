@@ -59,11 +59,15 @@ const round = (value, expTenDigits) => ( // log_10(expTenDigits) decimal digits,
     Math.round(value * expTenDigits) / expTenDigits
 );
 
+const feetPerMeter = 0.3048;
+const unitsPerMeter = {
+    'm': 1,
+    'km': 1000,
+    'ft': feetPerMeter,
+    'yd': 3 * feetPerMeter,
+    'mi': 5280 * feetPerMeter,
+};
+
 const metersRatio = (unit) => (
-    unit === 'm' ? 1
-        : unit === 'km' ? 1000
-            : unit === 'ft' ? 3048 / 10000
-                : unit === 'yd' ? 3 * 3048 / 10000
-                    : unit === 'mi' ? 5280 * 3048 / 10000
-                        : NaN
+    unitsPerMeter[unit] || NaN
 );
