@@ -1,24 +1,26 @@
-const CREATE = 1 << 0;
-const READ = 1 << 1;
-const UPDATE = 1 << 2;
-const DELETE = 1 << 3;
-const NEEDS_GPS = 1 << 4;
-const IS_ITEM = 1 << 5;
-const IS_GROUP = 1 << 6;
+const flags = {
+    isCreate: 1 << 0,
+    isRead: 1 << 1,
+    isUpdate: 1 << 2,
+    isDelete: 1 << 3,
+    needsGPS: 1 << 4,
+    isItem: 1 << 5,
+    isGroup: 1 << 6,
+}
 
 const views = { // name: [id, flags]
     About: [1],
     Help: [2],
     Settings: [3],
-    Item_Create: [4, CREATE | IS_ITEM | NEEDS_GPS],
-    Item_Read: [5, READ | IS_ITEM | NEEDS_GPS],
-    Item_Read_List: [6, READ | IS_ITEM],
-    Item_Update: [7, UPDATE | IS_ITEM],
-    Item_Delete: [8, DELETE | IS_ITEM],
-    Group_Create: [9, CREATE | IS_GROUP],
-    Group_Read_List: [10, READ | IS_GROUP],
-    Group_Update: [11, UPDATE | IS_GROUP],
-    Group_Delete: [12, DELETE | IS_GROUP],
+    Item_Create: [4, flags.isCreate | flags.isItem | flags.needsGPS],
+    Item_Read: [5, flags.isRead | flags.isItem | flags.needsGPS],
+    Item_Read_List: [6, flags.isRead | flags.isItem],
+    Item_Update: [7, flags.isUpdate | flags.isItem],
+    Item_Delete: [8, flags.isDelete | flags.isItem],
+    Group_Create: [9, flags.isCreate | flags.isGroup],
+    Group_Read_List: [10, flags.isRead | flags.isGroup],
+    Group_Update: [11, flags.isUpdate | flags.isGroup],
+    Group_Delete: [12, flags.isDelete | flags.isGroup],
 };
 
 const viewIdsByName = Object.fromEntries(
@@ -29,21 +31,18 @@ const viewFlagsById = Object.fromEntries(
     Object.entries(views)
         .map(([_, view]) => [view[0], view[1]]));
 
-const allIds = Object.values(views)
-    .map((view) => view[0]);
+const allIds = Object.values(viewIdsByName);
 
-const viewFuncs = {
-    isCreate: (viewId) => !!(viewFlagsById[viewId] & CREATE),
-    isRead: (viewId) => !!(viewFlagsById[viewId] & READ),
-    isUpdate: (viewId) => !!(viewFlagsById[viewId] & UPDATE),
-    isDelete: (viewId) => !!(viewFlagsById[viewId] & DELETE),
-    needsGPS: (viewId) => !!(viewFlagsById[viewId] & NEEDS_GPS),
-    isItem: (viewId) => !!(viewFlagsById[viewId] & IS_ITEM),
-    isGroup: (viewId) => !!(viewFlagsById[viewId] & IS_GROUP),
-};
+const handleIsFlag = (flag) => (viewId) => ( // true if viewId has flag
+    !!(viewFlagsById[viewId] & flag)
+);
+
+const isFlagFuncs = Object.fromEntries(
+    Object.entries(flags)
+        .map(([name, flag]) => [name, handleIsFlag(flag)]));
 
 export const View = {
     ...viewIdsByName,
-    ...viewFuncs,
+    ...isFlagFuncs,
     AllIDs: allIds,
 };
