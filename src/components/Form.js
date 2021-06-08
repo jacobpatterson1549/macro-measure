@@ -79,7 +79,7 @@ export const Label = ({ caption, children }) => (
 
 export const Fieldset = ({ caption, disabled, border = true, children }) => (
     <fieldset
-        className={'Fieldset' + (!border ? ' NoBorder' : '')}
+        className={`Fieldset ${border ? '' : 'NoBorder'}`}
         disabled={disabled}
     >
         {
