@@ -22,7 +22,7 @@ export const Item = (props) => {
 };
 
 const render = (props) => (
-    (props.view === View.Item_Read_List)
+    (props.view === View.Item_List)
         ? renderItemList(props)
         : renderItem(props)
 );

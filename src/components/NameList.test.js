@@ -10,7 +10,7 @@ describe('NameList', () => {
             ['Create', View.Group_Create],
             ['Update', View.Group_Update],
             ['Delete', View.Group_Delete],
-            ['Create', View.Group_Read_List],
+            ['Create', View.Group_List],
         ];
         it.each(viewTests)('should have one button of %s when view is %s', (expected, view) => {
             render(<NameList
@@ -36,7 +36,7 @@ describe('NameList', () => {
             });
             it('should start updating when the edit button is clicked', () => {
                 const updateStart = jest.fn();
-                render(<NameList type={'test'} view={View.Group_Read_List} values={values} index={1} updateStart={updateStart} />);
+                render(<NameList type={'test'} view={View.Group_List} values={values} index={1} updateStart={updateStart} />);
                 const elements = screen.getAllByRole('button', { name: 'update value' });
                 expect(elements.length).toBe(values.length);;
                 const element = elements[1];
@@ -45,7 +45,7 @@ describe('NameList', () => {
             });
             it('should start deleting when the delete button is clicked', () => {
                 const deleteStart = jest.fn();
-                render(<NameList type={'test'} view={View.Group_Read_List} values={values} index={1} deleteStart={deleteStart} />);
+                render(<NameList type={'test'} view={View.Group_List} values={values} index={1} deleteStart={deleteStart} />);
                 const elements = screen.getAllByRole('button', { name: 'delete value' });
                 expect(elements.length).toBe(values.length);;
                 const element = elements[2];

@@ -4,7 +4,7 @@ import { View } from '../utils/View';
 
 export const Header = (props) => (
     <header className="Header">
-        {getHeaderItem(props.setView, getGroupName(props.view, props.groups, props.groupIndex), 'groups list', View.Group_Read_List)}
+        {getHeaderItem(props.setView, getGroupName(props.view, props.groups, props.groupIndex), 'groups list', View.Group_List)}
         {getHeaderItem(props.setView, 'ⓘ', 'about page', View.About)}
         {getHeaderItem(props.setView, '?', 'help page', View.Help)}
         {getHeaderItem(props.setView, '⚙', 'edit settings', View.Settings)}

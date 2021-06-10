@@ -50,7 +50,7 @@ describe('Groups', () => {
       const mockArgs = [expected];
       render(<Groups {...props} render={groupUtils => (<MockApp {...groupUtils} mockArgs={mockArgs} />)} />);
       screen.getByRole('button', { name: 'createGroupEnd' }).click();
-      expect(props.setView).toBeCalledWith(View.Group_Read_List);
+      expect(props.setView).toBeCalledWith(View.Group_List);
       expect(props.setGroups).toBeCalledWith([{ name: expected, items: [] }]);
     });
     it('readGroup', () => {
@@ -63,7 +63,7 @@ describe('Groups', () => {
       const mockArgs = [expected];
       render(<Groups {...props} render={groupUtils => (<MockApp {...groupUtils} mockArgs={mockArgs} />)} />);
       screen.getByRole('button', { name: 'readGroup' }).click();
-      expect(props.setView).toBeCalledWith(View.Item_Read_List);
+      expect(props.setView).toBeCalledWith(View.Item_List);
       expect(props.setGroupIndex).toBeCalledWith(expected);
     });
     it('readGroupList', () => {
@@ -73,7 +73,7 @@ describe('Groups', () => {
       const mockArgs = [];
       render(<Groups {...props} render={groupUtils => (<MockApp {...groupUtils} mockArgs={mockArgs} />)} />);
       screen.getByRole('button', { name: 'readGroupList' }).click();
-      expect(props.setView).toBeCalledWith(View.Group_Read_List);
+      expect(props.setView).toBeCalledWith(View.Group_List);
     });
     it('updateGroupStart', () => {
       const expected = 2;
@@ -99,7 +99,7 @@ describe('Groups', () => {
       const mockArgs = [2, expected];
       render(<Groups {...props} render={groupUtils => (<MockApp {...groupUtils} mockArgs={mockArgs} />)} />);
       screen.getByRole('button', { name: 'updateGroupEnd' }).click();
-      expect(props.setView).toBeCalledWith(View.Group_Read_List);
+      expect(props.setView).toBeCalledWith(View.Group_List);
       expect(props.setGroups).toBeCalledWith([{ name: 'groupA' }, { name: 'groupB' }, { name: expected }]);
     });
     it('deleteGroupStart', () => {
@@ -126,7 +126,7 @@ describe('Groups', () => {
       const mockArgs = [2, expected];
       render(<Groups {...props} render={groupUtils => (<MockApp {...groupUtils} mockArgs={mockArgs} />)} />);
       screen.getByRole('button', { name: 'deleteGroupEnd' }).click();
-      expect(props.setView).toBeCalledWith(View.Group_Read_List);
+      expect(props.setView).toBeCalledWith(View.Group_List);
       expect(props.setGroups).toBeCalledWith([{ name: 'groupA' }, { name: 'groupB' }]);
     });
     it('moveGroupUp', () => {
@@ -138,7 +138,7 @@ describe('Groups', () => {
       const mockArgs = [2];
       render(<Groups {...props} render={groupUtils => (<MockApp {...groupUtils} mockArgs={mockArgs} />)} />);
       screen.getByRole('button', { name: 'moveGroupUp' }).click();
-      expect(props.setView).toBeCalledWith(View.Group_Read_List);
+      expect(props.setView).toBeCalledWith(View.Group_List);
       expect(props.setGroups).toBeCalledWith([{ name: 'groupA' }, { name: 'groupC' }, { name: 'groupB' }]);
     });
     it('moveGroupDown', () => {
@@ -150,7 +150,7 @@ describe('Groups', () => {
       const mockArgs = [0];
       render(<Groups {...props} render={groupUtils => (<MockApp {...groupUtils} mockArgs={mockArgs} />)} />);
       screen.getByRole('button', { name: 'moveGroupDown' }).click();
-      expect(props.setView).toBeCalledWith(View.Group_Read_List);
+      expect(props.setView).toBeCalledWith(View.Group_List);
       expect(props.setGroups).toBeCalledWith([{ name: 'groupB' }, { name: 'groupA' }, { name: 'groupC' }]);
     });
   });
@@ -205,7 +205,7 @@ describe('Groups', () => {
       const mockArgs = [];
       render(<Groups {...props} render={groupUtils => (<MockApp {...groupUtils} mockArgs={mockArgs} />)} />);
       screen.getByRole('button', { name: 'readItemList' }).click();
-      expect(props.setView).toBeCalledWith(View.Item_Read_List);
+      expect(props.setView).toBeCalledWith(View.Item_List);
     });
     it('updateItemStart', () => {
       const expected = 2;
@@ -261,7 +261,7 @@ describe('Groups', () => {
       const mockArgs = [1];
       render(<Groups {...props} render={groupUtils => (<MockApp {...groupUtils} mockArgs={mockArgs} />)} />);
       screen.getByRole('button', { name: 'deleteItemEnd' }).click();
-      expect(props.setView).toBeCalledWith(View.Item_Read_List);
+      expect(props.setView).toBeCalledWith(View.Item_List);
       expect(props.setGroups).toBeCalledWith([{ name: 'g', items: [{ name: 'iA' }, { name: 'iC' }] }]);
     });
     it('moveItemUp', () => {
@@ -274,7 +274,7 @@ describe('Groups', () => {
       const mockArgs = [1];
       render(<Groups {...props} render={groupUtils => (<MockApp {...groupUtils} mockArgs={mockArgs} />)} />);
       screen.getByRole('button', { name: 'moveItemUp' }).click();
-      expect(props.setView).toBeCalledWith(View.Item_Read_List);
+      expect(props.setView).toBeCalledWith(View.Item_List);
       expect(props.setGroups).toBeCalledWith([{ name: 'g', items: [{ name: 'iB' }, { name: 'iA' }, { name: 'iC' }] }]);
     });
     it('moveItemDown', () => {
@@ -287,7 +287,7 @@ describe('Groups', () => {
       const mockArgs = [1];
       render(<Groups {...props} render={groupUtils => (<MockApp {...groupUtils} mockArgs={mockArgs} />)} />);
       screen.getByRole('button', { name: 'moveItemDown' }).click();
-      expect(props.setView).toBeCalledWith(View.Item_Read_List);
+      expect(props.setView).toBeCalledWith(View.Item_List);
       expect(props.setGroups).toBeCalledWith([{ name: 'g', items: [{ name: 'iA' }, { name: 'iC' }, { name: 'iB' }] }]);
     });
   });

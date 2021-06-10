@@ -29,7 +29,7 @@ describe('Main', () => {
     it('should start to create a group', () => {
       const createGroupStart = jest.fn();
       render(<Main
-        view={View.Group_Read_List}
+        view={View.Group_List}
         createGroupStart={createGroupStart}
         groups={[]}
       />);
@@ -51,7 +51,7 @@ describe('Main', () => {
     it('should read a group', () => {
       const readGroup = jest.fn();
       render(<Main
-        view={View.Group_Read_List}
+        view={View.Group_List}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
         readGroup={readGroup}
       />);
@@ -71,7 +71,7 @@ describe('Main', () => {
     it('should start to update a group', () => {
       const updateGroupStart = jest.fn();
       render(<Main
-        view={View.Group_Read_List}
+        view={View.Group_List}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
         updateGroupStart={updateGroupStart}
       />);
@@ -94,7 +94,7 @@ describe('Main', () => {
     it('should start to delete a group', () => {
       const deleteGroupStart = jest.fn();
       render(<Main
-        view={View.Group_Read_List}
+        view={View.Group_List}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
         deleteGroupStart={deleteGroupStart}
       />);
@@ -115,7 +115,7 @@ describe('Main', () => {
     it('should move a group up', () => {
       const moveGroupUp = jest.fn();
       render(<Main
-        view={View.Group_Read_List}
+        view={View.Group_List}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
         moveGroupUp={moveGroupUp}
       />);
@@ -125,7 +125,7 @@ describe('Main', () => {
     it('should move a group down', () => {
       const moveGroupDown = jest.fn();
       render(<Main
-        view={View.Group_Read_List}
+        view={View.Group_List}
         groups={[{ name: 'groupA' }, { name: 'groupB' }, { name: 'groupC' }]}
         moveGroupDown={moveGroupDown}
       />);
@@ -137,7 +137,7 @@ describe('Main', () => {
     it('should start to create an item from list', () => {
       const createItemStart = jest.fn();
       render(<Main
-        view={View.Item_Read_List}
+        view={View.Item_List}
         groups={[{ name: 'g', items: [] }]}
         groupIndex={0}
         createItemStart={createItemStart}
@@ -177,7 +177,7 @@ describe('Main', () => {
     it('should read an item', () => {
       const readItem = jest.fn();
       render(<Main
-        view={View.Item_Read_List}
+        view={View.Item_List}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         readItem={readItem}
@@ -235,7 +235,7 @@ describe('Main', () => {
     it('should start to update an item from list', () => {
       const updateItemStart = jest.fn();
       render(<Main
-        view={View.Item_Read_List}
+        view={View.Item_List}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         updateItemStart={updateItemStart}
@@ -275,7 +275,7 @@ describe('Main', () => {
     it('should start to delete an item from list', () => {
       const deleteItemStart = jest.fn();
       render(<Main
-        view={View.Item_Read_List}
+        view={View.Item_List}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         deleteItemStart={deleteItemStart}
@@ -313,7 +313,7 @@ describe('Main', () => {
     it('should move an item up', () => {
       const moveItemUp = jest.fn();
       render(<Main
-        view={View.Item_Read_List}
+        view={View.Item_List}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         moveItemUp={moveItemUp}
@@ -324,7 +324,7 @@ describe('Main', () => {
     it('should move an item down', () => {
       const moveItemDown = jest.fn();
       render(<Main
-        view={View.Item_Read_List}
+        view={View.Item_List}
         groups={[{ name: 'g', items: [{ name: 'iA' }, { name: 'iB' }, { name: 'iC' }] }]}
         groupIndex={0}
         moveItemDown={moveItemDown}
