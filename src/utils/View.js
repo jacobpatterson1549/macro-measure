@@ -6,6 +6,7 @@ const flags = {
     needsGPS: 1 << 4,
     isItem: 1 << 5,
     isGroup: 1 << 6,
+    isList: 1 << 7,
 }
 
 const views = { // name: [id, flags]
@@ -14,11 +15,11 @@ const views = { // name: [id, flags]
     Settings: [3],
     Item_Create: [4, flags.isCreate | flags.isItem | flags.needsGPS],
     Item_Read: [5, flags.isRead | flags.isItem | flags.needsGPS],
-    Item_Read_List: [6, flags.isRead | flags.isItem],
+    Item_Read_List: [6, flags.isList | flags.isItem],
     Item_Update: [7, flags.isUpdate | flags.isItem],
     Item_Delete: [8, flags.isDelete | flags.isItem],
     Group_Create: [9, flags.isCreate | flags.isGroup],
-    Group_Read_List: [10, flags.isRead | flags.isGroup],
+    Group_Read_List: [10, flags.isList | flags.isGroup],
     Group_Update: [11, flags.isUpdate | flags.isGroup],
     Group_Delete: [12, flags.isDelete | flags.isGroup],
 };
