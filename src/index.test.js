@@ -14,7 +14,7 @@ jest.mock('react-dom', () => ({
         const rootElement = document.createElement('div');
         rootElement.setAttribute('id', 'root');
         document.body.appendChild(rootElement);
-        require('./index.js');
+        require('./index');
         expect(render).toHaveBeenCalledWith(<App />, rootElement);
     });
 });
