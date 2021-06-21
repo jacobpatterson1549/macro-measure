@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import './Root.css';
 
@@ -9,18 +9,32 @@ import { Footer } from './Footer';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 import { View } from '../utils/View';
+import { readItems, GROUPS, WAYPOINTS } from '../utils/db';
 
 export const Root = (props) => {
   const [view, setView] = useLocalStorage('view', View.Group_List);
-  const [groups, setGroups] = useLocalStorage('groups', []);
-  const [groupIndex, setGroupIndex] = useLocalStorage('groupIndex', 0);
-  const [itemIndex, setItemIndex] = useLocalStorage('itemIndex', 0);
+  const [groupKey, setGroupKey] = useLocalStorage('groupKey', 0);
+  const [itemKey, setItemKey] = useLocalStorage('itemKey', 0);
+  const [groups, setGroups] = useState([]);
+  const [items, setItems] = useState([]);
   const [gpsOn, setGPSOn] = useState(false);
+  useEffect(() => {
+    const loadFromDb = async () => {
+      const dbGroups = await readItems(GROUPS);
+      const dbWaypoints = dbGroups.length ? await readItems(WAYPOINTS, dbGroups[groupIndex].key) : [];
+      setGroups(dbGroups);
+      setItems(dbWaypoints);
+      // TODO: do not render until leaded
+      // TODO: load groups/items in sub-components, group name in settings
+    };
+    loadFromDb();
+  }, [groupIndex, itemIndex, setGroups, setItems]);
   const state = {
     view, setView,
-    groups, setGroups,
     groupIndex, setGroupIndex,
     itemIndex, setItemIndex,
+    groups, setGroups,
+    items, setItems,
     gpsOn, setGPSOn,
   };
   return render({ ...props, ...state });
@@ -32,6 +46,7 @@ const render = (props) => (
     groupIndex={props.groupIndex}
     setView={props.setView}
     setGroups={props.setGroups}
+    setWaypoints={props.setItems}
     setGroupIndex={props.setGroupIndex}
     setItemIndex={props.setItemIndex}
     render={groupUtils => (
@@ -48,6 +63,7 @@ const render = (props) => (
           installPromptEvent={props.installPromptEvent}
           view={props.view}
           groups={props.groups}
+          items={props.items}
           groupIndex={props.groupIndex}
           itemIndex={props.itemIndex}
           setGPSOn={props.setGPSOn}

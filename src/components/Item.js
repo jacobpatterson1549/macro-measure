@@ -254,7 +254,7 @@ const handleCreateStart = ({ createStart, setName, setLatLng }) => () => {
 
 const handleCreateEnd = ({ createEnd, name, geolocation, setLatLng }) => () => {
     setLatLng(geolocation.latLng);
-    createEnd(name, geolocation.latLng.lat, geolocation.latLng.lng); // create with current position
+    createEnd(name, geolocation.latLng.lat, geolocation.latLng.lng, groupKey); // create with current position
 };
 
 const handleRead = (delta, { read, items, index, setName, setLatLng }) => () => {

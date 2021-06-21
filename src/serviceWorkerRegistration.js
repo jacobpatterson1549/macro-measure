@@ -1,6 +1,6 @@
-if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-    window.addEventListener('load', async () => {
+export const registerSW = () => {
+    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
         const swURL = `${process.env.PUBLIC_URL}/service-worker.js`;
         navigator.serviceWorker.register(swURL);
-    });
-}
+    }
+};

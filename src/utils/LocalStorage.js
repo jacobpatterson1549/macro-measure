@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { deleteDatabase, getDatabaseJSON } from './db';
+
 const storage = window.localStorage;
 
 export const useLocalStorage = (key, defaultValue) => {
@@ -11,25 +13,29 @@ export const useLocalStorage = (key, defaultValue) => {
     return [value, handleSetValue(key, setValue)];
 };
 
-export const clearLocalStorage = () => (
-    storage.clear()
-);
+export const clearLocalStorage = async () => {
+    storage.clear();
+    // TODO add another button to clear storage, but not database (this might fix some problems)
+    await deleteDatabase();
+};
 
-export const getLocalStorage = () => (
-    JSON.stringify(
-        Object.fromEntries(
-            Array.from(Array(storage.length).keys()) // [0 .. storage.length)
-                .map(
-                    (i) => (
-                        storage.key(i)))
-                .reduce(
-                    (map, key) => (
-                        map.set(
-                            key,
-                            JSON.parse(storage.getItem(key)))),
-                    new Map())
-                .entries()))
-);
+export const getLocalStorage = async () => {
+    const ls =  Object.fromEntries(
+        Array.from(Array(storage.length).keys()) // [0 .. storage.length)
+            .map(
+                (i) => (
+                    storage.key(i)))
+            .reduce(
+                (map, key) => (
+                    map.set(
+                        key,
+                        JSON.parse(storage.getItem(key)))),
+                new Map())
+            .entries());
+    const db = await getDatabaseJSON();
+    const combinedStorage = Object.assign(ls, db);
+    return JSON.stringify(combinedStorage);
+};
 
 export const setLocalStorage = (localStorageJSON) => (
     Object.entries(

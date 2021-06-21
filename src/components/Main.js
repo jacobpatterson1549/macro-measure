@@ -53,7 +53,7 @@ const getSettingsView = (props) => (
 const getItemsView = (props) => (
     <Item
         view={props.view}
-        items={getItems(props)}
+        items={props.items}
         index={props.itemIndex}
         distanceUnit={props.distanceUnit}
         highAccuracyGPS={props.highAccuracyGPS}
@@ -88,10 +88,6 @@ const getGroupsView = (props) => (
         moveDown={props.moveGroupDown}
         cancel={props.readGroupList}
     />
-);
-
-const getItems = ({ groups, groupIndex }) => (
-    (groups?.length) ? groups[groupIndex].items : []
 );
 
 const mainViews = Object.fromEntries(

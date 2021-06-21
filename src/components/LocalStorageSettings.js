@@ -42,8 +42,8 @@ const render = (props) => (
     </Fieldset>
 );
 
-const handleExportStorage = (setExportLink) => () => {
-    const allJSON = getLocalStorage();
+const handleExportStorage = (setExportLink) => async () => {
+    const allJSON = await getLocalStorage();
     const file = new Blob([allJSON], { type: jsonMimeType });
     const url = URL.createObjectURL(file);
     const filename = `macro_measure_backup_${_getISO8601Digits(new Date())}.json`;
