@@ -62,12 +62,12 @@ describe('Item', () => {
         it('should show distance when reading item with currentLatLng', async () => {
             navigator.geolocation.watchPosition = jest.fn();
             const expected = 'km'
-            window.localStorage.getItem.mockImplementation((key) => key === 'itemInputLatLng' ? '{"lat":7,"lng":9}' : null);
-            useItems.mockReturnValue([[]]); // the latLng is read from the state
+            useItems.mockReturnValue([[{ lat: 7, lng: 9, id: 8 }]]);
             render(<Item
                 view={View.Waypoint_Read}
                 distanceUnit={expected}
                 setGPSOn={jest.fn()}
+                itemID={8}
             />);
             const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
             await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
@@ -91,11 +91,11 @@ describe('Item', () => {
     });
     describe('update action', () => {
         it('should set form item latLng', async () => {
-            window.localStorage.getItem.mockImplementation((key) => key === 'itemInputLatLng' ? '{"lat":1111,"lng":2222}' : null);
-            useItems.mockReturnValue([[{}]]); // the latLng is read from the state
+            useItems.mockReturnValue([[{ name: 'something', lat: 1111, lng: 2222, id: 3 }]]);
             render(<Item
                 view={View.Waypoint_Update}
                 setGPSOn={jest.fn()}
+                itemID={3}
             />);
             expect(screen.getByDisplayValue('1111')).toBeInTheDocument();
             expect(screen.getByDisplayValue('2222')).toBeInTheDocument();

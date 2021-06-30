@@ -285,15 +285,13 @@ describe('Main', () => {
         screen.getByRole('button', { name: /update waypoint/i }).click();
         expect(handlers.updateStart).toBeCalledWith(expected);
       });
-      it('should update a waypoint', () => {
-        const updateItemEnd = jest.fn();
+      it('should update a waypoint', async () => {
         const name = '[iC-EDITED]'
         const expected = { name: name, id: 'c', order: 3, lat: 4, lng: 1 };
         useItems.mockReturnValue([
-          [{ name: 'iA', id: 'a' }, { name: 'iB', id: 'b' }, { name: 'iC', id: 'c', order: 3 }],
+          [{ name: 'iA', id: 'a' }, { name: 'iB', id: 'b' }, { name: 'iC', id: 'c', order: 3, lat: 4, lng: 1 }],
           jest.fn(),
         ]);
-        window.localStorage.getItem.mockImplementation((key) => key === 'itemInputLatLng' ? '{"lat":4,"lng":1}' : null);
         render(<Main
           view={View.Waypoint_Update}
           waypointID={expected.id}
