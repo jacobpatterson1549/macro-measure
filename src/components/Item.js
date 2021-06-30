@@ -53,6 +53,7 @@ const renderItemList = (props) => (
         objectStoreName={props.objectStoreName}
         type={props.type}
         itemID={props.itemID}
+        parentItemID={props.parentItemID}
         view={props.view}
         createStart={handleCreateStart(props)}
         read={handleReadFromList(props)}
