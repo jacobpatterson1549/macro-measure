@@ -172,9 +172,14 @@ export const createItem = async (objectStoreName, item) => {
     const dbItem = Object.assign({}, item, { order: numItems });
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
-        objectStore.add(dbItem);
+        const request = objectStore.add(dbItem);
+        let itemID;
+        request.onsuccess = (event) => {
+            const id = event.target.result;
+            itemID = id;
+        };
         transaction.oncomplete = (event) => {
-            resolve();
+            resolve(itemID);
         };
     };
     return handle(objectStoreName, action, READWRITE);

@@ -95,6 +95,18 @@ describe('Database', () => {
                 handlers[handlerFuncName](...inParams);
                 expect(databaseFunc).toBeCalledWith(...expected);
             });
+            it('should also setID for create-end actions', async () => {
+                const expected = 'newID';
+                createItem.mockReturnValue(expected)
+                const handlerFuncName = 'createEnd';
+                const setItemID = jest.fn();
+                const setView = jest.fn();
+                const viewType = testData.viewType[index];
+                const inParam = { name: 'name' };
+                const handlers = createHandlers(objectStoreName, setItemID, setView, viewType);
+                handlers[handlerFuncName](inParam);
+                await waitFor(() => expect(setItemID).toBeCalledWith(expected));
+            });
         });
     });
     describe('useDatabase', () => {
