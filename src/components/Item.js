@@ -36,7 +36,8 @@ export const Item = (props) => {
         name, setName,
         lat, setLat,
         lng, setLng,
-        items, item, usePropsItems: true,
+        items,
+        item, setItem,
     };
     return render({ ...props, ...state });
 };
@@ -284,12 +285,13 @@ const handleUpdateStart = ({ updateStart, item }) => () => {
     updateStart(item);
 };
 
-const handleUpdateEnd = ({ updateEnd, item, name, lat, lng }) => () => {
+const handleUpdateEnd = ({ updateEnd, item, name, lat, lng, setItem }) => () => {
     const item2 = Object.assign({}, item, {
         name: name,
         lat: lat,
         lng: lng,
     });
+    setItem(item2);
     updateEnd(item2);
 };
 

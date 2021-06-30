@@ -90,7 +90,7 @@ describe('Item', () => {
         });
     });
     describe('update action', () => {
-        it('should set form item latLng', async () => {
+        it('should set form item latLng', () => {
             useItems.mockReturnValue([[{ name: 'something', lat: 1111, lng: 2222, id: 3 }]]);
             render(<Item
                 view={View.Waypoint_Update}
@@ -99,6 +99,20 @@ describe('Item', () => {
             />);
             expect(screen.getByDisplayValue('1111')).toBeInTheDocument();
             expect(screen.getByDisplayValue('2222')).toBeInTheDocument();
+        });
+        it.only('should update name', async () => {
+            const expected = 'something else';
+            useItems.mockReturnValue([[{ name: 'something', lat: 1111, lng: 2222, id: 3 }]]);
+            const { container } = render(<Item
+                view={View.Waypoint_Update}
+                setGPSOn={jest.fn()}
+                itemID={3}
+                updateEnd={jest.fn()}
+            />);
+            fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: expected } });
+            screen.getByRole('button', { name: /update/i }).click();
+            const nameElement = container.querySelector('.name'); // TODO: hack! find better way to query item title (between arrows)
+            expect(nameElement.textContent).toBe(expected);
         });
     });
     describe('create action', () => {
