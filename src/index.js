@@ -4,11 +4,11 @@ import './index.css';
 
 import { App } from './components/App';
 import { registerSW } from './serviceWorkerRegistration';
-import { initDatabase } from './utils/db';
+import { initDatabase } from './utils/Database';
 
 window.addEventListener('load', async () => {
-    registerSW();
-    initDatabase();
+    await registerSW();
+    await initDatabase();
     render(
         <App />,
         document.getElementById('root'));

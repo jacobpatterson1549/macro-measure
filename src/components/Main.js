@@ -7,8 +7,11 @@ import { Help } from './Help';
 import { NameList } from './NameList';
 import { Item } from './Item';
 
+import { createHandlers } from '../hooks/Database';
+
 import { useLocalStorage } from '../utils/LocalStorage';
 import { View } from '../utils/View';
+import { GROUPS, WAYPOINTS } from '../utils/Database';
 
 export const Main = (props) => {
     const [distanceUnit, setDistanceUnit] = useLocalStorage('distanceUnit', DefaultDistanceUnit);
@@ -50,50 +53,35 @@ const getSettingsView = (props) => (
     />
 );
 
-const getItemsView = (props) => (
+const getWaypointsView = (props) => (
     <Item
+        itemID={props.waypointID}
+        parentItemID={props.groupID}
+        objectStoreName={WAYPOINTS}
+        type={'waypoint'}
         view={props.view}
-        items={props.items}
-        index={props.itemIndex}
         distanceUnit={props.distanceUnit}
         highAccuracyGPS={props.highAccuracyGPS}
-        createStart={props.createItemStart}
-        createEnd={props.createItemEnd}
-        read={props.readItem}
-        readItemList={props.readItemList}
-        updateStart={props.updateItemStart}
-        updateEnd={props.updateItemEnd}
-        deleteStart={props.deleteItemStart}
-        deleteEnd={props.deleteItemEnd}
         setGPSOn={props.setGPSOn}
-        moveUp={props.moveItemUp}
-        moveDown={props.moveItemDown}
+        {...createHandlers(WAYPOINTS, props.setWaypointID, props.setView, View.isWaypoint)}
     />
 );
 
 const getGroupsView = (props) => (
     <NameList
-        type="group"
-        values={props.groups}
-        index={props.groupIndex}
+        itemID={props.groupID}
+        objectStoreName={GROUPS}
+        type={'group'}
         view={props.view}
-        createStart={props.createGroupStart}
-        createEnd={props.createGroupEnd}
-        read={props.readGroup}
-        updateStart={props.updateGroupStart}
-        updateEnd={props.updateGroupEnd}
-        deleteStart={props.deleteGroupStart}
-        deleteEnd={props.deleteGroupEnd}
-        moveUp={props.moveGroupUp}
-        moveDown={props.moveGroupDown}
-        cancel={props.readGroupList}
+        {...createHandlers(GROUPS, props.setGroupID, props.setView, View.isGroup)}
     />
 );
 
 const mainViews = Object.fromEntries(
     View.AllIDs
-        .filter(View.isItem)
-        .map((viewId) => [viewId, getItemsView]));
+        .filter(View.isWaypoint)
+        .map((viewId) => [viewId, getWaypointsView]));
+mainViews[View.Group_Read] = getWaypointsView;
 mainViews[View.About] = getAboutView;
 mainViews[View.Help] = getHelpView;
 mainViews[View.Settings] = getSettingsView;

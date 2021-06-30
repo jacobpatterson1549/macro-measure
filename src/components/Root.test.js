@@ -2,7 +2,19 @@ import { render, screen } from '@testing-library/react';
 
 import { Root } from './Root';
 
+import { createHandlers, useItem, useItems } from '../hooks/Database';
+
+jest.mock('../hooks/Database', () => ({
+  createHandlers: jest.fn(),
+  useItem: jest.fn(),
+  useItems: jest.fn(),
+}));
+
 describe('Root', () => {
+  beforeEach(() => {
+    useItem.mockReturnValue([]);
+    useItems.mockReturnValue([]);
+  });
   it('should have help header in the document', () => {
     render(<Root />);
     const linkElement = screen.getByText('?');

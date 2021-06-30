@@ -2,10 +2,19 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 import { Header } from './Header';
 
+import { useItem } from '../hooks/Database';
+
 import { View } from '../utils/View';
+
+jest.mock('../hooks/Database', () => ({
+    useItem: jest.fn(),
+}));
 
 describe('Header', () => {
     describe('items', () => {
+        beforeEach(() => {
+            useItem.mockReturnValue([[]]);
+        });
         const titleParts = [
             ['groups', View.Group_List],
             ['about', View.About],
@@ -27,21 +36,27 @@ describe('Header', () => {
             expect(handleClick).toHaveBeenCalledWith(expected);
         });
     });
-    const groupNames = [
-        ['[Groups]', null, null],
-        ['[Groups]', View.Settings, 'any'],
-        ['[Groups]', View.Group_List, 'ignore'],
-        ['groupA', View.Item_List, 'groupA'],
-        ['groupB', View.Item_Create, 'groupB'],
-        ['groupC', View.Item_Read, 'groupC'],
-        ['groupD', View.Item_Update, 'groupD'],
-        ['groupE', View.Item_Delete, 'groupE'],
-    ];
-    it.each(groupNames)('should have groups link %s when view is %s and groupName is %s', (expected, view, groupName) => {
-        const groups = [{ name: groupName }];
-        const groupIndex = 0;
-        render(<Header view={view} groups={groups} groupIndex={groupIndex} />);
-        const groupElement = screen.getByRole('button', { name: 'groups list' });
-        expect(groupElement).toHaveTextContent(expected);
-    });
+    describe('readItem', () => {
+        const readItemNameTests = [
+            ['[Groups]', null, null],
+            ['[Groups]', View.Settings, { name: 'any' }],
+            ['[Groups]', View.Group_List, { name: 'ignore' }],
+            ['groupA', View.Waypoint_List, { name: 'groupA' }],
+            ['groupB', View.Waypoint_Create, { name: 'groupB' }],
+            ['groupC', View.Waypoint_Read, { name: 'groupC' }],
+            ['groupD', View.Waypoint_Update, { name: 'groupD' }],
+            ['groupE', View.Waypoint_Delete, { name: 'groupE' }],
+            ['[Groups]', View.Waypoint_Delete, {}],
+            ['[Groups]', View.Waypoint_Delete, null],
+        ];
+        it.each(readItemNameTests)('should have groups link %s and call readGroup when view is %s and groupName is %s', async (expected, view, group) => {
+            useItem.mockReturnValue([group]);
+            render(<Header
+                view={view}
+                group={group}
+                />);
+            const groupElement = screen.getByRole('button', { name: 'groups list' });
+            expect(groupElement).toHaveTextContent(expected);
+        });
+    })
 });

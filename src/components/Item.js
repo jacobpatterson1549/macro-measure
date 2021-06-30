@@ -1,9 +1,13 @@
+import { useState, useEffect } from 'react';
+
 import './Item.css';
 
 import { Map } from './Map';
 import { Geolocation } from './Geolocation';
 import { Form, Fieldset, Label, NameInput, TextInput, NumberInput, ButtonInput } from './Form';
 import { NameList } from './NameList';
+
+import { useItems } from '../hooks/Database';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 import { getDistanceHeading, moveLatLngTo, Heading, roundLatLng as latLngOnly } from '../utils/Geolocation';
@@ -13,25 +17,32 @@ export const Item = (props) => {
     const [moveAmount, setMoveAmount] = useLocalStorage('moveAmount', 1);
     const [name, setName] = useLocalStorage('itemInputName', '?'); // same name as NameList.js
     const [latLng, setLatLng] = useLocalStorage('itemInputLatLng', { lat: 0, lng: 0 });
+    const [items] = useItems(props.objectStoreName, props.parentItemID);
+    const [item, setItem] = useState(null);
+    useEffect(() => {
+        items?.filter((dbItem => dbItem.id === props.itemID))
+            .forEach(setItem);
+    }, [items, setItem, props.itemID]);
     const state = {
         moveAmount, setMoveAmount,
         name, setName,
         latLng, setLatLng,
+        items, item, usePropsItems: true,
     };
     return render({ ...props, ...state });
 };
 
 const render = (props) => (
-    (props.view === View.Item_List)
+    (props.view === View.Group_Read || props.view === View.Waypoint_List)
         ? renderItemList(props)
         : renderItem(props)
 );
 
 const renderItemList = (props) => (
     <NameList
-        type="item"
-        values={props.items}
-        index={props.index}
+        objectStoreName={props.objectStoreName}
+        type={props.type}
+        itemID={props.itemID}
         view={props.view}
         createStart={handleCreateStart(props)}
         read={handleReadFromList(props)}
@@ -39,6 +50,7 @@ const renderItemList = (props) => (
         deleteStart={handleDeleteStartFromList(props)}
         moveUp={props.moveUp}
         moveDown={props.moveDown}
+        usePropsItems={true}
     />
 );
 
@@ -75,19 +87,19 @@ const renderItemHelper = (props) => (
 );
 
 const getHeader = (props) => {
-    const prevDisabled = props.index <= 0;
+    const prevDisabled = !props.item || props.item.order <= 0;
     const headerName
-        = (View.isCreate(props.view)) ? '[Add Item]'
-            : (props.items?.length) ? props.items[props.index].name
+        = (View.isCreate(props.view)) ? `[Add ${props.type}]`
+            : (props.item) ? props.item.name
                 : '?';
-    const nextDisabled = !props.items || props.index + 1 >= props.items.length
+    const nextDisabled = !props.item || props.item.order + 1 >= props.items.length
     const showEdit = View.isRead(props.view);
     return (
         <>
             <div className="row">
                 <button
                     className="left arrow"
-                    title="previous item"
+                    title={`previous ${props.type}`}
                     disabled={prevDisabled}
                     onClick={handleRead(-1, props)}
                 >
@@ -95,14 +107,14 @@ const getHeader = (props) => {
                 </button>
                 <button
                     className="name"
-                    title="item list"
+                    title={`${props.type} list`}
                     onClick={handleReadItemList(props)}
                 >
                     <span>{headerName}</span>
                 </button>
                 <button
                     className="right arrow"
-                    title="next item"
+                    title={`next ${props.type}`}
                     disabled={nextDisabled}
                     onClick={handleRead(+1, props)}
                 >
@@ -113,19 +125,19 @@ const getHeader = (props) => {
                 showEdit &&
                 <div className="row">
                     <button
-                        title="update item"
+                        title={`update ${props.type}`}
                         onClick={handleUpdateStart(props)}
                     >
                         <span>Edit...</span>
                     </button>
                     <button
-                        title="delete item"
+                        title={`delete ${props.type}`}
                         onClick={handleDeleteStart(props)}
                     >
                         <span>Delete...</span>
                     </button>
                     <button
-                        title="create item"
+                        title={`create ${props.type}`}
                         onClick={handleCreateStart(props)}
                     >
                         <span>Add...</span>
@@ -138,8 +150,8 @@ const getHeader = (props) => {
 
 const getMap = (props) => {
     const [itemName, itemLatLng] = (View.isCreate(props.view))
-        ? ['Item', props.geolocation.latLng]
-        : (props.items) ? [props.items[props.index].name, props.latLng]
+        ? ['Waypoint', props.geolocation.latLng]
+        : (props.item) ? [props.item.name, props.latLng]
             : [null];
     const item = { name: itemName, ...itemLatLng };
     const [device, distanceHeading] = (props.geolocation.valid && props.distanceHeading)
@@ -165,9 +177,9 @@ const getAction = (props) => (
 );
 
 const getCreateOrUpdateAction = (props) => {
-    const [handleSubmit, hasLatLng, updateLatLngDisabled, actionName, updateIndex, handleCancel, submitValue] = (View.isCreate(props.view))
-        ? [handleCreateEnd(props), !!props.geolocation.latLng, true, 'Create Item', -1, handleReadItemList(props), 'Create Item']
-        : [handleUpdateEnd(props), true, false, ('Update ' + props.items[props.index].name), props.index, handleRead(0, props), 'Update Item'];
+    const [handleSubmit, hasLatLng, updateLatLngDisabled, actionName, updateID, handleCancel, submitValue] = (View.isCreate(props.view))
+        ? [handleCreateEnd(props), !!props.geolocation.latLng, true, `Create ${props.type}`, null, handleReadItemList(props), `Create ${props.type}`]
+        : [handleUpdateEnd(props), true, false, `Update ${props.item?.name}`, props.item?.id, handleRead(0, props), `Update ${props.type}`];
     return (
         <Form
             submitValue={submitValue}
@@ -180,7 +192,7 @@ const getCreateOrUpdateAction = (props) => {
                     <NameInput
                         value={props.name}
                         values={props.items}
-                        updateIndex={updateIndex}
+                        updateID={updateID}
                         onChange={props.setName}
                     />
                 </Label>
@@ -217,11 +229,11 @@ const getCreateOrUpdateAction = (props) => {
 
 const getDeleteAction = (props) => (
     <Form
-        submitValue="Delete item"
+        submitValue={`Delete ${props.type}`}
         onCancel={handleRead(0, props)}
         onSubmit={handleDeleteEnd(props)}
     >
-        <Fieldset caption={'Delete ' + props.items[props.index].name} />
+        <Fieldset caption={`Delete ${props.item?.name}`} />
     </Form>
 );
 
@@ -246,58 +258,73 @@ const getMoveLatLngButton = (heading, value, disabled, { moveAmount, latLng, set
     />
 );
 
-const handleCreateStart = ({ createStart, setName, setLatLng }) => () => {
-    setName('[New Item Name]');
+const handleCreateStart = ({ type, createStart, setName, setLatLng }) => () => {
+    setName(`[New ${type} Name]`);
     setLatLng({ lat: '[current]', lng: '[current]' });
     createStart();
 };
 
-const handleCreateEnd = ({ createEnd, name, geolocation, setLatLng }) => () => {
+const handleCreateEnd = ({ createEnd, name, geolocation, setLatLng, parentItemID }) => () => {
     setLatLng(geolocation.latLng);
-    createEnd(name, geolocation.latLng.lat, geolocation.latLng.lng, groupKey); // create with current position
+    const item2 = {
+        name: name,
+        lat: geolocation.latLng.lat, // create with current position
+        lng: geolocation.latLng.lng,
+        parentItemID: parentItemID,
+    }
+    createEnd(item2);
 };
 
-const handleRead = (delta, { read, items, index, setName, setLatLng }) => () => {
-    const index2 = index + delta;
-    const item = items[index2];
-    setName(item.name);
-    setLatLng(latLngOnly(item));
-    read(index2);
+const handleRead = (delta, { read, items, item, setName, setLatLng }) => () => {
+    let item2;
+    items.forEach((item3) => {
+        if (item3.order === item.order + delta) {
+            item2 = item3;
+        }
+    })
+    setName(item2.name);
+    const trimmedLatLng = latLngOnly(item2);
+    setLatLng(trimmedLatLng);
+    read(item2);
 };
 
-const handleReadFromList = ({ read, items, setName, setLatLng }) => (index) => {
-    handleRead(0, { read, items, index, setName, setLatLng })();
+const handleReadFromList = ({ read, items, setName, setLatLng }) => (item) => {
+    handleRead(0, { read, items, item, setName, setLatLng })();
 };
 
-const handleReadItemList = ({ readItemList }) => () => {
-    readItemList();
+const handleReadItemList = ({ list }) => () => {
+    list();
 };
 
-const handleUpdateStart = ({ updateStart, items, index, setName, setLatLng }) => () => {
-    const item = items[index]
-    setName(item.name);
-    setLatLng(latLngOnly(item));
-    updateStart(index);
+const handleUpdateStart = ({ updateStart, item, setName, setLatLng }) => () => {
+    // setName(item.name);
+    // setLatLng(latLngOnly(item)); // TODO: is this needed? -> if not, delete and update do not need pass-through, maybe namelist is not needed to be encapsulated by item
+    updateStart(item);
 };
 
-const handleUpdateStartFromList = ({ updateStart, items, setName, setLatLng }) => (index) => {
-    handleUpdateStart({ updateStart, items, index, setName, setLatLng })();
+const handleUpdateStartFromList = ({ updateStart, setName, setLatLng }) => (item) => {
+    handleUpdateStart({ updateStart, item })();
 };
 
-const handleUpdateEnd = ({ updateEnd, index, name, latLng }) => () => {
-    updateEnd(index, name, latLng.lat, latLng.lng);
+const handleUpdateEnd = ({ updateEnd, item, name, latLng }) => () => {
+    const item2 = Object.assign({}, item, {
+        name: name,
+        lat: latLng.lat,
+        lng: latLng.lng,
+    });
+    updateEnd(item2);
 };
 
-const handleDeleteStart = ({ deleteStart, index }) => () => {
-    deleteStart(index);
+const handleDeleteStart = ({ deleteStart, item }) => () => {
+    deleteStart(item);
 };
 
-const handleDeleteStartFromList = ({ deleteStart }) => (index) => {
-    handleDeleteStart({ deleteStart, index })();
+const handleDeleteStartFromList = ({ deleteStart }) => (item) => {
+    handleDeleteStart({ deleteStart, item })();
 };
 
-const handleDeleteEnd = ({ deleteEnd, index }) => () => {
-    deleteEnd(index);
+const handleDeleteEnd = ({ deleteEnd, item }) => () => {
+    deleteEnd(item);
 };
 
 const handleUpdateLatLng = (heading, moveAmount, latLng, setLatLng, distanceUnit) => () => {

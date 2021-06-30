@@ -134,14 +134,18 @@ describe('NameInput', () => {
         expect(selectFn).toBeCalled();
     });
     const uniqueNameTests = [
-        [true, [{ name: 'a' }, { name: 'c' }], -1, 'b', ''],
-        [false, [{ name: 'a' }, { name: 'c' }], -1, 'c', expect.stringMatching(/./)],
-        [true, [{ name: 'a' }, { name: 'c' }], 1, 'c', ''],
+        [true, [{ name: 'a', id: 0 }, { name: 'c', id: 1 }], -1, 'b', ''],
+        [false, [{ name: 'a', id: 0 }, { name: 'c', id: 1 }], -1, 'c', expect.stringMatching(/./)],
+        [true, [{ name: 'a', id: 0 }, { name: 'c', id: 1 }], 1, 'c', ''],
     ];
-    it.each(uniqueNameTests)('should have valid = %s when values are %s, the update index is %d, and the new name is %s', (expectedValid, values, updateIndex, name, expected) => {
+    it.each(uniqueNameTests)('should have valid = %s when values are %s, the update index is %d, and the new name is %s', (expectedValid, values, updateID, name, expected) => {
         const setCustomValidity = jest.fn();
         const onChange = jest.fn();
-        render(<NameInput values={values} updateIndex={updateIndex} onChange={onChange} />);
+        render(<NameInput
+            values={values}
+            updateID={updateID}
+            onChange={onChange}
+        />);
         const element = screen.getByRole('textbox');
         fireEvent.change(element, { target: { value: name, setCustomValidity: setCustomValidity } });
         expect(setCustomValidity).toHaveBeenCalledWith(expected);
@@ -380,6 +384,12 @@ describe('Form', () => {
         render(<Form submitDisabled={true} />);
         const element = screen.getByRole('button');
         expect(element.disabled).toBeTruthy();
+    });
+    it('should have one button', () => {
+        const onCancel = jest.fn();
+        render(<Form />);
+        const elements = screen.getAllByRole('button');
+        expect(elements.length).toBe(1);
     });
     it('should have two buttons', () => {
         const onCancel = jest.fn();

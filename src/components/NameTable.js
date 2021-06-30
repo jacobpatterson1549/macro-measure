@@ -18,35 +18,34 @@ export const NameTable = (props) => (
     </table>
 );
 
-const getTableBody = ({ values, read, update, deleteValue, moveUp, moveDown }) => (
-    (values?.length)
-        ? tableRows(values, read, update, deleteValue, moveUp, moveDown)
-        : (
-            <tr><td colSpan="5">No values exist.  Create one.</td></tr>
-        )
+const getTableBody = ({ items, reloadItems, read, update, deleteValue, moveUp, moveDown }) => (
+    (!items) ? <></>
+        : (items.length)
+            ? tableRows(items, reloadItems, read, update, deleteValue, moveUp, moveDown)
+            : (<tr><td colSpan="5">No values exist.  Create one.</td></tr>)
 );
 
-const tableRows = (values, read, update, deleteValue, moveUp, moveDown) => (
-    values.map((value, index) => (
+const tableRows = (items, reloadItems, read, update, deleteValue, moveUp, moveDown) => (
+    items.map((item, index) => (
         <tr
             className="Row"
-            key={value.name}
+            key={item.id}
         >
-            {tableCell(value.name, 'read value', true, read, index)}
-            {tableCell('▲', 'move up', index > 0, moveUp, index)}
-            {tableCell('▼', 'move down', index + 1 < values.length, moveDown, index)}
-            {tableCell('Edit', 'update value', true, update, index)}
-            {tableCell('Delete', 'delete value', true, deleteValue, index)}
+            {tableCell(item.name, 'read value', true, read, item, reloadItems)}
+            {tableCell('▲', 'move up', index > 0, moveUp, item, reloadItems)}
+            {tableCell('▼', 'move down', index + 1 < items.length, moveDown, item, reloadItems)}
+            {tableCell('Edit', 'update value', true, update, item, reloadItems)}
+            {tableCell('Delete', 'delete value', true, deleteValue, item, reloadItems)}
         </tr>
     )));
 
-const tableCell = (value, title, isVisible, fn, index) => (
+const tableCell = (value, title, isVisible, action, item, reloadItems) => (
     <td className="Cell">
         {
             isVisible &&
             <button
                 title={title} className="FakeButton"
-                onClick={handleOnClick(fn, index)}
+                onClick={handleOnClick(action, item, reloadItems)}
             >
                 <span>{value}</span>
             </button>
@@ -54,6 +53,7 @@ const tableCell = (value, title, isVisible, fn, index) => (
     </td>
 );
 
-const handleOnClick = (fn, index) => () => (
-    fn(index)
-);
+const handleOnClick = (action, item, reloadItems) => async () => {
+    await action(item);
+    reloadItems(); // TODO: is this needed? Does moving an item up/down work without this line?  If so, remove this entirely
+};

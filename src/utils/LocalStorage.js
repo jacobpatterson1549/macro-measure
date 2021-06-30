@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { deleteDatabase, getDatabaseJSON } from './db';
+import { deleteDatabase, getDatabaseJSON } from './Database';
 
 const storage = window.localStorage;
 

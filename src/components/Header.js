@@ -1,19 +1,30 @@
 import './Header.css';
 
-import { View } from '../utils/View';
+import { useItem } from '../hooks/Database';
 
-export const Header = (props) => (
+import { View } from '../utils/View';
+import { GROUPS } from '../utils/Database';
+
+export const Header = (props) => {
+    const [group] = useItem(GROUPS, props.groupID);
+    const state = {
+        group,
+    };
+    return render({ ...props, ...state });
+};
+
+const render = ({ group, view, setView }) => (
     <header className="Header">
-        {getHeaderItem(props.setView, getGroupName(props.view, props.groups, props.groupIndex), 'groups list', View.Group_List)}
-        {getHeaderItem(props.setView, 'ⓘ', 'about page', View.About)}
-        {getHeaderItem(props.setView, '?', 'help page', View.Help)}
-        {getHeaderItem(props.setView, '⚙', 'edit settings', View.Settings)}
+        {getHeaderItem(setView, getGroupName(view, group), 'groups list', View.Group_List)}
+        {getHeaderItem(setView, 'ⓘ', 'about page', View.About)}
+        {getHeaderItem(setView, '?', 'help page', View.Help)}
+        {getHeaderItem(setView, '⚙', 'edit settings', View.Settings)}
     </header>
 );
 
-const getGroupName = (view, groups, groupIndex) => (
-    (View.isItem(view) && groups.length)
-        ? groups[groupIndex].name
+const getGroupName = (view, group) => (
+    (View.isWaypoint(view) && group?.name)
+        ? group.name
         : '[Groups]'
 );
 

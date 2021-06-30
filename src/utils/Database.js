@@ -4,18 +4,22 @@ const READ = 'readonly';
 const READWRITE = 'readwrite';
 export const GROUPS = 'groups';
 export const WAYPOINTS = 'waypoints';
+let db
 
 export const initDatabase = () => {
     const indexedDB = window.indexedDB;
-    const openRequest = indexedDB.open(DATABASE_NAME, DB_VERSION);
-    openRequest.onupgradeneeded = upgradeDb;
-    openRequest.onerror = (event) => {
-        throw new Error(`Database open error: ${event.target.error.message}`)
-    };
-    openRequest.onsuccess = (event) => {
-        const db = event.target.result;
-        addLocalStorage(db);
-    };
+    return new Promise((resolve, reject) => {
+        const openRequest = indexedDB.open(DATABASE_NAME, DB_VERSION);
+        openRequest.onupgradeneeded = upgradeDb;
+        openRequest.onerror = (event) => {
+            reject(`Database open error: ${event.target.error.message}`)
+        };
+        openRequest.onsuccess = (event) => {
+            db = event.target.result;
+            addLocalStorage(db);
+            resolve();
+        };
+    });
 };
 
 export const getDatabaseJSON = () => {
@@ -52,19 +56,10 @@ export const deleteDatabase = () => {
 
 const handle = (objectStoreNames, action, mode) => {
     return new Promise((resolve, reject) => {
-        const indexedDB = window.indexedDB;
-        const openRequest = indexedDB.open(DATABASE_NAME, DB_VERSION);
-        openRequest.onupgradeneeded = upgradeDb;
-        openRequest.onerror = (event) => {
-            reject(`Database open error: ${event.target.error.message}`);
-        };
-        openRequest.onsuccess = (event) => {
-            const db = event.target.result;
-            var transaction = db.transaction(objectStoreNames, mode);
-            action(transaction, resolve);
-            transaction.onerror = (event) => {
-                reject(`transaction error: ${event.target.error.message}`);
-            };
+        var transaction = db.transaction(objectStoreNames, mode);
+        action(transaction, resolve);
+        transaction.onerror = (event) => {
+            reject(`transaction error: ${event.target.error.message}`);
         };
     });
 };
@@ -79,14 +74,16 @@ const upgradeDb = (event) => {
 const createObjectStores = (db) => {
     if (!db.objectStoreNames.contains(GROUPS)) {
         const groupsObjectStore = db.createObjectStore(GROUPS,
-            { keyPath: 'key', autoIncrement: true });
-        groupsObjectStore.createIndex('order', 'order', { unique: false });
+            { keyPath: 'id', autoIncrement: true });
+        groupsObjectStore.createIndex('order', 'order', { unique: true });
+        groupsObjectStore.createIndex('name', 'name', { unique: true });
     }
     if (!db.objectStoreNames.contains(WAYPOINTS)) {
         const waypointsObjectStore = db.createObjectStore(WAYPOINTS,
-            { keyPath: 'key', autoIncrement: true });
-        waypointsObjectStore.createIndex('order', ['parentKey', 'order'], { unique: true });
-        waypointsObjectStore.createIndex('parentKey', ['parentKey'], { unique: false });
+            { keyPath: 'id', autoIncrement: true });
+        waypointsObjectStore.createIndex('order', ['parentItemID', 'order'], { unique: true });
+        waypointsObjectStore.createIndex('parentItemID', ['parentItemID'], { unique: false });
+        waypointsObjectStore.createIndex('name', ['parentItemID', 'name'], { unique: true });
     }
 }
 
@@ -95,10 +92,14 @@ const addLocalStorage = (db) => {
     const groupsJSON = window.localStorage.getItem('groups');
     const waypointsJSON = window.localStorage.getItem('waypoints');
     if (groupsJSON) {
-        promises.push(new Promise((resolve, reject) => backfillGroups(db, JSON.parse(groupsJSON), resolve, reject)));
+        promises.push(new Promise((resolve, reject) => {
+            backfillGroups(db, JSON.parse(groupsJSON), resolve, reject);
+        }));
     }
     if (waypointsJSON) {
-        promises.push(new Promise((resolve, reject) => backfillWaypoints(db, JSON.parse(waypointsJSON), resolve, reject)));
+        promises.push(new Promise((resolve, reject) => {
+            backfillWaypoints(db, JSON.parse(waypointsJSON), resolve, reject);
+        }));
     }
     return Promise.all(promises);
 };
@@ -117,7 +118,6 @@ const backfillGroups = (db, oldGroups, resolve, reject) => {
         reject(`backfill groups error: ${event.target.error.message}`);
     };
     groupTransaction.oncomplete = (event) => {
-
         backfillGroupItems(db, oldGroups, dbGroups, resolve, reject);
     };
 };
@@ -132,7 +132,7 @@ const backfillGroupItems = (db, oldGroups, dbGroups, resolve, reject) => {
                 lat: item.lat,
                 lng: item.lng,
                 order: itemIndex,
-                parentKey: dbGroups[groupIndex].result,
+                parentItemID: dbGroups[groupIndex].result,
             })
         });
     });
@@ -148,13 +148,14 @@ const backfillGroupItems = (db, oldGroups, dbGroups, resolve, reject) => {
 const backfillWaypoints = (db, oldWaypoints, resolve, reject) => {
     const waypointsTransaction = db.transaction(WAYPOINTS, READWRITE);
     const waypoints = waypointsTransaction.objectStore(WAYPOINTS);
-    oldWaypoints.forEach((parentKey, index) => {
+    oldWaypoints.forEach((waypoint, index) => {
         waypoints.add({
-            name: parentKey.name,
-            lat: parentKey.lat,
-            lng: parentKey.lng,
+            name: waypoint.name,
+            lat: waypoint.lat,
+            lng: waypoint.lng,
             order: index,
-            parentKey: parentKey.parentKey,
+            // TODO: feature: add new group for each group of waypoints ?  (this ensures parentItemID exists)
+            parentItemID: waypoint.itemID,
         });
     });
     waypointsTransaction.onerror = (event) => {
@@ -167,23 +168,22 @@ const backfillWaypoints = (db, oldWaypoints, resolve, reject) => {
 };
 
 export const createItem = async (objectStoreName, item) => {
-    const numItems = await readItemCount(objectStoreName, item.parentKey);
+    const numItems = await readItemCount(objectStoreName, item.parentItemID);
     const dbItem = Object.assign({}, item, { order: numItems });
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
-        const request = objectStore.add(dbItem);
-        request.onsuccess = async (event) => {
-            const items = await readItems(objectStoreName, dbItem.parentKey);
-            resolve(items);
+        objectStore.add(dbItem);
+        transaction.oncomplete = (event) => {
+            resolve();
         };
     };
     return handle(objectStoreName, action, READWRITE);
 };
 
-export const readItem = (objectStoreName, key) => {
+export const readItem = (objectStoreName, itemID) => {
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
-        const request = objectStore.get(key);
+        const request = objectStore.get(itemID);
         request.onsuccess = (event) => {
             const item = event.target.result;
             resolve(item);
@@ -192,14 +192,14 @@ export const readItem = (objectStoreName, key) => {
     return handle([objectStoreName], action, READ);
 };
 
-const readItemCount = (objectStoreName, parentKey) => {
+const readItemCount = (objectStoreName, parentItemID) => {
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
         const index = objectStore.index('order');
-        const range = (parentKey)
+        const range = (parentItemID)
             ? IDBKeyRange.bound(
-                [parentKey, -Infinity],
-                [parentKey, +Infinity])
+                [parentItemID, -Infinity],
+                [parentItemID, +Infinity])
             : null;
         const request = index.count(range);
         request.onsuccess = (event) => {
@@ -210,31 +210,31 @@ const readItemCount = (objectStoreName, parentKey) => {
     return handle([objectStoreName], action, READ);
 };
 
-const readItemByOrder = (objectStoreName, order, parentKey) => {
+const readItemByOrder = (objectStoreName, order, parentItemID) => {
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
         const index = objectStore.index('order');
-        const range = (parentKey)
-            ? IDBKeyRange.only([parentKey, order])
+        const range = (parentItemID)
+            ? IDBKeyRange.only([parentItemID, order])
             : IDBKeyRange.only(order);
-        const request = index.getAll(range);
+        const request = index.get(range);
         request.onsuccess = (event) => {
-            const items = event.target.result;
-            resolve(items[0]);
+            const item = event.target.result;
+            resolve(item);
         };
     };
     return handle([objectStoreName], action, READ);
 };
 
-// TODO: rename readItems to readItemNames -> return [{key, parentKey, order, name}]
-export const readItems = (objectStoreName, parentKey) => {
+// TODO: rename readItems to readItemNames -> return [{itemID, parentItemID, order, name}...]
+export const readItems = (objectStoreName, parentItemID) => {
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
         const index = objectStore.index('order');
-        const range = (parentKey)
+        const range = (parentItemID)
             ? IDBKeyRange.bound(
-                [parentKey, -Infinity],
-                [parentKey, +Infinity])
+                [parentItemID, -Infinity],
+                [parentItemID, +Infinity])
             : null;
         const request = index.getAll(range);
         request.onsuccess = (event) => {
@@ -248,46 +248,44 @@ export const readItems = (objectStoreName, parentKey) => {
 export const updateItem = (objectStoreName, item) => {
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
-        const request = objectStore.put(item);
-        request.onsuccess = async (event) => {
-            const items = await readItems(objectStoreName, item.parentKey);
-            resolve(items);
+        objectStore.put(item);
+        transaction.oncomplete = (event) => {
+            resolve();
         };
     };
     return handle([objectStoreName], action, READWRITE);
 };
 
-export const deleteItem = async (objectStoreName, item) => {
-    const cascadeObjectStoreKeys = await getCascadeObjectStoreNameKeys(objectStoreName, item)
+export const deleteItem = async (objectStoreName, itemID) => {
+    const cascadeObjectStoreKeys = await getCascadeObjectStoreNameItemIDs(objectStoreName, itemID)
     const objectStoreNames = [objectStoreName, ...Object.keys(cascadeObjectStoreKeys)];
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
-        objectStore.delete(item.key);
-        Object.entries(cascadeObjectStoreKeys).forEach(([cascadeObjectStoreName, cascadeObjectStoreKeys]) => {
+        objectStore.delete(itemID);
+        Object.entries(cascadeObjectStoreKeys).forEach(([cascadeObjectStoreName, cascadeObjectStoreItemIDs]) => {
             const cascadeObjectStore = transaction.objectStore(cascadeObjectStoreName);
-            cascadeObjectStoreKeys.forEach((cascadeObjectStoreKey) => {
-                cascadeObjectStore.delete(cascadeObjectStoreKey)
+            cascadeObjectStoreItemIDs.forEach((cascadeObjectStoreItemID) => {
+                cascadeObjectStore.delete(cascadeObjectStoreItemID)
             });
         });
         transaction.oncomplete = async (event) => {
-            const items = await readItems(objectStoreName, item.parentKey);
-            resolve(items);
+            resolve();
         };
     };
     return handle(objectStoreNames, action, READWRITE);
 };
 
-const getCascadeObjectStoreNameKeys = (objectStoreName, item) => {
+const getCascadeObjectStoreNameItemIDs = (objectStoreName, item) => {
     if (objectStoreName === GROUPS) {
         const action = (transaction, resolve) => {
             const objectStore = transaction.objectStore(WAYPOINTS);
-            const index = objectStore.index('parentKey');
-            const range = IDBKeyRange.only(item.key);
+            const index = objectStore.index('parentItemID');
+            const range = IDBKeyRange.only(item.id);
             const request = index.getAllKeys(range);
             request.onsuccess = async (event) => {
-                const waypointKeys = event.target.result;
-                const cascadeObjectStoreNameKeys = { [WAYPOINTS]: waypointKeys }
-                resolve(cascadeObjectStoreNameKeys);
+                const waypointItemIDs = event.target.result;
+                const cascadeObjectStoreNameItemIDs = { [WAYPOINTS]: waypointItemIDs }
+                resolve(cascadeObjectStoreNameItemIDs);
             };
         };
         return handle([WAYPOINTS], action, READ);
@@ -305,16 +303,19 @@ export const moveItemDown = (objectStoreName, item) => {
 
 const moveItem = async (objectStoreName, item, delta) => {
     const order = item.order;
-    const otherItem = await readItemByOrder(objectStoreName, order + delta, item.parentKey);
+    const otherItem = await readItemByOrder(objectStoreName, order + delta, item.parentItemID);
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
         item.order += delta;
         otherItem.order -= delta;
+        const desiredOrder = item.order;
+        item.order = -1; // database does not have deferrable constraints between put() calls in a transaction
         objectStore.put(item);
         objectStore.put(otherItem);
-        transaction.oncomplete = async (event) => {
-            const items = await readItems(objectStoreName, item.parentKey);
-            resolve(items);
+        item.order = desiredOrder;
+        objectStore.put(item);
+        transaction.oncomplete = (event) => {
+            resolve();
         };
     };
     return handle([objectStoreName], action, READWRITE);

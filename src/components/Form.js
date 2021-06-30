@@ -27,11 +27,11 @@ export const NumberInput = ({ value, onChange, min, max }) => (
     />
 );
 
-export const NameInput = ({ value, values, onChange, updateIndex }) => (
+export const NameInput = ({ value, values, onChange, updateID }) => (
     <Input
         type="text"
         value={value}
-        onChange={handleOnNameChange(onChange, values, updateIndex)}
+        onChange={handleOnNameChange(onChange, values, updateID)}
     />
 );
 
@@ -129,10 +129,10 @@ const handleOnTextChange = (onChange) => (event) => {
     onChange(value);
 };
 
-const handleOnNameChange = (onChange, values, updateIndex) => (event) => {
+const handleOnNameChange = (onChange, items, updateID) => (event) => {
     const nameInput = event.target;
     const name = nameInput.value;
-    const unique = isUniqueName(name, values, updateIndex);
+    const unique = isUniqueName(name, items, updateID);
     nameInput.setCustomValidity(unique ? '' : 'duplicate name');
     onChange(name);
 };
@@ -147,9 +147,9 @@ const handleOnFileChange = (onChange) => (event) => {
     onChange(file);
 };
 
-const isUniqueName = (name, nameObjects, updateIndex) => (
+const isUniqueName = (name, nameObjects, updateID) => (
     !(nameObjects?.length) || nameObjects
-        .map((value, i) => (value.name !== name || i === updateIndex))
+        .map((item) => (item.name !== name || item.id === updateID))
         .reduce((accumulator, currentValue) => accumulator && currentValue)
 );
 

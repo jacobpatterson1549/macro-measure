@@ -34,11 +34,11 @@ describe('Geolocation', () => {
     );
     describe('views', () => {
         const viewTests = [
-            [1, View.Item_Create],
-            [1, View.Item_Read],
-            [0, View.Item_Update],
-            [0, View.Item_Delete],
-            [0, View.Item_List],
+            [1, View.Waypoint_Create],
+            [1, View.Waypoint_Read],
+            [0, View.Waypoint_Update],
+            [0, View.Waypoint_Delete],
+            [0, View.Waypoint_List],
         ];
         it.each(viewTests)('should watch position %d times when view is %s', (expected, view) => {
             navigator.geolocation.watchPosition = jest.fn();
@@ -53,7 +53,7 @@ describe('Geolocation', () => {
     it('should not watch position if geolocation is falsy', () => {
         navigator.geolocation = null; // will crash if watchPosition is called
         render(<Geolocation
-            view={View.Item_Read}
+            view={View.Waypoint_Read}
             setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
@@ -63,7 +63,7 @@ describe('Geolocation', () => {
     it('should not clear watch if geolocation is falsy', () => {
         navigator.geolocation = null; // will crash if watchPosition is called
         const { unmount } = render(<Geolocation
-            view={View.Item_Read}
+            view={View.Waypoint_Read}
             setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
@@ -73,7 +73,7 @@ describe('Geolocation', () => {
         const highAccuracyStates = [true, false];
         it.each(highAccuracyStates)('should set highAccuracy to %s', (state) => {
             render(<Geolocation
-                view={View.Item_Read}
+                view={View.Waypoint_Read}
                 highAccuracyGPS={state}
                 setGPSOn={jest.fn()}
                 render={position => <MockApp position={position} />}
@@ -84,7 +84,7 @@ describe('Geolocation', () => {
     it('should show positions when success is called', async () => {
         navigator.geolocation.watchPosition = jest.fn();
         render(<Geolocation
-            view={View.Item_Read}
+            view={View.Waypoint_Read}
             setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
@@ -95,7 +95,7 @@ describe('Geolocation', () => {
     it('should show positions when success is called', async () => {
         navigator.geolocation.watchPosition = jest.fn();
         render(<Geolocation
-            view={View.Item_Read}
+            view={View.Waypoint_Read}
             setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
@@ -106,7 +106,7 @@ describe('Geolocation', () => {
     it('should show last position when success is called', async () => {
         navigator.geolocation.watchPosition = jest.fn();
         render(<Geolocation
-            view={View.Item_Read}
+            view={View.Waypoint_Read}
             setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
@@ -121,7 +121,7 @@ describe('Geolocation', () => {
         jest.mock()
         navigator.geolocation.watchPosition = jest.fn();
         render(<Geolocation
-            view={View.Item_Read}
+            view={View.Waypoint_Read}
             setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
@@ -132,7 +132,7 @@ describe('Geolocation', () => {
     it('should clear position when error occurs', async () => {
         navigator.geolocation.watchPosition = jest.fn();
         render(<Geolocation
-            view={View.Item_Read}
+            view={View.Waypoint_Read}
             setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
@@ -149,7 +149,7 @@ describe('Geolocation', () => {
             clearWatch: jest.fn(),
         };
         render(<Geolocation
-            view={View.Item_Read}
+            view={View.Waypoint_Read}
             setGPSOn={jest.fn()}
             render={position => <MockApp position={position} />}
         />);
@@ -181,7 +181,7 @@ describe('Geolocation', () => {
             const setGPSOn = jest.fn();
             navigator.geolocation.watchPosition = jest.fn();
             render(<Geolocation
-                view={View.Item_Read}
+                view={View.Waypoint_Read}
                 setGPSOn={setGPSOn}
                 render={position => <MockApp position={position} />}
             />);
@@ -190,7 +190,7 @@ describe('Geolocation', () => {
         it('should set GPS off', () => {
             const setGPSOn = jest.fn();
             const { unmount } = render(<Geolocation
-                view={View.Item_Read}
+                view={View.Waypoint_Read}
                 setGPSOn={setGPSOn}
                 render={position => <MockApp position={position} />}
             />);
