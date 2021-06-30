@@ -5,7 +5,6 @@ import './Item.css';
 import { Map } from './Map';
 import { Geolocation } from './Geolocation';
 import { Form, Fieldset, Label, NameInput, TextInput, NumberInput, ButtonInput } from './Form';
-import { NameList } from './NameList';
 
 import { useItems } from '../hooks/Database';
 
@@ -43,29 +42,6 @@ export const Item = (props) => {
 };
 
 const render = (props) => (
-    (props.view === View.Group_Read || props.view === View.Waypoint_List)
-        ? renderItemList(props)
-        : renderItem(props)
-);
-
-const renderItemList = (props) => (
-    <NameList
-        objectStoreName={props.objectStoreName}
-        type={props.type}
-        itemID={props.itemID}
-        parentItemID={props.parentItemID}
-        view={props.view}
-        createStart={handleCreateStart(props)}
-        read={handleReadFromList(props)}
-        updateStart={handleUpdateStartFromList(props)}
-        deleteStart={handleDeleteStartFromList(props)}
-        moveUp={props.moveUp}
-        moveDown={props.moveDown}
-        usePropsItems={true}
-    />
-);
-
-const renderItem = (props) => (
     <Geolocation
         view={props.view}
         highAccuracyGPS={props.highAccuracyGPS}
@@ -300,20 +276,12 @@ const handleRead = (delta, { read, items, item }) => () => {
     read(item2);
 };
 
-const handleReadFromList = ({ read, items }) => (item) => {
-    handleRead(0, { read, items, item })();
-};
-
 const handleReadItemList = ({ list }) => () => {
     list();
 };
 
 const handleUpdateStart = ({ updateStart, item }) => () => {
     updateStart(item);
-};
-
-const handleUpdateStartFromList = ({ updateStart }) => (item) => {
-    handleUpdateStart({ updateStart, item })();
 };
 
 const handleUpdateEnd = ({ updateEnd, item, name, lat, lng }) => () => {
@@ -327,10 +295,6 @@ const handleUpdateEnd = ({ updateEnd, item, name, lat, lng }) => () => {
 
 const handleDeleteStart = ({ deleteStart, item }) => () => {
     deleteStart(item);
-};
-
-const handleDeleteStartFromList = ({ deleteStart }) => (item) => {
-    handleDeleteStart({ deleteStart, item })();
 };
 
 const handleDeleteEnd = ({ deleteEnd, item }) => () => {

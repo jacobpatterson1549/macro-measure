@@ -31,7 +31,7 @@ describe('Main', () => {
     it('should render default view if view is unknown (or outdated)', () => {
       render(<Main view={'settings'} />);
       expect(screen.queryByText(/settings/i)).not.toBeInTheDocument();
-      expect(screen.queryByText(/create group/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /create /i })).toBeInTheDocument();
     });
   });
   describe('CRUD handlers', () => {

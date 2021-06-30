@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import './Root.css';
 
@@ -14,6 +14,11 @@ export const Root = (props) => {
   const [gpsOn, setGPSOn] = useState(false);
   const [groupID, setGroupID] = useLocalStorage('groupID', 0);
   const [waypointID, setWaypointID] = useLocalStorage('waypointID', 0);
+  useEffect(() => {
+    if (view === View.Group_Read) {
+        setView(View.Waypoint_List);
+      }
+  }, [view, setView])
   const state = {
     view, setView,
     groupID, setGroupID,

@@ -30,7 +30,7 @@ const render = (props) => (
 );
 
 const getMain = (props) => (
-    (mainViews[props.view] || getGroupsView)(props)
+    (mainViews[props.view] || getListView)(props)
 );
 
 const getAboutView = (props) => (
@@ -53,35 +53,49 @@ const getSettingsView = (props) => (
     />
 );
 
-const getWaypointsView = (props) => (
+const getItemView = (props) => (
     <Item
-        itemID={props.waypointID}
-        parentItemID={props.groupID}
-        objectStoreName={WAYPOINTS}
-        type={'waypoint'}
-        view={props.view}
         distanceUnit={props.distanceUnit}
         highAccuracyGPS={props.highAccuracyGPS}
         setGPSOn={props.setGPSOn}
-        {...createHandlers(WAYPOINTS, props.setWaypointID, props.setView, View.isWaypoint)}
+        {...getProps(props)}
     />
 );
 
-const getGroupsView = (props) => (
+const getListView = (props) => (
     <NameList
-        itemID={props.groupID}
-        objectStoreName={GROUPS}
-        type={'group'}
-        view={props.view}
-        {...createHandlers(GROUPS, props.setGroupID, props.setView, View.isGroup)}
+        {...getProps(props)}
     />
 );
+
+const getProps = (props) => {
+    if (View.isGroup(props.view)) {
+        return {
+            view: props.view,
+            itemID: props.groupID,
+            objectStoreName: GROUPS,
+            type: 'groups',
+            ...createHandlers(GROUPS, props.setGroupID, props.setView, View.isGroup),
+        };
+    }
+    if (View.isWaypoint(props.view)) {
+        return {
+            view: props.view,
+            itemID: props.waypointID,
+            parentItemID: props.groupID,
+            objectStoreName: WAYPOINTS,
+            type: 'waypoint',
+            ...createHandlers(WAYPOINTS, props.setWaypointID, props.setView, View.isWaypoint),
+        };
+    }
+    return {};
+};
 
 const mainViews = Object.fromEntries(
     View.AllIDs
         .filter(View.isWaypoint)
-        .map((viewId) => [viewId, getWaypointsView]));
-mainViews[View.Group_Read] = getWaypointsView;
+        .map((viewId) => [viewId, getItemView]));
+mainViews[View.Waypoint_List] = getListView;
 mainViews[View.About] = getAboutView;
 mainViews[View.Help] = getHelpView;
 mainViews[View.Settings] = getSettingsView;
