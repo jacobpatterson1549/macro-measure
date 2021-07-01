@@ -1,42 +1,47 @@
 import { Fieldset, Label, CheckboxInput, ButtonInput } from './Form';
 
-export const FullscreenSettings = (props) => (
-    <Fieldset caption="Fullscreen Settings">
-        <Label caption="Fullscreen">
-            <CheckboxInput
-                checked={props.fullscreen}
-                onChange={handleToggleFullscreen()}
-            />
-        </Label>
-        {getAddToHomeScreen(props)}
-    </Fieldset>
-);
+import { useFullscreen, useOnLine, useInstallPromptEvent } from '../hooks/Window';
 
-const getAddToHomeScreen = ({ installPromptEvent, onLine} ) => (
+export const FullscreenSettings = (props) => {
+    const [fullscreen, setFullscreen] = useFullscreen();
+    const onLine = useOnLine();
+    const installPromptEvent = useInstallPromptEvent();
+    return (
+        <Fieldset caption="Fullscreen Settings">
+            <Label caption="Fullscreen">
+                <CheckboxInput
+                    checked={fullscreen}
+                    onChange={handleToggleFullscreen(setFullscreen)}
+                />
+            </Label>
+            {getAddToHomeScreen(installPromptEvent, onLine)}
+        </Fieldset>
+    );
+};
+
+const getAddToHomeScreen = (installPromptEvent, onLine) => (
     installPromptEvent
-    ? (
-        <Label caption="Add to Home Screen">
-            <ButtonInput
-                value="Install"
-                onClick={handlePromptInstall(installPromptEvent)}
-            />
-        </Label>
-    )
-    : (
-        <div>
-            <span>App updates when restarting after a reload.</span>
-            {
-                !onLine &&
-                <span>Currently offline.  Go online to reload.</span>
-            }
-        </div>
-    )
+        ? (
+            <Label caption="Add to Home Screen">
+                <ButtonInput
+                    value="Install"
+                    onClick={handlePromptInstall(installPromptEvent)}
+                />
+            </Label>
+        )
+        : (
+            <div>
+                <span>App updates when restarting after a reload.</span>
+                {
+                    !onLine &&
+                    <span>Currently offline.  Go online to reload.</span>
+                }
+            </div>
+        )
 );
 
-const handleToggleFullscreen = () => (toFullscreen) => (
-    (toFullscreen)
-        ? document.body.requestFullscreen()
-        : document.exitFullscreen()
+const handleToggleFullscreen = (setFullscreen) => (toFullscreen) => (
+    setFullscreen(toFullscreen)
 );
 
 const handlePromptInstall = (installPromptEvent) => async () => {

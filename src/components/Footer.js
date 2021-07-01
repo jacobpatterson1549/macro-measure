@@ -1,22 +1,27 @@
 import './Footer.css';
 
-export const Footer = (props) => (
-    <footer className="Footer">
-        <div>
-            <span>GPS: </span>
+import { useOnLine } from '../hooks/Window';
+
+export const Footer = (props) => {
+    const onLine = useOnLine();
+    return (
+        <footer className="Footer">
+            <div>
+                <span>GPS: </span>
+                <OnOffSpan
+                    on={props.gpsOn}
+                    onValue="ON"
+                    offValue="OFF"
+                />
+            </div>
             <OnOffSpan
-                on={props.gpsOn}
-                onValue="ON"
-                offValue="OFF"
+                on={onLine}
+                onValue="online"
+                offValue="offline"
             />
-        </div>
-        <OnOffSpan
-            on={props.onLine}
-            onValue="online"
-            offValue="offline"
-        />
-    </footer >
-);
+        </footer >
+    );
+};
 
 const OnOffSpan = (props) => (
     <span className={onOffClassName(props)}>

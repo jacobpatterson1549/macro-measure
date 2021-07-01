@@ -47,9 +47,6 @@ const getSettingsView = (props) => (
         setDistanceUnit={props.setDistanceUnit}
         highAccuracyGPS={props.highAccuracyGPS}
         setHighAccuracyGPS={props.setHighAccuracyGPS}
-        fullscreen={props.fullscreen}
-        onLine={props.onLine}
-        installPromptEvent={props.installPromptEvent}
     />
 );
 

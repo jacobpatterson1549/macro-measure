@@ -33,8 +33,4 @@ Object.defineProperties(global.navigator, {
         },
         writable: true,
     },
-    'onLine': {
-        value: true,
-        writable: true,
-    },
 });

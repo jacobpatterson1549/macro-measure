@@ -36,9 +36,6 @@ const render = (props) => (
       setView={props.setView}
     />
     <Main
-      fullscreen={props.fullscreen}
-      onLine={props.onLine}
-      installPromptEvent={props.installPromptEvent}
       view={props.view}
       groupID={props.groupID}
       waypointID={props.waypointID}
@@ -49,7 +46,6 @@ const render = (props) => (
     />
     <Footer
       gpsOn={props.gpsOn}
-      onLine={props.onLine}
     />
   </div>
 );

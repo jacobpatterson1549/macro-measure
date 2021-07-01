@@ -2,57 +2,72 @@ import { render, screen, waitFor } from '@testing-library/react';
 
 import { FullscreenSettings } from './FullscreenSettings';
 
+import { useFullscreen, useOnLine, useInstallPromptEvent } from '../hooks/Window';
+
+jest.mock('../hooks/Window', () => ({
+    useFullscreen: jest.fn(),
+    useOnLine: jest.fn(),
+    useInstallPromptEvent: jest.fn(),
+}));
+
+
 describe('FullscreenSettings', () => {
+    beforeEach(() => {
+        useFullscreen.mockReturnValue([]);
+    })
     describe('fullscreen', () => {
         describe('state', () => {
             it('should be available if not currently active', () => {
-                render(<FullscreenSettings fullscreen={false} />);
+                useFullscreen.mockReturnValue([false]);
+                render(<FullscreenSettings />);
                 const element = screen.getByRole('checkbox');
                 expect(element.checked).toBeFalsy();
             });
             it('should be exit-able if currently active', () => {
-                render(<FullscreenSettings fullscreen={true} />);
+                useFullscreen.mockReturnValue([true]);
+                render(<FullscreenSettings />);
                 const element = screen.getByRole('checkbox');
                 expect(element.checked).toBeTruthy();
             });
         });
         describe('click handlers', () => {
             it('should request fullscreen when clicked', async () => {
-                const root = (<FullscreenSettings />);
-                document.fullscreenElement = null;
-                document.body.requestFullscreen = jest.fn().mockReturnValue(() => { });
-                render(root);
+                const setFullscreen = jest.fn();
+                useFullscreen.mockReturnValue([false, setFullscreen]);
+                render(<FullscreenSettings />);
                 const element = screen.getByRole('checkbox');
                 element.click();
-                expect(document.body.requestFullscreen).toBeCalled();
+                expect(setFullscreen).toBeCalledWith(true);
             });
             it('should cancel fullscreen when clicked', () => {
-                const root = (<FullscreenSettings fullscreen={true} />);
-                document.fullscreenElement = root;
-                document.exitFullscreen = jest.fn();
-                render(root);
+                const setFullscreen = jest.fn();
+                useFullscreen.mockReturnValue([true, setFullscreen]);
+                render(<FullscreenSettings />);
                 const element = screen.getByRole('checkbox');
                 element.click();
-                expect(document.exitFullscreen).toBeCalled();
+                expect(setFullscreen).toBeCalledWith(false);
             });
         });
     });
     describe('add to home screen (a2hs)', () => {
         describe('state', () => {
             it('should show install button when is truthy', () => {
-                render(<FullscreenSettings installPromptEvent={{}} />);
+                useInstallPromptEvent.mockReturnValue({});
+                render(<FullscreenSettings />);
                 expect(screen.queryByRole('button', { name: 'Install' })).toBeInTheDocument();
                 expect(screen.queryByText(/^online/i)).not.toBeInTheDocument();
                 expect(screen.queryByText(/^offline/i)).not.toBeInTheDocument();
             });
             it('should show reload root button when is installed and online', () => {
-                render(<FullscreenSettings onLine={true} />);
+                useOnLine.mockReturnValue(true);
+                render(<FullscreenSettings />);
                 expect(screen.queryByRole('button', { name: 'Install' })).not.toBeInTheDocument();
                 expect(screen.queryByText(/online/i)).not.toBeInTheDocument();
                 expect(screen.queryByText(/offline/i)).not.toBeInTheDocument();
             });
             it('should show prompt to go online when is installed and is not online', () => {
-                render(<FullscreenSettings onLine={false} />);
+                useOnLine.mockReturnValue(false);
+                render(<FullscreenSettings />);
                 expect(screen.queryByRole('button', { name: 'Install' })).not.toBeInTheDocument();
                 expect(screen.queryByText(/online/i)).toBeInTheDocument();
                 expect(screen.queryByText(/offline/i)).toBeInTheDocument();
@@ -70,7 +85,8 @@ describe('FullscreenSettings', () => {
                     prompt: jest.fn(),
                     userChoice: { outcome: accepted },
                 };
-                render(<FullscreenSettings installPromptEvent={installPromptEvent} />);
+                useInstallPromptEvent.mockReturnValue(installPromptEvent);
+                render(<FullscreenSettings />);
                 const element = screen.queryByRole('button');
                 element.click();
                 await waitFor(expect(installPromptEvent.prompt).toBeCalled);

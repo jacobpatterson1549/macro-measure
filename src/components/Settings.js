@@ -11,11 +11,7 @@ export const Settings = (props) => (
             highAccuracyGPS={props.highAccuracyGPS}
             setHighAccuracyGPS={props.setHighAccuracyGPS}
         />
-        <FullscreenSettings
-            fullscreen={props.fullscreen}
-            onLine={props.onLine}
-            installPromptEvent={props.installPromptEvent}
-        />
+        <FullscreenSettings />
         <LocalStorageSettings />
     </div>
 );
