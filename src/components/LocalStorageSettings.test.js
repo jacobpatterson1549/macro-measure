@@ -21,16 +21,21 @@ describe('LocalStorageSettings', () => {
         });
     });
     describe('import/export', () => {
+        beforeAll(() => {
+            Object.defineProperties(URL, {
+                createObjectURL: { value: jest.fn() },
+                revokeObjectURL: { value: jest.fn() },
+            });
+        });
         const allJSON = '{"groups":[{"name":"backup","items":[]}]}';
         it('should export storage when clicked', async () => {
             const expectedURL = 'some_export_url'
-            const createObjectURLMock = jest.fn().mockReturnValue(expectedURL);
-            Object.defineProperty(global.URL, 'createObjectURL', { value: createObjectURLMock });
+            URL.createObjectURL.mockReturnValue(expectedURL);
             render(<LocalStorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
             fireEvent.click(exportElement);
             await waitFor(expect(getLocalStorage).toBeCalled);
-            expect(createObjectURLMock).toBeCalled();
+            expect(URL.createObjectURL).toBeCalled();
             const exportLink = screen.getByRole('link');
             expect(exportLink.href).toMatch(expectedURL);
             expect(exportLink.textContent).toMatch(/^\S+$/); // expect link to have no spaces
@@ -48,6 +53,19 @@ describe('LocalStorageSettings', () => {
             expect(clearLocalStorage).toBeCalled();
             expect(setLocalStorage).toBeCalledWith(allJSON);
             expect(window.location.reload).toBeCalled();
+        });
+        it('should revokeObjectURL', async () => {
+            const expectedURLs = ['url1', 'url2', 'url3']
+            expectedURLs.forEach((url) => URL.createObjectURL.mockReturnValueOnce(url))
+            const { unmount } = render(<LocalStorageSettings />);
+            const exportElement = screen.getByLabelText(/export/i);
+            fireEvent.click(exportElement);
+            fireEvent.click(exportElement);
+            fireEvent.click(exportElement);
+            await waitFor(expect(getLocalStorage).toBeCalled);
+            expect(URL.revokeObjectURL.mock.calls).toEqual([['url1'], ['url2']]);
+            unmount();
+            expect(URL.revokeObjectURL.mock.calls).toEqual([['url1'], ['url2'], ['url3']]);
         });
     });
     describe('reload button', () => {
