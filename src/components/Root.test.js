@@ -2,7 +2,9 @@ import { render, screen } from '@testing-library/react';
 
 import { Root } from './Root';
 
-import { createHandlers, useItem, useItems } from '../hooks/Database';
+import { useItem, useItems } from '../hooks/Database';
+
+import { View } from '../utils/View';
 
 jest.mock('../hooks/Database', () => ({
   createHandlers: jest.fn(),
@@ -25,6 +27,12 @@ describe('Root', () => {
     const element = screen.getByText((content, element) => (
       element.textContent === 'GPS: OFF'
     ));
+    expect(element).toBeInTheDocument();
+  });
+  it('should switch view to Waypoint_List when on Group_Read', () => {
+    window.localStorage.getItem.mockReturnValue(View.Group_Read);
+    render(<Root />);
+    const element = screen.getByText(/waypoint values/i);
     expect(element).toBeInTheDocument();
   });
 });

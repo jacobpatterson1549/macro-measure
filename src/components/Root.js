@@ -16,8 +16,8 @@ export const Root = (props) => {
   const [waypointID, setWaypointID] = useLocalStorage('waypointID', 0);
   useEffect(() => {
     if (view === View.Group_Read) {
-        setView(View.Waypoint_List);
-      }
+      setView(View.Waypoint_List);
+    }
   }, [view, setView])
   const state = {
     view, setView,
