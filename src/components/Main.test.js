@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Main } from './Main';
 
 import { createHandlers, useItem, useItems } from '../hooks/Database';
+import { useGeolocation } from '../hooks/Geolocation';
 
 import { View } from '../utils/View';
 
@@ -12,10 +13,17 @@ jest.mock('../hooks/Database', () => ({
   useItems: jest.fn(),
 }));
 
+jest.mock('../hooks/Geolocation', () => ({
+  useGeolocation: jest.fn(),
+}));
+
 describe('Main', () => {
   beforeEach(() => { // TODO: is this needed?
     useItem.mockReturnValue([[]]);
     useItems.mockReturnValue([[]]);
+    useGeolocation.mockReturnValue({
+      valid: true,
+    });
   });
   describe('views', () => {
     // TODO: add tests to ensure objectStoreName is passed for viewTypes
@@ -181,7 +189,11 @@ describe('Main', () => {
         screen.getByRole('button', { name: /create waypoint/i }).click();
         expect(handlers.createStart).toBeCalled();
       });
-      it('should create an waypoint', async () => {
+      it('should create an waypoint', () => {
+        useGeolocation.mockReturnValue({
+          latLng: { lat: 7, lng: -9 },
+          valid: true,
+        });
         const parentItemID = 33;
         const name = '[my custom waypoint name]';
         const expected = {
@@ -196,8 +208,6 @@ describe('Main', () => {
           setGPSOn={jest.fn()}
         />);
         fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: name } });
-        const successCallback = navigator.geolocation.watchPosition.mock.calls[0][0];
-        await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } })); // must have location to create item
         screen.getByRole('button', { name: /create waypoint/i }).click();
         expect(handlers.createEnd).toBeCalledWith(expected);
       });

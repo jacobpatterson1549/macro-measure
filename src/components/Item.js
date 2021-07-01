@@ -3,35 +3,41 @@ import { useState, useEffect } from 'react';
 import './Item.css';
 
 import { Map } from './Map';
-import { Geolocation } from './Geolocation';
 import { Form, Fieldset, Label, NameInput, TextInput, NumberInput, ButtonInput } from './Form';
 
 import { useItems } from '../hooks/Database';
+import { useGeolocation } from '../hooks/Geolocation';
 
 import { useLocalStorage } from '../utils/LocalStorage';
 import { getDistanceHeading, moveLatLngTo, Heading, roundLatLng as latLngOnly } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
 export const Item = (props) => {
+    const geolocation = useGeolocation(props);
     const [moveAmount, setMoveAmount] = useLocalStorage('moveAmount', 1);
     const [name, setName] = useLocalStorage('itemInputName', '?'); // same name as NameList.js
     const [lat, setLat] = useLocalStorage('itemInputLat', 0);
     const [lng, setLng] = useLocalStorage('itemInputLng', 0);
     const [items] = useItems(props.objectStoreName, props.parentItemID);
     const [item, setItem] = useState(null);
+    // const [distanceHeading, setDistanceHeading] = useState(null);
     useEffect(() => {
         if (item?.id !== props.itemID) {
-        items?.filter((dbItem => dbItem.id === props.itemID))
-            .forEach((dbItem) => {
-                setItem(dbItem)
-                setName(dbItem.name);
-                const latLng = latLngOnly(dbItem);
-                setLat(latLng.lat || 0);
-                setLng(latLng.lng || 0);
-            });
+            items?.filter((dbItem => dbItem.id === props.itemID))
+                .forEach((dbItem) => {
+                    setItem(dbItem)
+                    setName(dbItem.name);
+                    const latLng = latLngOnly(dbItem);
+                    setLat(latLng.lat || 0);
+                    setLng(latLng.lng || 0);
+                });
         }
     }, [items, setItem, props.itemID, setName, setLat, setLng, name, lat, lng, props.view, item]);
+    const distanceHeading = (View.isRead(props.view) && geolocation.latLng)
+        ? getDistanceHeading({ lat: lat, lng: lng }, geolocation.latLng, props.distanceUnit)
+        : null;
     const state = {
+        geolocation, distanceHeading,
         moveAmount, setMoveAmount,
         name, setName,
         lat, setLat,
@@ -43,24 +49,6 @@ export const Item = (props) => {
 };
 
 const render = (props) => (
-    <Geolocation
-        view={props.view}
-        highAccuracyGPS={props.highAccuracyGPS}
-        setGPSOn={props.setGPSOn}
-        render={geolocation => {
-            const distanceHeading = (View.isRead(props.view) && geolocation.latLng !== null)
-                ? getDistanceHeading({ lat: props.lat, lng: props.lng }, geolocation.latLng, props.distanceUnit)
-                : null;
-            const state = {
-                geolocation,
-                distanceHeading,
-            };
-            return renderItemHelper({ ...props, ...state });
-        }}
-    />
-);
-
-const renderItemHelper = (props) => (
     <div className="Item">
         <div className="Item-Header">
             {getHeader(props)}
@@ -230,15 +218,15 @@ const getDeleteAction = (props) => (
 );
 
 const getReadAction = (props) => (
-    (!props.geolocation.latLng)
+    (props.distanceHeading)
         ? (
-            <span>Getting location...</span>
-        )
-        : (
             <div className="distance">
                 <span>{String(props.distanceHeading.distance)}</span>
                 <span className="unit"> {props.distanceUnit}</span>
             </div>
+        )
+        : (
+            <span>Getting location...</span>
         )
 );
 

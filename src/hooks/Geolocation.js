@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { roundLatLng } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
-export const Geolocation = (props) => {
+export const useGeolocation = (props) => {
     const watchID = useRef(null);
     const [latLng, setLatLng] = useState(null);
     const [accuracy, setAccuracy] = useState(noAccuracy);
@@ -18,9 +18,9 @@ export const Geolocation = (props) => {
     const state = {
         latLng: latLng,
         accuracy: accuracy,
-        valid: !!getGeolocation(),
+        valid: !!getGeolocation(), // not actually state, only fetched between refreshes
     };
-    return props.render({ ...state });
+    return state;
 };
 
 const startWatch = (watchID, highAccuracyGPS, setLatLng, setAccuracy, setGPSOn) => {

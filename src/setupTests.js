@@ -25,12 +25,3 @@ Object.defineProperties(global, {
         writable: true,
     },
 });
-Object.defineProperties(global.navigator, {
-    'geolocation': {
-        value: {
-            watchPosition: jest.fn(),
-            clearWatch: jest.fn(),
-        },
-        writable: true,
-    },
-});
