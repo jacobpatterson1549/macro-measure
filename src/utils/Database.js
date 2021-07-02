@@ -4,7 +4,7 @@ const READ = 'readonly';
 const READWRITE = 'readwrite';
 export const GROUPS = 'groups';
 export const WAYPOINTS = 'waypoints';
-let db
+let db;
 
 export const initDatabase = () => {
     const indexedDB = window.indexedDB;
@@ -12,7 +12,7 @@ export const initDatabase = () => {
         const openRequest = indexedDB.open(DATABASE_NAME, DB_VERSION);
         openRequest.onupgradeneeded = upgradeDb;
         openRequest.onerror = (event) => {
-            reject(`Database open error: ${event.target.error.message}`)
+            reject(`Database open error: ${event.target.error.message}`);
         };
         openRequest.onsuccess = (event) => {
             db = event.target.result;
@@ -31,7 +31,7 @@ export const getDatabaseJSON = () => {
             const request = objectStore.getAll();
             request.onsuccess = (event) => {
                 const items = event.target.result;
-                objectStores[objectStoreName] = items
+                objectStores[objectStoreName] = items;
             };
         });
         transaction.oncomplete = (event) => {
@@ -46,7 +46,7 @@ export const deleteDatabase = () => {
         const indexedDB = window.indexedDB;
         const request = indexedDB.deleteDatabase(DATABASE_NAME);
         request.onerror = (event) => {
-            reject(`Database delete error: ${event.target.error.message}`)
+            reject(`Database delete error: ${event.target.error.message}`);
         };
         request.onsuccess = (event) => {
             resolve('database deleted');
@@ -133,7 +133,7 @@ const backfillGroupItems = (db, oldGroups, dbGroups, resolve, reject) => {
                 lng: item.lng,
                 order: itemIndex,
                 parentItemID: dbGroups[groupIndex].result,
-            })
+            });
         });
     });
     waypointsTransaction.onerror = (event) => {
@@ -262,7 +262,7 @@ export const updateItem = (objectStoreName, item) => {
 };
 
 export const deleteItem = async (objectStoreName, itemID) => {
-    const cascadeObjectStoreKeys = await getCascadeObjectStoreNameItemIDs(objectStoreName, itemID)
+    const cascadeObjectStoreKeys = await getCascadeObjectStoreNameItemIDs(objectStoreName, itemID);
     const objectStoreNames = [objectStoreName, ...Object.keys(cascadeObjectStoreKeys)];
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
@@ -270,7 +270,7 @@ export const deleteItem = async (objectStoreName, itemID) => {
         Object.entries(cascadeObjectStoreKeys).forEach(([cascadeObjectStoreName, cascadeObjectStoreItemIDs]) => {
             const cascadeObjectStore = transaction.objectStore(cascadeObjectStoreName);
             cascadeObjectStoreItemIDs.forEach((cascadeObjectStoreItemID) => {
-                cascadeObjectStore.delete(cascadeObjectStoreItemID)
+                cascadeObjectStore.delete(cascadeObjectStoreItemID);
             });
         });
         transaction.oncomplete = async (event) => {
