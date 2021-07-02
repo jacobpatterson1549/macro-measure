@@ -9,7 +9,10 @@ export const LocalStorageSettings = () => {
     const [exportLink, setExportLink] = useState(null);
     useEffect(() => {
         if (exportURL) {
-            const filename = `macro_measure_backup_${_getISO8601Digits(new Date())}.json`;
+            const now = Date.now();
+            const date = new Date(now);
+            const iso8601Digits = date.toISOString().replace(/[^\dZ]/g, '');
+            const filename = `macro_measure_backup_${iso8601Digits}.json`;
             const anchor = (<a href={exportURL} download={filename}>{filename}</a>);
             setExportLink(anchor);
         }
@@ -56,7 +59,8 @@ const handleExportStorage = (exportURL, setExportURL) => async () => {
     const allJSON = await getLocalStorage();
     const file = new Blob([allJSON], { type: jsonMimeType });
     revokeExportURL(exportURL);
-    setExportURL(createExportURL(file));
+    const newExportURL = createExportURL(file);
+    setExportURL(newExportURL);
 };
 
 const handleImportStorage = () => async (file) => {
@@ -74,10 +78,6 @@ const handleResetStorage = () => () => {
 const reload = () => {
     window.location.reload(); // force all states to be refreshed
 };
-
-export const _getISO8601Digits = (date) => ( // exported for testing
-    date.toISOString().replace(/[^\dZ]/g, '')
-);
 
 const jsonMimeType = "application/json";
 

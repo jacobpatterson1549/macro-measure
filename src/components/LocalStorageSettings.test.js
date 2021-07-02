@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
-import { LocalStorageSettings, _getISO8601Digits } from './LocalStorageSettings';
+import { LocalStorageSettings } from './LocalStorageSettings';
 
 import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 
@@ -67,6 +67,23 @@ describe('LocalStorageSettings', () => {
             unmount();
             expect(URL.revokeObjectURL.mock.calls).toEqual([['url1'], ['url2'], ['url3']]);
         });
+        describe('exportLink filename', () => {
+            const tests = [
+                ['should have contain digits and UTC (Zulu) timezone (Z)', Date.UTC(2021, 5, 1, 17, 22, 30, 554), '20210601172230554Z'],
+                ['should end in Z even if date is not in GMT', Date.parse('Tue Jun 01 2021 12:36:26 GMT-0700'), '20210601193626000Z'],
+                ['show always end in Z, even for the current date', new Date().getTime(), 'Z'],
+            ];
+            it.each(tests)('%s', async (name, epochMilliseconds, expected) => {
+                Date.now = jest.fn().mockReturnValue(epochMilliseconds);
+                URL.createObjectURL.mockReturnValue('any_url');
+                render(<LocalStorageSettings />);
+                const exportElement = screen.getByLabelText(/export/i);
+                fireEvent.click(exportElement);
+                const element = await waitFor(() => screen.getByRole('link'));
+                const actual = element.download;
+                expect(actual).toContain(expected);
+            });
+        });
     });
     describe('reload button', () => {
         it('should reload window when clicked', () => {
@@ -74,18 +91,6 @@ describe('LocalStorageSettings', () => {
             const reloadButtonElement = screen.getByLabelText(/reload/i);
             fireEvent.click(reloadButtonElement);
             expect(window.location.reload).toBeCalled();
-        });
-    });
-    describe('getISO8601Digits', () => {
-        const tests = [
-            ['should have contain digits and UTC (Zulu) timezone (Z)', Date.UTC(2021, 5, 1, 17, 22, 30, 554), '20210601172230554Z'],
-            ['should end in Z even if date is not in GMT', Date.parse('Tue Jun 01 2021 12:36:26 GMT-0700'), '20210601193626000Z'],
-            ['show always end in Z, even for the current date', new Date().getTime(), /Z$/],
-        ];
-        it.each(tests)('%s', (name, epochMilliseconds, expected) => {
-            const date = new Date(epochMilliseconds);
-            const actual = _getISO8601Digits(date);
-            expect(actual).toMatch(expected);
         });
     });
 });
