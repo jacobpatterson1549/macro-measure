@@ -3,17 +3,16 @@ import { screen, render } from '@testing-library/react';
 import { ErrorBoundary } from './ErrorBoundary';
 
 describe('ErrorBoundary', () => {
-    let consoleError
     beforeAll(() => {
-        consoleError = console.error;
-        console.error = jest.fn();
-    })
-    afterAll(() => {
-        console.Error = consoleError;
-    })
-
+        jest.spyOn(console, 'error'); // disable error logging for tests
+    });
     const errorBoundaryText = 'Something went wrong.';
-
+    const falsyErrorMessages = [
+        '',
+        0,
+        null,
+        undefined,
+    ];
     it('should not render for a valid component', () => {
         const validComponentText = 'valid component';
         const ValidComponent = () => (
@@ -27,26 +26,6 @@ describe('ErrorBoundary', () => {
         expect(screen.queryByText(errorBoundaryText)).not.toBeInTheDocument();
         expect(screen.queryByText(validComponentText)).toBeInTheDocument();
     });
-
-    it('should render the error message', () => {
-        const expected = 'MockErrorMessage';
-        const InvalidComponent = () => {
-            throw new Error(expected);
-        };
-        render(
-            <ErrorBoundary>
-                <InvalidComponent />
-            </ErrorBoundary>
-        );
-        expect(screen.queryByText(expected)).toBeInTheDocument();
-    });
-
-    const falsyErrorMessages = [
-        '',
-        0,
-        null,
-        undefined,
-    ];
     it.each(falsyErrorMessages)('should render when an error exists without a message: %s', (message) => {
         const InvalidComponent = () => {
             throw new Error(message);
