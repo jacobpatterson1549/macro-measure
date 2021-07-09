@@ -7,7 +7,6 @@ const mockIDBKeyRange = (lower, upper, lowerOpen, upperOpen) => (
     { lower, upper, lowerOpen, upperOpen }
 );
 
-
 jest.mock('./Global', () => ({
     indexedDB: {
         open: jest.fn(),
@@ -18,7 +17,7 @@ jest.mock('./Global', () => ({
         removeItem: jest.fn(),
     },
     IDBKeyRange: {
-        only: (z) =>  mockIDBKeyRange(z, z, false, false),
+        only: (z) => mockIDBKeyRange(z, z, false, false),
         bound: (x, y) => mockIDBKeyRange(x, y, false, false),
     },
 }));
@@ -242,69 +241,139 @@ describe('Database', () => {
         });
     });
     describe('C.R.U.D. handlers', () => {
-        it('should handle errors', () => {
+        it('should handle errors', async () => {
             const expected = 'mock key missing message';
             const getRequest = new MockIDBRequest();
             const objectStore = { get: jest.fn().mockReturnValue(getRequest) };
             const transaction = new MockIDBTransaction(objectStore);
-            mockTransaction(transaction);
+            const db = await mockTransaction(transaction);
             const request = readItem('os1', 'key1');
             transaction.dispatchEvent(mockEvent('error', { error: new Error(expected) }));
+            expect(db.transaction.mock.calls).toEqual([[['os1'], 'readonly'],]);
             expect(request).rejects.toContain(expected);
         });
-        it('should createItem', () => {
-            //TODO
+        const createItemTests = [
+            [{ name: 'root item' }, null],
+            [{ name: 'item with parent', parentItemID: 7 }, mockIDBKeyRange(
+                [7, -Infinity],
+                [7, Infinity],
+                false,
+                false,
+            )],
+        ];
+        it.each(createItemTests)('should createItem when item is %s, using a range of %s', async (item, range) => {
+            const expectedItemID = 5;
+            const expectedCount = 93;
+            const expectedItem = Object.assign({}, item, {
+                order: expectedCount,
+            });
+            const countRequest = new MockIDBRequest();
+            const orderIndex = {
+                count: jest.fn().mockReturnValue(countRequest),
+            };
+            const addRequest = new MockIDBRequest();
+            const objectStoreR = {
+                index: jest.fn().mockReturnValue(orderIndex),
+            };
+            const objectStoreW = {
+                add: jest.fn().mockReturnValue(addRequest),
+            };
+            const transactionR = new MockIDBTransaction(objectStoreR);
+            const transactionW = new MockIDBTransaction(objectStoreW);
+            const db = await mockTransaction(transactionR, transactionW);
+            const request = createItem('os1', item);
+            countRequest.dispatchEvent(mockEvent('success', { result: expectedCount }));
+            await waitFor(() => expect(db.transaction.mock.calls).toEqual([
+                [['os1'], 'readonly'],
+                [['os1'], 'readwrite'],
+            ]));
+            addRequest.dispatchEvent(mockEvent('success', { result: expectedItemID }));
+            transactionW.dispatchEvent(mockEvent('complete', {}));
+            const actualItemID = await request;
+            expect(objectStoreR.index).toBeCalledWith('order');
+            expect(orderIndex.count).toBeCalledWith(range);
+            expect(objectStoreW.add.mock.calls).toEqual([[expectedItem]]);
+            expect(actualItemID).toEqual(expectedItemID);
         });
-        it('should readItem', () => {
+        it('should readItem', async () => {
             const expected = 'the desired item';
             const getRequest = new MockIDBRequest();
             const objectStore = { get: jest.fn().mockReturnValue(getRequest) };
             const transaction = new MockIDBTransaction(objectStore);
-            mockTransaction(transaction);
+            const db = await mockTransaction(transaction);
             const request = readItem('os1', 'key1');
             getRequest.dispatchEvent(mockEvent('success', { result: expected }));
             transaction.dispatchEvent(mockEvent('complete', {}));
+            expect(db.transaction.mock.calls).toEqual([[['os1'], 'readonly']]);
             expect(objectStore.get).toBeCalledWith('key1');
             expect(request).resolves.toEqual(expected);
         });
-        it('should readItems', () => {
-            //TODO
+        const readItemTests = [
+            [null, null],
+            [7, mockIDBKeyRange(
+                [7, -Infinity],
+                [7, Infinity],
+                false,
+                false,
+            )],
+        ];
+        it.each(readItemTests)('should readItems when parentID is %s, using a range of %s', async (parentItemID, range) => {
+            const expected = ['some items', 8];
+            const getAllRequest = new MockIDBRequest();
+            const orderIndex = {
+                getAll: jest.fn().mockReturnValue(getAllRequest),
+            };
+            const objectStore = {
+                index: jest.fn().mockReturnValue(orderIndex),
+            };
+            const transaction = new MockIDBTransaction(objectStore);
+            const db = await mockTransaction(transaction);
+            const request = readItems('os1', parentItemID);
+            getAllRequest.dispatchEvent(mockEvent('success', { result: expected }));
+            expect(db.transaction.mock.calls).toEqual([[['os1'], 'readonly']]);
+            const actual = await request;
+            expect(objectStore.index).toBeCalledWith('order');
+            expect(orderIndex.getAll).toBeCalledWith(range);
+            expect(actual).toEqual(expected);
         });
         it('should updateItem', async () => {
             const expected = 'the item being put, with key';
             const putRequest = new MockIDBRequest();
             const objectStore = { put: jest.fn().mockReturnValue(putRequest) };
             const transaction = new MockIDBTransaction(objectStore);
-            mockTransaction(transaction);
+            const db = await mockTransaction(transaction);
             const request = updateItem('os1', expected);
             putRequest.dispatchEvent(mockEvent('success', {}));
             transaction.dispatchEvent(mockEvent('complete', {}));
             await request;
+            expect(db.transaction.mock.calls).toEqual([[['os1'], 'readwrite']]);
             expect(objectStore.put).toBeCalledWith(expected);
         });
-        it('should deleteItem', () => {
-            //TODO
-            // * basic delete
-            // * cascading delete
+        it('should deleteItem', async () => {
+            const itemID = 'test id';
+            const deleteRequest = new MockIDBRequest();
+            const objectStore = { delete: jest.fn().mockReturnValue(deleteRequest) };
+            const transaction = new MockIDBTransaction(objectStore);
+            const db = await mockTransaction(transaction);
+            const request = deleteItem('child_object_store', itemID);
+            await waitFor(() => expect(db.transaction.mock.calls).toEqual([[['child_object_store'], 'readwrite']]));
+            transaction.dispatchEvent(mockEvent('complete', {}));
+            expect(objectStore.delete).toBeCalledWith(itemID);
+            expect(request).resolves.toBeTruthy();
         });
+        // * TODO:  cascading delete
         describe('moveItem', () => {
             const moveItemTests = [
-                ['down', moveItemDown, 1, 2],
-                ['up', moveItemUp, 2, 1],
+                ['down', { name: 'src', order: 1 }, IDBKeyRange.only(2), { name: 'dst', order: 2 }, moveItemDown],
+                ['up', { name: 'src', order: 7 }, IDBKeyRange.only(6), { name: 'dst', order: 6 }, moveItemUp],
+                ['down', { name: 'src', order: 9, parentItemID: 6 }, IDBKeyRange.only([6, 10]), { name: 'dst', order: 10, parentItemID: 6 }, moveItemDown],
+                ['up', { name: 'src', order: 4, parentItemID: 9 }, IDBKeyRange.only([9, 3]), { name: 'dst', order: 3, parentItemID: 9 }, moveItemUp],
             ];
-            it.each(moveItemTests)('should moveItem %s', async (direction, moveItem, srcOrder, dstOrder) => {
-                const srcItem = {
-                    name: 'srcItem',
-                    order: srcOrder,
-                };
-                const dstItem = {
-                    name: 'dstItem',
-                    order: dstOrder,
-                };
+            it.each(moveItemTests)('should moveItem %s when item is %s using a range of %s', async (direction, srcItem, range, dstItem, moveItem) => {
                 const expected = [
-                    [{ name: 'srcItem', order: -1 }],
-                    [{ name: 'dstItem', order: srcOrder }],
-                    [{ name: 'srcItem', order: dstOrder }],
+                    [Object.assign({}, srcItem, { order: -1 })],
+                    [Object.assign({}, dstItem, { order: srcItem.order })],
+                    [Object.assign({}, srcItem, { order: dstItem.order })],
                 ];
                 const getRequest = new MockIDBRequest();
                 const orderIndex = {
@@ -319,7 +388,6 @@ describe('Database', () => {
                 };
                 const transactionR = new MockIDBTransaction(objectStoreR);
                 const transactionW = new MockIDBTransaction(objectStoreW);
-                const range = IDBKeyRange.only(dstOrder);
                 const db = await mockTransaction(transactionR, transactionW);
                 const request = moveItem('os1', srcItem);
                 getRequest.dispatchEvent(mockEvent('success', { result: dstItem }));

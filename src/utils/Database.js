@@ -183,7 +183,7 @@ export const createItem = async (objectStoreName, item) => {
             resolve(itemID);
         };
     };
-    return handle(objectStoreName, action, READWRITE);
+    return handle([objectStoreName], action, READWRITE);
 };
 
 export const readItem = (objectStoreName, itemID) => {
