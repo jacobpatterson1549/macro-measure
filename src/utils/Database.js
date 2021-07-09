@@ -1,3 +1,5 @@
+import { indexedDB, localStorage, IDBKeyRange } from "./Global";
+
 const DATABASE_NAME = 'MACRO_MEASURE_DB';
 const DB_VERSION = parseInt('1'); // must be integer
 const READ = 'readonly';
@@ -7,22 +9,21 @@ export const WAYPOINTS = 'waypoints';
 let db;
 
 export const initDatabase = () => {
-    const indexedDB = window.indexedDB;
     return new Promise((resolve, reject) => {
         const openRequest = indexedDB.open(DATABASE_NAME, DB_VERSION);
         openRequest.onupgradeneeded = upgradeDb;
         openRequest.onerror = (event) => {
             reject(`Database open error: ${event.target.error.message}`);
         };
-        openRequest.onsuccess = (event) => {
+        openRequest.onsuccess = async (event) => {
             db = event.target.result;
-            addLocalStorage(db);
-            resolve();
+            await addLocalStorage(db);
+            resolve(true);
         };
     });
 };
 
-export const getDatabaseJSON = () => {
+export const getDatabaseAsObject = () => {
     const objectStoreNames = [GROUPS, WAYPOINTS];
     const action = (transaction, resolve) => {
         const objectStores = {};
@@ -43,7 +44,6 @@ export const getDatabaseJSON = () => {
 
 export const deleteDatabase = () => {
     return new Promise((resolve, reject) => {
-        const indexedDB = window.indexedDB;
         const request = indexedDB.deleteDatabase(DATABASE_NAME);
         request.onerror = (event) => {
             reject(`Database delete error: ${event.target.error.message}`);
@@ -72,13 +72,13 @@ const upgradeDb = (event) => {
 };
 
 const createObjectStores = (db) => {
-    if (!db.objectStoreNames.contains(GROUPS)) {
+    if (!db.objectStoreNames.includes(GROUPS)) {
         const groupsObjectStore = db.createObjectStore(GROUPS,
             { keyPath: 'id', autoIncrement: true });
         groupsObjectStore.createIndex('order', 'order', { unique: true });
         groupsObjectStore.createIndex('name', 'name', { unique: true });
     }
-    if (!db.objectStoreNames.contains(WAYPOINTS)) {
+    if (!db.objectStoreNames.includes(WAYPOINTS)) {
         const waypointsObjectStore = db.createObjectStore(WAYPOINTS,
             { keyPath: 'id', autoIncrement: true });
         waypointsObjectStore.createIndex('order', ['parentItemID', 'order'], { unique: true });
@@ -89,8 +89,8 @@ const createObjectStores = (db) => {
 
 const addLocalStorage = (db) => {
     const promises = [];
-    const groupsJSON = window.localStorage.getItem('groups');
-    const waypointsJSON = window.localStorage.getItem('waypoints');
+    const groupsJSON = localStorage.getItem('groups');
+    const waypointsJSON = localStorage.getItem('waypoints');
     if (groupsJSON) {
         promises.push(new Promise((resolve, reject) => {
             backfillGroups(db, JSON.parse(groupsJSON), resolve, reject);
@@ -104,16 +104,17 @@ const addLocalStorage = (db) => {
     return Promise.all(promises);
 };
 
-const backfillGroups = (db, oldGroups, resolve, reject) => {
+const backfillGroups = async (db, oldGroups, resolve, reject) => {
+    // TODO: call createItems
+    const numItems = await readItemCount(GROUPS);
     const groupTransaction = db.transaction(GROUPS, READWRITE);
     const groups = groupTransaction.objectStore(GROUPS);
     const dbGroups = oldGroups.map((group, index) => (
         groups.add({
             name: group.name,
-            order: index,
+            order: numItems + index,
         })
     ));
-    groupTransaction.commit();
     groupTransaction.onerror = (event) => {
         reject(`backfill groups error: ${event.target.error.message}`);
     };
@@ -140,8 +141,8 @@ const backfillGroupItems = (db, oldGroups, dbGroups, resolve, reject) => {
         reject(`backfill old items error: ${event.target.error.message}`);
     };
     waypointsTransaction.oncomplete = (event) => {
-        window.localStorage.removeItem('groups');
-        resolve();
+        localStorage.removeItem('groups');
+        resolve(true);
     };
 };
 
@@ -162,8 +163,8 @@ const backfillWaypoints = (db, oldWaypoints, resolve, reject) => {
         reject(`backfill waypoints error: ${event.target.error.message}`);
     };
     waypointsTransaction.oncomplete = (event) => {
-        window.localStorage.removeItem('waypoints');
-        resolve();
+        localStorage.removeItem('waypoints');
+        resolve(true);
     };
 };
 
@@ -255,7 +256,7 @@ export const updateItem = (objectStoreName, item) => {
         const objectStore = transaction.objectStore(objectStoreName);
         objectStore.put(item);
         transaction.oncomplete = (event) => {
-            resolve();
+            resolve(true);
         };
     };
     return handle([objectStoreName], action, READWRITE);
@@ -274,7 +275,7 @@ export const deleteItem = async (objectStoreName, itemID) => {
             });
         });
         transaction.oncomplete = async (event) => {
-            resolve();
+            resolve(true);
         };
     };
     return handle(objectStoreNames, action, READWRITE);
@@ -315,12 +316,12 @@ const moveItem = async (objectStoreName, item, delta) => {
         otherItem.order -= delta;
         const desiredOrder = item.order;
         item.order = -1; // database does not have deferrable constraints between put() calls in a transaction
-        objectStore.put(item);
+        objectStore.put(Object.assign({}, item));
         objectStore.put(otherItem);
         item.order = desiredOrder;
         objectStore.put(item);
         transaction.oncomplete = (event) => {
-            resolve();
+            resolve(true);
         };
     };
     return handle([objectStoreName], action, READWRITE);

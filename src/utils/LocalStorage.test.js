@@ -2,11 +2,11 @@ import { render, screen } from '@testing-library/react';
 
 import { useLocalStorage, clearLocalStorage, getLocalStorage, setLocalStorage } from './LocalStorage';
 
-import { deleteDatabase, getDatabaseJSON } from './Database';
+import { deleteDatabase, getDatabaseAsObject } from './Database';
 
 jest.mock('./Database', () => ({
     deleteDatabase: jest.fn(),
-    getDatabaseJSON: jest.fn(),
+    getDatabaseAsObject: jest.fn(),
 }));
 
 describe('LocalStorage', () => {
@@ -77,7 +77,7 @@ describe('LocalStorage', () => {
             window.localStorage.length = 3;
             window.localStorage.key.mockReturnValueOnce('key1').mockReturnValueOnce('key2').mockReturnValueOnce('key3');
             window.localStorage.getItem.mockReturnValueOnce('"text"').mockReturnValueOnce('42').mockReturnValueOnce('{"obj":"prop"}');
-            getDatabaseJSON.mockReturnValue({ dbData: true})
+            getDatabaseAsObject.mockReturnValue({ dbData: true})
             const expected = localStorageJSON;
             const actual = await getLocalStorage();
             expect(window.localStorage.key.mock.calls).toEqual([[0], [1], [2]]);

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { deleteDatabase, getDatabaseJSON } from './Database';
+import { deleteDatabase, getDatabaseAsObject } from './Database';
 
 const storage = window.localStorage;
 
@@ -32,7 +32,7 @@ export const getLocalStorage = async () => {
                         JSON.parse(storage.getItem(key)))),
                 new Map())
             .entries());
-    const db = await getDatabaseJSON();
+    const db = await getDatabaseAsObject();
     const combinedStorage = Object.assign(ls, db);
     return JSON.stringify(combinedStorage);
 };
