@@ -361,7 +361,29 @@ describe('Database', () => {
             expect(objectStore.delete).toBeCalledWith(itemID);
             expect(request).resolves.toBeTruthy();
         });
-        // * TODO:  cascading delete
+        it('should deleteItem for group and cascade delete waypoints', async () => {
+            const groupID = 'test id';
+            const range = IDBKeyRange.only(groupID);
+            const getAllKeysRequest = new MockIDBRequest();
+            const parentItemIDIndex = { getAllKeys: jest.fn().mockReturnValue(getAllKeysRequest) };
+            const objectStoreR = { index: jest.fn().mockReturnValue(parentItemIDIndex) };
+            const objectStoreGW = { delete: jest.fn() };
+            const objectStoreWW = { delete: jest.fn() };
+            const transactionR = new MockIDBTransaction(objectStoreR);
+            const transactionW = new MockIDBTransaction(objectStoreGW, objectStoreWW);
+            const db = await mockTransaction(transactionR, transactionW);
+            const request = deleteItem('groups', groupID);
+            getAllKeysRequest.dispatchEvent(mockEvent('success', { result: [7, 8, 14] }));
+            transactionW.dispatchEvent(mockEvent('complete', {}));
+            await waitFor(() => expect(db.transaction.mock.calls).toEqual([
+                [['waypoints'], 'readonly'],
+                [['groups', 'waypoints'], 'readwrite'],
+            ]));
+            expect(parentItemIDIndex.getAllKeys).toBeCalledWith(range)
+            expect(objectStoreGW.delete).toBeCalledWith(groupID);
+            expect(objectStoreWW.delete.mock.calls).toEqual([[7], [8], [14]]);
+            expect(request).resolves.toBeTruthy();
+        });
         describe('moveItem', () => {
             const moveItemTests = [
                 ['down', { name: 'src', order: 1 }, IDBKeyRange.only(2), { name: 'dst', order: 2 }, moveItemDown],

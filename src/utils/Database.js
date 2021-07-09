@@ -281,12 +281,12 @@ export const deleteItem = async (objectStoreName, itemID) => {
     return handle(objectStoreNames, action, READWRITE);
 };
 
-const getCascadeObjectStoreNameItemIDs = (objectStoreName, item) => {
+const getCascadeObjectStoreNameItemIDs = (objectStoreName, itemID) => {
     if (objectStoreName === GROUPS) {
         const action = (transaction, resolve) => {
             const objectStore = transaction.objectStore(WAYPOINTS);
             const index = objectStore.index('parentItemID');
-            const range = IDBKeyRange.only(item.id);
+            const range = IDBKeyRange.only(itemID);
             const request = index.getAllKeys(range);
             request.onsuccess = async (event) => {
                 const waypointItemIDs = event.target.result;
