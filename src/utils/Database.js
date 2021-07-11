@@ -1,7 +1,7 @@
 import { indexedDB, localStorage, IDBKeyRange, getCurrentDate } from "./Global";
 
 const DATABASE_NAME = 'MACRO_MEASURE_DB';
-const DB_VERSION = parseInt('1'); // must be integer
+const DB_VERSION = parseInt('2'); // must be integer
 const READ = 'readonly';
 const READWRITE = 'readwrite';
 export const GROUPS = 'groups';
@@ -67,39 +67,38 @@ const handle = (db, objectStoreNames, action, mode) => {
     });
 };
 
-const upgradeDb = async (event) => {
+const upgradeDb = (event) => {
     if (event.oldVersion < DB_VERSION) {
         const db = event.target.result;
         createObjectStores(db);
-        await refreshIndexes(db);
+        const transaction = event.target.transaction;
+        refreshIndexes(transaction);
     }
 };
 
 const createObjectStores = (db) => {
-    if (!db.objectStoreNames.includes(GROUPS)) {
+    if (!db.objectStoreNames.contains(GROUPS)) {
         db.createObjectStore(GROUPS, { keyPath: 'id', autoIncrement: true });
     }
-    if (!db.objectStoreNames.includes(WAYPOINTS)) {
+    if (!db.objectStoreNames.contains(WAYPOINTS)) {
         db.createObjectStore(WAYPOINTS, { keyPath: 'id', autoIncrement: true });
     }
 };
 
-const refreshIndexes = (db) => {
-    const action = (transaction, resolve) => {
-        const groupsObjectStore = transaction.objectStore(GROUPS);
-        const waypointsObjectStore = transaction.objectStore(WAYPOINTS);
-        groupsObjectStore.indexNames.forEach(groupsObjectStore.deleteIndex);
-        waypointsObjectStore.indexNames.forEach(waypointsObjectStore.deleteIndex);
-        groupsObjectStore.createIndex('order', 'order', { unique: true });
-        groupsObjectStore.createIndex('name', 'name', { unique: true });
-        waypointsObjectStore.createIndex('order', ['parentItemID', 'order'], { unique: true });
-        waypointsObjectStore.createIndex('parentItemID', ['parentItemID'], { unique: false });
-        waypointsObjectStore.createIndex('name', ['parentItemID', 'name'], { unique: true });
-        transaction.onsuccess = (event) => {
-            resolve('indexes refreshed');
-        };
-    };
-    return handle(db, [GROUPS, WAYPOINTS], action, READWRITE);
+const refreshIndexes = (transaction) => {
+    const groupsObjectStore = transaction.objectStore(GROUPS);
+    const waypointsObjectStore = transaction.objectStore(WAYPOINTS);
+    [groupsObjectStore, waypointsObjectStore].forEach((objectStore) => {
+        const indexNames = Array.from(objectStore.indexNames);
+        indexNames.forEach((name) => {
+            objectStore.deleteIndex(name);
+        });
+    });
+    groupsObjectStore.createIndex('order', 'order', { unique: true });
+    groupsObjectStore.createIndex('name', 'name', { unique: true });
+    waypointsObjectStore.createIndex('order', ['parentItemID', 'order'], { unique: true });
+    waypointsObjectStore.createIndex('parentItemID', ['parentItemID'], { unique: false });
+    waypointsObjectStore.createIndex('name', ['parentItemID', 'name'], { unique: true });
 };
 
 const addLocalStorage = () => {

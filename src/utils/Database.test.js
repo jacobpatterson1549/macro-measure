@@ -95,24 +95,41 @@ const mockTransaction = async (...transactions) => {
     return db;
 };
 
+const mockDOMStringList = (array) => {
+    let i = 0;
+    const list = {
+        length : array?.length || 0,
+        item: () => array?.toString() || '[]',
+        contains: (item) => array?.includes(item) || false,
+    };
+    list[Symbol.iterator] = () => ({ // implement the iterator protocol
+        next: () => ({
+            done: i >= list.length,
+            value: array?.[i++],
+        }),
+    });
+    return list;
+};
+
+const mockUpgradeObjectStore = (indexNames) => {
+    const expectedDeleteIndexCalls = indexNames?.map((indexName) => (
+        [indexName]
+    )) || [];
+    indexNames = mockDOMStringList(indexNames);
+    const createIndex = jest.fn();
+    const deleteIndex = jest.fn().mockImplementation(() => {
+        expect(createIndex).not.toHaveBeenCalled(); // ensure create called before delete
+    });
+    return { indexNames, expectedDeleteIndexCalls, deleteIndex, createIndex };
+};
+
 describe('Database', () => {
-    it('should have previously called initDB', () => { // KEEP THIS TEST FIRST
+    it('should have previously called initDB', () => { // KEEP THIS TEST FIRST, or reset the module between tests
         const expected = 'call initDatabase() first';
         const request = readItem('os1', 'key1');
         expect(request).rejects.toContain(expected);
     });
     describe('initDatabase', () => {
-        const mockUpgradeObjectStore = (indexNames) => {
-            indexNames = indexNames || [];
-            const expectedDeleteIndexCalls = indexNames.map((indexName, index, array) => (
-                [indexName, index, array]
-            )) || [];
-            const createIndex = jest.fn();
-            const deleteIndex = jest.fn().mockImplementation(() => {
-                expect(createIndex).not.toHaveBeenCalled(); // ensure create called before delete
-            });
-            return { indexNames, expectedDeleteIndexCalls, deleteIndex, createIndex };
-        };
         describe('onupgradeneeded', () => {
             const upgradeTests = [
                 [2, -1],
@@ -122,13 +139,13 @@ describe('Database', () => {
                 const openRequest = new MockIDBOpenDBRequest();
                 indexedDB.open = () => openRequest;
                 const db = {
-                    objectStoreNames: [],
+                    objectStoreNames: mockDOMStringList(),
                     createObjectStore: jest.fn().mockReturnValue({
                         createIndex: jest.fn(),
                     }),
-                    transaction: jest.fn().mockReturnValue(new MockIDBTransaction(mockUpgradeObjectStore(), mockUpgradeObjectStore())),
                 };
-                const event = mockEvent('upgradeneeded', { result: db });
+                const transaction = new MockIDBTransaction(mockUpgradeObjectStore(), mockUpgradeObjectStore());
+                const event = mockEvent('upgradeneeded', { result: db, transaction: transaction });
                 Object.defineProperty(event, 'oldVersion', { value: oldVersion });
                 initDatabase();
                 openRequest.dispatchEvent(event);
@@ -145,13 +162,13 @@ describe('Database', () => {
                 const openRequest = new MockIDBOpenDBRequest();
                 indexedDB.open = () => openRequest;
                 const db = {
-                    objectStoreNames: oldObjectStoresNames,
+                    objectStoreNames: mockDOMStringList(oldObjectStoresNames),
                     createObjectStore: jest.fn().mockReturnValue({
                         createIndex: jest.fn(),
                     }),
-                    transaction: jest.fn().mockReturnValue(new MockIDBTransaction(mockUpgradeObjectStore(), mockUpgradeObjectStore())),
                 };
-                const event = mockEvent('upgradeneeded', { result: db });
+                const transaction = new MockIDBTransaction(mockUpgradeObjectStore(), mockUpgradeObjectStore());
+                const event = mockEvent('upgradeneeded', { result: db, transaction: transaction });
                 Object.defineProperty(event, 'oldVersion', { value: -1 });
                 initDatabase();
                 openRequest.dispatchEvent(event);
@@ -169,17 +186,15 @@ describe('Database', () => {
                 const waypointsObjectStore = mockUpgradeObjectStore(oldIndexes['waypoints']);
                 const transaction = new MockIDBTransaction(groupsObjectStore, waypointsObjectStore);
                 const db = {
-                    objectStoreNames: [],
+                    objectStoreNames: mockDOMStringList(),
                     createObjectStore: jest.fn().mockReturnValue({
                         createIndex: jest.fn(),
                     }),
-                    transaction: jest.fn().mockReturnValueOnce(transaction),
                 };
-                const event = mockEvent('upgradeneeded', { result: db });
+                const event = mockEvent('upgradeneeded', { result: db, transaction: transaction });
                 Object.defineProperty(event, 'oldVersion', { value: 0 });
                 initDatabase();
                 openRequest.dispatchEvent(event);
-                expect(db.transaction).toBeCalledWith(['groups', 'waypoints'], 'readwrite');
                 expect(groupsObjectStore.deleteIndex.mock.calls).toEqual(groupsObjectStore.expectedDeleteIndexCalls);
                 expect(waypointsObjectStore.deleteIndex.mock.calls).toEqual(waypointsObjectStore.expectedDeleteIndexCalls);
                 // the expectations below are fragile and will need to be changed when more indexes are added or removed
