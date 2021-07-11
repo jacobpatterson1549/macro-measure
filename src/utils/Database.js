@@ -39,7 +39,7 @@ export const getDatabaseAsObject = () => {
             resolve(objectStores);
         };
     };
-    return handle(objectStoreNames, action, READ);
+    return handle(db, objectStoreNames, action, READ);
 };
 
 export const deleteDatabase = () => {
@@ -54,9 +54,12 @@ export const deleteDatabase = () => {
     });
 };
 
-const handle = (objectStoreNames, action, mode) => {
+const handle = (db, objectStoreNames, action, mode) => {
     return new Promise((resolve, reject) => {
-        var transaction = db.transaction(objectStoreNames, mode);
+        if (!db) {
+            reject('db not initialized, call initDatabase() first');
+        }
+        let transaction = db.transaction(objectStoreNames, mode);
         action(transaction, resolve);
         transaction.onerror = (event) => {
             reject(`transaction error: ${event.target.error.message}`);
@@ -64,28 +67,40 @@ const handle = (objectStoreNames, action, mode) => {
     });
 };
 
-const upgradeDb = (event) => {
+const upgradeDb = async (event) => {
     if (event.oldVersion < DB_VERSION) {
         const db = event.target.result;
         createObjectStores(db);
+        await refreshIndexes(db);
     }
 };
 
 const createObjectStores = (db) => {
     if (!db.objectStoreNames.includes(GROUPS)) {
-        const groupsObjectStore = db.createObjectStore(GROUPS,
-            { keyPath: 'id', autoIncrement: true });
-        groupsObjectStore.createIndex('order', 'order', { unique: true });
-        groupsObjectStore.createIndex('name', 'name', { unique: true });
+        db.createObjectStore(GROUPS, { keyPath: 'id', autoIncrement: true });
     }
     if (!db.objectStoreNames.includes(WAYPOINTS)) {
-        const waypointsObjectStore = db.createObjectStore(WAYPOINTS,
-            { keyPath: 'id', autoIncrement: true });
+        db.createObjectStore(WAYPOINTS, { keyPath: 'id', autoIncrement: true });
+    }
+};
+
+const refreshIndexes = (db) => {
+    const action = (transaction, resolve) => {
+        const groupsObjectStore = transaction.objectStore(GROUPS);
+        const waypointsObjectStore = transaction.objectStore(WAYPOINTS);
+        groupsObjectStore.indexNames.forEach(groupsObjectStore.deleteIndex);
+        waypointsObjectStore.indexNames.forEach(waypointsObjectStore.deleteIndex);
+        groupsObjectStore.createIndex('order', 'order', { unique: true });
+        groupsObjectStore.createIndex('name', 'name', { unique: true });
         waypointsObjectStore.createIndex('order', ['parentItemID', 'order'], { unique: true });
         waypointsObjectStore.createIndex('parentItemID', ['parentItemID'], { unique: false });
         waypointsObjectStore.createIndex('name', ['parentItemID', 'name'], { unique: true });
-    }
-}
+        transaction.onsuccess = (event) => {
+            resolve('indexes refreshed');
+        };
+    };
+    return handle(db, [GROUPS, WAYPOINTS], action, READWRITE);
+};
 
 const addLocalStorage = () => {
     const promises = [];
@@ -112,7 +127,7 @@ const backfillGroups = async (oldGroups) => {
         { name: getUniqueItemName(group, index) }
     ));
     const oldGroupsByName = Object.fromEntries(oldGroups.map((group, index) => (
-        [getUniqueItemName(group, index),group ]
+        [getUniqueItemName(group, index), group]
     )));
     const createdGroupIDs = await createItems(GROUPS, dbGroups); // // { createdID: dbGroup, ... }
     const backfillWaypointsPromises = Object.entries(createdGroupIDs).map(([groupID, group]) => {
@@ -169,7 +184,7 @@ const createItems = async (objectStoreName, items) => {
             resolve(itemIDs);
         };
     };
-    return handle([objectStoreName], action, READWRITE);
+    return handle(db, [objectStoreName], action, READWRITE);
 };
 
 export const createItem = async (objectStoreName, item) => {
@@ -186,7 +201,7 @@ export const readItem = (objectStoreName, itemID) => {
             resolve(item);
         };
     };
-    return handle([objectStoreName], action, READ);
+    return handle(db, [objectStoreName], action, READ);
 };
 
 const readItemCount = (objectStoreName, parentItemID) => {
@@ -204,7 +219,7 @@ const readItemCount = (objectStoreName, parentItemID) => {
             resolve(count);
         };
     };
-    return handle([objectStoreName], action, READ);
+    return handle(db, [objectStoreName], action, READ);
 };
 
 const readItemByOrder = (objectStoreName, order, parentItemID) => {
@@ -220,7 +235,7 @@ const readItemByOrder = (objectStoreName, order, parentItemID) => {
             resolve(item);
         };
     };
-    return handle([objectStoreName], action, READ);
+    return handle(db, [objectStoreName], action, READ);
 };
 
 // TODO: rename readItems to readItemNames -> return [{itemID, parentItemID, order, name}...]
@@ -239,7 +254,7 @@ export const readItems = (objectStoreName, parentItemID) => {
             resolve(items);
         };
     };
-    return handle([objectStoreName], action, READ);
+    return handle(db, [objectStoreName], action, READ);
 };
 
 export const updateItem = (objectStoreName, item) => {
@@ -250,7 +265,7 @@ export const updateItem = (objectStoreName, item) => {
             resolve(true);
         };
     };
-    return handle([objectStoreName], action, READWRITE);
+    return handle(db, [objectStoreName], action, READWRITE);
 };
 
 export const deleteItem = async (objectStoreName, itemID) => {
@@ -269,7 +284,7 @@ export const deleteItem = async (objectStoreName, itemID) => {
             resolve(true);
         };
     };
-    return handle(objectStoreNames, action, READWRITE);
+    return handle(db, objectStoreNames, action, READWRITE);
 };
 
 const getCascadeObjectStoreNameItemIDs = (objectStoreName, itemID) => {
@@ -285,7 +300,7 @@ const getCascadeObjectStoreNameItemIDs = (objectStoreName, itemID) => {
                 resolve(cascadeObjectStoreNameItemIDs);
             };
         };
-        return handle([WAYPOINTS], action, READ);
+        return handle(db, [WAYPOINTS], action, READ);
     }
     return {};
 };
@@ -315,5 +330,5 @@ const moveItem = async (objectStoreName, item, delta) => {
             resolve(true);
         };
     };
-    return handle([objectStoreName], action, READWRITE);
+    return handle(db, [objectStoreName], action, READWRITE);
 };
