@@ -120,7 +120,7 @@ const backfillGroups = async (oldGroups) => {
     }
     const currentDate = getCurrentDate();
     const getUniqueItemName = (item, index) => (
-        `${item.name}_imported_${currentDate}_${index}`
+        `${item.name}, imported ${currentDate} ${index}`
     );
     const dbGroups = oldGroups.map((group, index) => (
         { name: getUniqueItemName(group, index) }

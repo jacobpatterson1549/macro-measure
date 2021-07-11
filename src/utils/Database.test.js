@@ -323,17 +323,17 @@ describe('Database', () => {
                 expect(groupsObjectStore.index).toBeCalledWith('order');
                 expect(groupsOrderIndex.count).toBeCalledWith(groupsCountRange);
                 expect(groupsObjectStore.add.mock.calls).toEqual([
-                    [{ name: 'group 1_imported_XYZ_0', order: 111 }],
-                    [{ name: 'group 1b_imported_XYZ_1', order: 112 }],
-                    [{ name: 'group 2_imported_XYZ_2', order: 113 }],
-                    [{ name: 'group 3_imported_XYZ_3', order: 114 }],
+                    [{ name: 'group 1, imported XYZ 0', order: 111 }],
+                    [{ name: 'group 1b, imported XYZ 1', order: 112 }],
+                    [{ name: 'group 2, imported XYZ 2', order: 113 }],
+                    [{ name: 'group 3, imported XYZ 3', order: 114 }],
                 ]);
                 expect(waypointsObjectStore.index.mock.calls).toEqual([['order'], ['order']]);
                 expect(waypointsOrderIndex.count.mock.calls).toEqual([[waypointsGroup1Range], [waypointsGroup2Range]]);
                 expect(waypointsObjectStore.add.mock.calls).toEqual([
-                    [{ name: 'item1_imported_XYZ_0', lat: 2, lng: 3, order: 0, parentItemID: 'g1' }],
-                    [{ name: 'item2_imported_XYZ_1', lat: 22, lng: 7, order: 1, parentItemID: 'g1' }],
-                    [{ name: 'item7_imported_XYZ_0', lat: 20, lng: 31, order: 0, parentItemID: 'g2' }],
+                    [{ name: 'item1, imported XYZ 0', lat: 2, lng: 3, order: 0, parentItemID: 'g1' }],
+                    [{ name: 'item2, imported XYZ 1', lat: 22, lng: 7, order: 1, parentItemID: 'g1' }],
+                    [{ name: 'item7, imported XYZ 0', lat: 20, lng: 31, order: 0, parentItemID: 'g2' }],
                 ]);
             });
             it('should backfill waypoints', async () => {
@@ -419,15 +419,15 @@ describe('Database', () => {
                 expect(groupsObjectStore.index).toBeCalledWith('order');
                 expect(groupsOrderIndex.count).toBeCalledWith(groupsCountRange);
                 expect(groupsObjectStore.add.mock.calls).toEqual([
-                    [{ name: '0_imported_XYZ_0', order: 111 }],
-                    [{ name: '1_imported_XYZ_1', order: 112 }],
+                    [{ name: '0, imported XYZ 0', order: 111 }],
+                    [{ name: '1, imported XYZ 1', order: 112 }],
                 ]);
                 expect(waypointsObjectStore.index.mock.calls).toEqual([['order'], ['order']]);
                 expect(waypointsOrderIndex.count.mock.calls).toEqual([[waypointsGroup1Range], [waypointsGroup2Range]]);
                 expect(waypointsObjectStore.add.mock.calls).toEqual([
-                    [{ name: 'item1_imported_XYZ_0', lat: 2, lng: 3, order: 0, parentItemID: 'g1' }],
-                    [{ name: 'item2_imported_XYZ_1', lat: 22, lng: 7, order: 1, parentItemID: 'g1' }],
-                    [{ name: 'item7_imported_XYZ_0', lat: 20, lng: 31, order: 0, parentItemID: 'g2' }],
+                    [{ name: 'item1, imported XYZ 0', lat: 2, lng: 3, order: 0, parentItemID: 'g1' }],
+                    [{ name: 'item2, imported XYZ 1', lat: 22, lng: 7, order: 1, parentItemID: 'g1' }],
+                    [{ name: 'item7, imported XYZ 0', lat: 20, lng: 31, order: 0, parentItemID: 'g2' }],
                 ]);
             });
             it('should backfill empty groups and waypoints', () => {
