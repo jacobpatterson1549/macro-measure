@@ -163,10 +163,10 @@ const backfillWaypoints = (oldWaypoints) => {
 
 const createItems = async (objectStoreName, items) => {
     const parentItemID = items[0].parentItemID;
-    const differentParentIDs = !items.every((element, index) => index === 0 || parentItemID === element.parentItemID);
-    if (differentParentIDs) {
-        throw new Error("different parent IDs among items");
-    }
+    // const differentParentIDs = !items.every((element, index) => index === 0 || parentItemID === element.parentItemID);
+    // if (differentParentIDs) {
+    //     throw new Error("different parent IDs among items"); // this is unreachable.
+    // }
     const numItems = await readItemCount(objectStoreName, parentItemID);
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
