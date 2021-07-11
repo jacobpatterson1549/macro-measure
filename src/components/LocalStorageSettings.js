@@ -3,16 +3,15 @@ import { useEffect, useState } from 'react';
 import { Fieldset, Label, ButtonInput, FileInput } from './Form';
 
 import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
+import { getCurrentDate }  from '../utils/Global';
 
 export const LocalStorageSettings = () => {
     const [exportURL, setExportURL] = useState(null);
     const [exportLink, setExportLink] = useState(null);
     useEffect(() => {
         if (exportURL) {
-            const now = Date.now();
-            const date = new Date(now);
-            const iso8601Digits = date.toISOString().replace(/[^\dZ]/g, '');
-            const filename = `macro_measure_backup_${iso8601Digits}.json`;
+            const currentDate = getCurrentDate();
+            const filename = `macro_measure_backup_${currentDate}.json`;
             const anchor = (<a href={exportURL} download={filename}>{filename}</a>);
             setExportLink(anchor);
         }

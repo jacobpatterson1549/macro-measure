@@ -1,4 +1,4 @@
-import { indexedDB, localStorage, IDBKeyRange } from "./Global";
+import { indexedDB, localStorage, IDBKeyRange, getCurrentDate } from "./Global";
 
 const DATABASE_NAME = 'MACRO_MEASURE_DB';
 const DB_VERSION = parseInt('1'); // must be integer
@@ -17,7 +17,7 @@ export const initDatabase = () => {
         };
         openRequest.onsuccess = async (event) => {
             db = event.target.result;
-            await addLocalStorage(db);
+            await addLocalStorage();
             resolve(true);
         };
     });
@@ -87,103 +87,83 @@ const createObjectStores = (db) => {
     }
 }
 
-const addLocalStorage = (db) => {
+const addLocalStorage = () => {
     const promises = [];
     const groupsJSON = localStorage.getItem('groups');
     const waypointsJSON = localStorage.getItem('waypoints');
     if (groupsJSON) {
-        promises.push(new Promise((resolve, reject) => {
-            backfillGroups(db, JSON.parse(groupsJSON), resolve, reject);
-        }));
+        promises.push(backfillGroups(JSON.parse(groupsJSON)));
     }
     if (waypointsJSON) {
-        promises.push(new Promise((resolve, reject) => {
-            backfillWaypoints(db, JSON.parse(waypointsJSON), resolve, reject);
-        }));
+        promises.push(backfillWaypoints(JSON.parse(waypointsJSON)));
     }
     return Promise.all(promises);
 };
 
-const backfillGroups = async (db, oldGroups, resolve, reject) => {
-    // TODO: call createItems
-    const numItems = await readItemCount(GROUPS);
-    const groupTransaction = db.transaction(GROUPS, READWRITE);
-    const groups = groupTransaction.objectStore(GROUPS);
-    const dbGroups = oldGroups.map((group, index) => (
-        groups.add({
-            name: group.name,
-            order: numItems + index,
-        })
-    ));
-    groupTransaction.onerror = (event) => {
-        reject(`backfill groups error: ${event.target.error.message}`);
-    };
-    groupTransaction.oncomplete = (event) => {
-        backfillGroupItems(db, oldGroups, dbGroups, resolve, reject);
-    };
-};
-
-const backfillGroupItems = (db, oldGroups, dbGroups, resolve, reject) => {
-    const waypointsTransaction = db.transaction(WAYPOINTS, READWRITE);
-    const waypoints = waypointsTransaction.objectStore(WAYPOINTS);
-    oldGroups.forEach((group, groupIndex) => {
-        group.items?.forEach((item, itemIndex) => {
-            waypoints.add({
-                name: item.name,
-                lat: item.lat,
-                lng: item.lng,
-                order: itemIndex,
-                parentItemID: dbGroups[groupIndex].result,
-            });
-        });
+const backfillGroups = async (oldGroups) => {
+    // TODO: this does not ensure that no groups already exist with the provided names or that there are duplicate item names
+    // -> maybe the current date prefix could be added to all names!
+    const dbGroups = oldGroups.map((group) => ({ name: group.name })); // [{ name }, ...]
+    const oldGroupsByName = Object.fromEntries(oldGroups.map((group) => [group.name, group])); // { name: oldGroup, ... }
+    const createdGroupIDs = await createItems(GROUPS, dbGroups); // // { createdID: dbGroup, ... }
+    const backfillWaypointsPromises = Object.entries(createdGroupIDs).map(([groupID, group]) => {
+        const oldGroup = oldGroupsByName[group.name];
+        if (!oldGroup.items) {
+            return Promise.resolve();
+        }
+        const dbWaypoints = oldGroup.items.map((item) => (
+            Object.assign({}, item, { parentItemID: groupID })
+        ));
+        return createItems(WAYPOINTS, dbWaypoints);
     });
-    waypointsTransaction.onerror = (event) => {
-        reject(`backfill old items error: ${event.target.error.message}`);
-    };
-    waypointsTransaction.oncomplete = (event) => {
-        localStorage.removeItem('groups');
-        resolve(true);
-    };
+    await Promise.all(backfillWaypointsPromises);
 };
 
-const backfillWaypoints = (db, oldWaypoints, resolve, reject) => {
-    const waypointsTransaction = db.transaction(WAYPOINTS, READWRITE);
-    const waypoints = waypointsTransaction.objectStore(WAYPOINTS);
-    oldWaypoints.forEach((waypoint, index) => {
-        waypoints.add({
-            name: waypoint.name,
-            lat: waypoint.lat,
-            lng: waypoint.lng,
-            order: index,
-            // TODO: feature: add new group for each group of waypoints ?  (this ensures parentItemID exists)
-            parentItemID: waypoint.itemID,
-        });
+const backfillWaypoints = (oldWaypoints) => {
+    const oldWaypointsByParentItemIDs = {};
+    oldWaypoints.forEach((oldWaypoint) => {
+        if (!(oldWaypoint.parentItemID in oldWaypointsByParentItemIDs)) {
+            oldWaypointsByParentItemIDs[oldWaypoint.parentItemID] = [];
+        }
+        oldWaypointsByParentItemIDs[oldWaypoint.parentItemID].push(oldWaypoint);
     });
-    waypointsTransaction.onerror = (event) => {
-        reject(`backfill waypoints error: ${event.target.error.message}`);
-    };
-    waypointsTransaction.oncomplete = (event) => {
-        localStorage.removeItem('waypoints');
-        resolve(true);
-    };
+    const currentDate = getCurrentDate();
+    const oldGroups = Object.entries(oldWaypointsByParentItemIDs)
+        .map(([_, oldWaypoints], index) => ({
+            name: `imported_${currentDate}_${index}`,
+            items: oldWaypoints,
+        }));
+    return backfillGroups(oldGroups);
 };
 
-export const createItem = async (objectStoreName, item) => {
-    const numItems = await readItemCount(objectStoreName, item.parentItemID);
-    const dbItem = Object.assign({}, item, { order: numItems });
+const createItems = async (objectStoreName, items) => {
+    const parentItemID = items[0].parentItemID;
+    const differentParentIDs = !items.every((element, index) => index === 0 || parentItemID === element.parentItemID);
+    if (differentParentIDs) {
+        throw new Error("different parent IDs among items");
+    }
+    const numItems = await readItemCount(objectStoreName, parentItemID);
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
-        const request = objectStore.add(dbItem);
-        let itemID;
-        request.onsuccess = (event) => {
-            const id = event.target.result;
-            itemID = id;
-        };
+        let itemIDs = {};
+        items.forEach((item, index) => {
+            const dbItem = Object.assign({}, item, { order: numItems + index });
+            const request = objectStore.add(dbItem);
+            request.onsuccess = (event) => {
+                const id = event.target.result;
+                itemIDs[id] = item;
+            };
+        });
         transaction.oncomplete = (event) => {
-            resolve(itemID);
+            resolve(itemIDs);
         };
     };
     return handle([objectStoreName], action, READWRITE);
+};
+
+export const createItem = async (objectStoreName, item) => {
+    const createItemIDs = await createItems(objectStoreName, [item]); // { createdID: item }
+    return parseInt(Object.entries(createItemIDs)[0][0]);
 };
 
 export const readItem = (objectStoreName, itemID) => {
