@@ -96,6 +96,11 @@ const mockTransaction = async (...transactions) => {
 };
 
 describe('Database', () => {
+    it('should have previously called initDB', () => { // KEEP THIS TEST FIRST
+        const expected = 'call initDatabase() first';
+        const request = readItem('os1', 'key1');
+        expect(request).rejects.toContain(expected);
+    });
     describe('initDatabase', () => {
         const mockUpgradeObjectStore = (indexNames) => {
             indexNames = indexNames || [];
@@ -476,7 +481,7 @@ describe('Database', () => {
         });
     });
     describe('C.R.U.D. handlers', () => {
-        it('should handle errors', async () => {
+        it('should handle transaction errors', async () => {
             const expected = 'mock key missing message';
             const getRequest = new MockIDBRequest();
             const objectStore = { get: jest.fn().mockReturnValue(getRequest) };

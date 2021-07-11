@@ -6,7 +6,7 @@ const READ = 'readonly';
 const READWRITE = 'readwrite';
 export const GROUPS = 'groups';
 export const WAYPOINTS = 'waypoints';
-let db;
+let db; // !!! internal state in module !!!
 
 export const initDatabase = () => {
     return new Promise((resolve, reject) => {
