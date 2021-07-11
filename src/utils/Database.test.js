@@ -272,8 +272,8 @@ describe('Database', () => {
                         .mockReturnValueOnce(waypointsAddRequest7),
                 };
                 const groupsCountRange = null;
-                const waypointsGroup1Range = IDBKeyRange.bound(['g1', -Infinity], ['g1', +Infinity], false, false);
-                const waypointsGroup2Range = IDBKeyRange.bound(['g2', -Infinity], ['g2', +Infinity], false, false);
+                const waypointsGroup1Range = IDBKeyRange.bound([1, -Infinity], [1, +Infinity], false, false);
+                const waypointsGroup2Range = IDBKeyRange.bound([2, -Infinity], [2, +Infinity], false, false);
                 const transactionGR = new MockIDBTransaction(groupsObjectStore);
                 const transactionGW = new MockIDBTransaction(groupsObjectStore);
                 const transactionWR1 = new MockIDBTransaction(waypointsObjectStore);
@@ -298,10 +298,10 @@ describe('Database', () => {
                 await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readonly'));
                 groupsCountRequest.dispatchEvent(mockEvent('success', { result: 111 }));
                 await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readwrite'));
-                groupsAddRequest1.dispatchEvent(mockEvent('success', { result: 'g1' }));
-                groupsAddRequest1b.dispatchEvent(mockEvent('success', { result: 'g1b' }));
-                groupsAddRequest2.dispatchEvent(mockEvent('success', { result: 'g2' }));
-                groupsAddRequest3.dispatchEvent(mockEvent('success', { result: 'g3' }));
+                groupsAddRequest1.dispatchEvent(mockEvent('success', { result: 1 }));
+                groupsAddRequest1b.dispatchEvent(mockEvent('success', { result: 11 }));
+                groupsAddRequest2.dispatchEvent(mockEvent('success', { result: 2 }));
+                groupsAddRequest3.dispatchEvent(mockEvent('success', { result: 3 }));
                 transactionGW.dispatchEvent(mockEvent('complete', {}));
                 await waitFor(() => {
                     expect(db.transaction).toBeCalledWith(['waypoints'], 'readonly'); // i1, i2
@@ -331,9 +331,9 @@ describe('Database', () => {
                 expect(waypointsObjectStore.index.mock.calls).toEqual([['order'], ['order']]);
                 expect(waypointsOrderIndex.count.mock.calls).toEqual([[waypointsGroup1Range], [waypointsGroup2Range]]);
                 expect(waypointsObjectStore.add.mock.calls).toEqual([
-                    [{ name: 'item1, imported XYZ 0', lat: 2, lng: 3, order: 0, parentItemID: 'g1' }],
-                    [{ name: 'item2, imported XYZ 1', lat: 22, lng: 7, order: 1, parentItemID: 'g1' }],
-                    [{ name: 'item7, imported XYZ 0', lat: 20, lng: 31, order: 0, parentItemID: 'g2' }],
+                    [{ name: 'item1, imported XYZ 0', lat: 2, lng: 3, order: 0, parentItemID: 1 }],
+                    [{ name: 'item2, imported XYZ 1', lat: 22, lng: 7, order: 1, parentItemID: 1 }],
+                    [{ name: 'item7, imported XYZ 0', lat: 20, lng: 31, order: 0, parentItemID: 2 }],
                 ]);
             });
             it('should backfill waypoints', async () => {
@@ -370,8 +370,8 @@ describe('Database', () => {
                         .mockReturnValueOnce(waypointsAddRequest7),
                 };
                 const groupsCountRange = null;
-                const waypointsGroup1Range = IDBKeyRange.bound(['g1', -Infinity], ['g1', +Infinity], false, false);
-                const waypointsGroup2Range = IDBKeyRange.bound(['g2', -Infinity], ['g2', +Infinity], false, false);
+                const waypointsGroup1Range = IDBKeyRange.bound([1, -Infinity], [1, +Infinity], false, false);
+                const waypointsGroup2Range = IDBKeyRange.bound([2, -Infinity], [2, +Infinity], false, false);
                 const transactionGR = new MockIDBTransaction(groupsObjectStore);
                 const transactionGW = new MockIDBTransaction(groupsObjectStore);
                 const transactionWR1 = new MockIDBTransaction(waypointsObjectStore);
@@ -396,8 +396,8 @@ describe('Database', () => {
                 await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readonly'));
                 groupsCountRequest.dispatchEvent(mockEvent('success', { result: 111 }));
                 await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readwrite'));
-                groupsAddRequest1.dispatchEvent(mockEvent('success', { result: 'g1' }));
-                groupsAddRequest2.dispatchEvent(mockEvent('success', { result: 'g2' }));
+                groupsAddRequest1.dispatchEvent(mockEvent('success', { result: 1 }));
+                groupsAddRequest2.dispatchEvent(mockEvent('success', { result: 2 }));
                 transactionGW.dispatchEvent(mockEvent('complete', {}));
                 await waitFor(() => {
                     expect(db.transaction).toBeCalledWith(['waypoints'], 'readonly'); // i1, i2
@@ -425,9 +425,9 @@ describe('Database', () => {
                 expect(waypointsObjectStore.index.mock.calls).toEqual([['order'], ['order']]);
                 expect(waypointsOrderIndex.count.mock.calls).toEqual([[waypointsGroup1Range], [waypointsGroup2Range]]);
                 expect(waypointsObjectStore.add.mock.calls).toEqual([
-                    [{ name: 'item1, imported XYZ 0', lat: 2, lng: 3, order: 0, parentItemID: 'g1' }],
-                    [{ name: 'item2, imported XYZ 1', lat: 22, lng: 7, order: 1, parentItemID: 'g1' }],
-                    [{ name: 'item7, imported XYZ 0', lat: 20, lng: 31, order: 0, parentItemID: 'g2' }],
+                    [{ name: 'item1, imported XYZ 0', lat: 2, lng: 3, order: 0, parentItemID: 1 }],
+                    [{ name: 'item2, imported XYZ 1', lat: 22, lng: 7, order: 1, parentItemID: 1 }],
+                    [{ name: 'item7, imported XYZ 0', lat: 20, lng: 31, order: 0, parentItemID: 2 }],
                 ]);
             });
             it('should backfill empty groups and waypoints', () => {

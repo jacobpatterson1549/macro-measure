@@ -137,7 +137,7 @@ const backfillGroups = async (oldGroups) => {
         const dbWaypoints = oldGroup.items.map((item, index) => (
             Object.assign({}, item, {
                 name: getUniqueItemName(item, index),
-                parentItemID: groupID,
+                parentItemID: parseInt(groupID),
             })
         ));
         return createItems(WAYPOINTS, dbWaypoints);
