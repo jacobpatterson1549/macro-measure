@@ -101,18 +101,30 @@ const addLocalStorage = () => {
 };
 
 const backfillGroups = async (oldGroups) => {
-    // TODO: this does not ensure that no groups already exist with the provided names or that there are duplicate item names
-    // -> maybe the current date prefix could be added to all names!
-    const dbGroups = oldGroups.map((group) => ({ name: group.name })); // [{ name }, ...]
-    const oldGroupsByName = Object.fromEntries(oldGroups.map((group) => [group.name, group])); // { name: oldGroup, ... }
+    if (!oldGroups.length) {
+        return;
+    }
+    const currentDate = getCurrentDate();
+    const getUniqueItemName = (item, index) => (
+        `${item.name}_imported_${currentDate}_${index}`
+    );
+    const dbGroups = oldGroups.map((group, index) => (
+        { name: getUniqueItemName(group, index) }
+    ));
+    const oldGroupsByName = Object.fromEntries(oldGroups.map((group, index) => (
+        [getUniqueItemName(group, index),group ]
+    )));
     const createdGroupIDs = await createItems(GROUPS, dbGroups); // // { createdID: dbGroup, ... }
     const backfillWaypointsPromises = Object.entries(createdGroupIDs).map(([groupID, group]) => {
         const oldGroup = oldGroupsByName[group.name];
         if (!oldGroup.items) {
             return Promise.resolve();
         }
-        const dbWaypoints = oldGroup.items.map((item) => (
-            Object.assign({}, item, { parentItemID: groupID })
+        const dbWaypoints = oldGroup.items.map((item, index) => (
+            Object.assign({}, item, {
+                name: getUniqueItemName(item, index),
+                parentItemID: groupID,
+            })
         ));
         return createItems(WAYPOINTS, dbWaypoints);
     });
@@ -127,10 +139,9 @@ const backfillWaypoints = (oldWaypoints) => {
         }
         oldWaypointsByParentItemIDs[oldWaypoint.parentItemID].push(oldWaypoint);
     });
-    const currentDate = getCurrentDate();
     const oldGroups = Object.entries(oldWaypointsByParentItemIDs)
         .map(([_, oldWaypoints], index) => ({
-            name: `imported_${currentDate}_${index}`,
+            name: index,
             items: oldWaypoints,
         }));
     return backfillGroups(oldGroups);
