@@ -121,6 +121,28 @@ describe('Database', () => {
                 openRequest.dispatchEvent(event);
                 expect(db.createObjectStore).toBeCalledTimes(expected);
             });
+            const createObjectStoreCountTests = [
+                [2, []],
+                [2, ['unused', 'object', 'stores']],
+                [1, ['groups']],
+                [1, ['waypoints']],
+                [0, ['waypoints', 'groups']],
+            ]
+            it.each(createObjectStoreCountTests)('should create %d object stores when object stores were previously %s', (expected, oldObjectStoresNames) => {
+                const openRequest = new MockIDBOpenDBRequest();
+                indexedDB.open = () => openRequest;
+                const db = {
+                    objectStoreNames: oldObjectStoresNames,
+                    createObjectStore: jest.fn().mockReturnValue({
+                        createIndex: jest.fn(),
+                    }),
+                };
+                const event = mockEvent('upgradeneeded', { result: db });
+                Object.defineProperty(event, 'oldVersion', { value: -1 });
+                initDatabase();
+                openRequest.dispatchEvent(event);
+                expect(db.createObjectStore).toBeCalledTimes(expected);
+            });
         });
         it('should reject with the error message when an error is thrown', () => {
             const openRequest = new MockIDBOpenDBRequest();
