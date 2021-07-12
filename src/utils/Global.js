@@ -15,7 +15,6 @@ export const serviceWorker = navigator.serviceWorker; // TODO: use this
 export const onLine = navigator.onLine; // TODO: use this
 export const createObjectURL = URL.createObjectURL; // TODO: use this
 export const revokeObjectURL = URL.revokeObjectURL; // TODO: use this
-export const DateNow = Date.now; // TODO: use this
 export const getCurrentDate = () => (
     new Date(
         Date.now())
