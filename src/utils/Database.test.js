@@ -149,7 +149,7 @@ describe('Database', () => {
                 };
                 const transaction = new MockIDBTransaction(mockUpgradeObjectStore(), mockUpgradeObjectStore());
                 const event = mockEvent('upgradeneeded', { result: db, transaction: transaction });
-                Object.defineProperty(event, 'oldVersion', { value: oldVersion });
+                event.oldVersion = oldVersion;
                 initDatabase();
                 openRequest.dispatchEvent(event);
                 expect(db.createObjectStore).toBeCalledTimes(expected);
@@ -172,7 +172,7 @@ describe('Database', () => {
                 };
                 const transaction = new MockIDBTransaction(mockUpgradeObjectStore(), mockUpgradeObjectStore());
                 const event = mockEvent('upgradeneeded', { result: db, transaction: transaction });
-                Object.defineProperty(event, 'oldVersion', { value: -1 });
+                event.oldVersion = -1;
                 initDatabase();
                 openRequest.dispatchEvent(event);
                 expect(db.createObjectStore).toBeCalledTimes(expected);
@@ -195,7 +195,7 @@ describe('Database', () => {
                     }),
                 };
                 const event = mockEvent('upgradeneeded', { result: db, transaction: transaction });
-                Object.defineProperty(event, 'oldVersion', { value: 0 });
+                event.oldVersion = 0;
                 initDatabase();
                 openRequest.dispatchEvent(event);
                 expect(groupsObjectStore.deleteIndex.mock.calls).toEqual(groupsObjectStore.expectedDeleteIndexCalls);
