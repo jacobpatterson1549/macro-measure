@@ -1,21 +1,15 @@
 import { waitFor } from '@testing-library/react';
 
 import { initDatabase, getDatabaseAsObject, deleteDatabase, createItem, readItem, readItems, updateItem, deleteItem, moveItemUp, moveItemDown } from './Database';
-import { indexedDB, localStorage, IDBKeyRange, getCurrentDate, getLocalStorage } from "./Global";
+import { indexedDB, getIDBKeyRange, getCurrentDate, getLocalStorage, getIndexedDB } from "./Global";
 
 const mockIDBKeyRange = (lower, upper, lowerOpen, upperOpen) => (
     { lower, upper, lowerOpen, upperOpen }
 );
 
 jest.mock('./Global', () => ({
-    indexedDB: {
-        open: jest.fn(),
-        deleteDatabase: jest.fn(),
-    },
-    IDBKeyRange: {
-        only: (z) => mockIDBKeyRange(z, z, false, false),
-        bound: (x, y) => mockIDBKeyRange(x, y, false, false),
-    },
+    getIndexedDB: jest.fn(),
+    getIDBKeyRange: jest.fn(),
     getLocalStorage: jest.fn(),
     getCurrentDate: jest.fn(),
 }));
@@ -71,7 +65,7 @@ const mockEvent = (type, target) => ({ type, target });
 
 const mockTransaction = async (...transactions) => {
     const openRequest = new MockIDBOpenDBRequest();
-    indexedDB.open = () => openRequest;
+    getIndexedDB().open = () => openRequest;
     const db = {
         transaction: jest.fn(),
     };
@@ -114,12 +108,23 @@ const mockUpgradeObjectStore = (indexNames) => {
 };
 
 describe('Database', () => {
+    let indexedDB;
     let localStorage;
     beforeEach(() => {
+        indexedDB = {
+            open: jest.fn(),
+            deleteDatabase: jest.fn(),
+        };
+        const idbKeyRange = {
+            only: (z) => mockIDBKeyRange(z, z, false, false),
+            bound: (x, y) => mockIDBKeyRange(x, y, false, false),
+        };
         localStorage = {
             getItem: jest.fn(),
             removeItem: jest.fn(),
         };
+        getIndexedDB.mockReturnValue(indexedDB);
+        getIDBKeyRange.mockReturnValue(idbKeyRange);
         getLocalStorage.mockReturnValue(localStorage);
     });
     it('should have previously called initDB', () => { // KEEP THIS TEST FIRST, or reset the module between tests
@@ -270,8 +275,8 @@ describe('Database', () => {
                         .mockReturnValueOnce(waypointsAddRequest7),
                 };
                 const groupsCountRange = null;
-                const waypointsGroup1Range = IDBKeyRange.bound([1, -Infinity], [1, +Infinity], false, false);
-                const waypointsGroup2Range = IDBKeyRange.bound([2, -Infinity], [2, +Infinity], false, false);
+                const waypointsGroup1Range = getIDBKeyRange().bound([1, -Infinity], [1, +Infinity], false, false);
+                const waypointsGroup2Range = getIDBKeyRange().bound([2, -Infinity], [2, +Infinity], false, false);
                 const transactionGR = new MockIDBTransaction(groupsObjectStore);
                 const transactionGW = new MockIDBTransaction(groupsObjectStore);
                 const transactionWR1 = new MockIDBTransaction(waypointsObjectStore);
@@ -368,8 +373,8 @@ describe('Database', () => {
                         .mockReturnValueOnce(waypointsAddRequest7),
                 };
                 const groupsCountRange = null;
-                const waypointsGroup1Range = IDBKeyRange.bound([1, -Infinity], [1, +Infinity], false, false);
-                const waypointsGroup2Range = IDBKeyRange.bound([2, -Infinity], [2, +Infinity], false, false);
+                const waypointsGroup1Range = getIDBKeyRange().bound([1, -Infinity], [1, +Infinity], false, false);
+                const waypointsGroup2Range = getIDBKeyRange().bound([2, -Infinity], [2, +Infinity], false, false);
                 const transactionGR = new MockIDBTransaction(groupsObjectStore);
                 const transactionGW = new MockIDBTransaction(groupsObjectStore);
                 const transactionWR1 = new MockIDBTransaction(waypointsObjectStore);
@@ -632,7 +637,7 @@ describe('Database', () => {
         });
         it('should deleteItem for group and cascade delete waypoints', async () => {
             const groupID = 'test id';
-            const range = IDBKeyRange.only(groupID);
+            const range = getIDBKeyRange().only(groupID);
             const getAllKeysRequest = new MockIDBRequest();
             const parentItemIDIndex = { getAllKeys: jest.fn().mockReturnValue(getAllKeysRequest) };
             const objectStoreR = { index: jest.fn().mockReturnValue(parentItemIDIndex) };
@@ -654,11 +659,12 @@ describe('Database', () => {
             expect(request).resolves.toBeTruthy();
         });
         describe('moveItem', () => {
+            const rangeOnly = (x) => mockIDBKeyRange(x, x, false, false);
             const moveItemTests = [
-                ['down', { name: 'src', order: 1 }, IDBKeyRange.only(2), { name: 'dst', order: 2 }, moveItemDown],
-                ['up', { name: 'src', order: 7 }, IDBKeyRange.only(6), { name: 'dst', order: 6 }, moveItemUp],
-                ['down', { name: 'src', order: 9, parentItemID: 6 }, IDBKeyRange.only([6, 10]), { name: 'dst', order: 10, parentItemID: 6 }, moveItemDown],
-                ['up', { name: 'src', order: 4, parentItemID: 9 }, IDBKeyRange.only([9, 3]), { name: 'dst', order: 3, parentItemID: 9 }, moveItemUp],
+                ['down', { name: 'src', order: 1 }, rangeOnly(2), { name: 'dst', order: 2 }, moveItemDown],
+                ['up', { name: 'src', order: 7 }, rangeOnly(6), { name: 'dst', order: 6 }, moveItemUp],
+                ['down', { name: 'src', order: 9, parentItemID: 6 }, rangeOnly([6, 10]), { name: 'dst', order: 10, parentItemID: 6 }, moveItemDown],
+                ['up', { name: 'src', order: 4, parentItemID: 9 }, rangeOnly([9, 3]), { name: 'dst', order: 3, parentItemID: 9 }, moveItemUp],
             ];
             it.each(moveItemTests)('should moveItem %s when item is %s using a range of %s', async (direction, srcItem, range, dstItem, moveItem) => {
                 const expected = [

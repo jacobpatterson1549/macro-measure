@@ -1,10 +1,10 @@
 // global objects/functions that will often need to be mocked for testing
-export const isFullscreen = () => !!window.document.fullscreenElement;
+export const isFullscreen = () =>     !!window.document.fullscreenElement;
 export const requestFullscreen = window.document.body.requestFullscreen;
 export const exitFullscreen = window.document.exitFullscreen;
 export const getElementById = window.document.getElementById;
-export const indexedDB = window.indexedDB;
-export const IDBKeyRange = window.IDBKeyRange;
+export const getIndexedDB = () => window.indexedDB;
+export const getIDBKeyRange = () => window.IDBKeyRange;
 export const getLocalStorage = () => window.localStorage;
 export const addWindowEventListener = window.addEventListener;
 export const removeWindowEventListener = window.removeEventListener;

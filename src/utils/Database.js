@@ -1,4 +1,4 @@
-import { indexedDB, getLocalStorage, IDBKeyRange, getCurrentDate } from "./Global";
+import { getIndexedDB, getIDBKeyRange, getLocalStorage, getCurrentDate } from "./Global";
 
 const DATABASE_NAME = 'MACRO_MEASURE_DB';
 const DB_VERSION = parseInt('2'); // must be integer
@@ -10,7 +10,7 @@ let db; // !!! internal state in module !!!
 
 export const initDatabase = () => {
     return new Promise((resolve, reject) => {
-        const openRequest = indexedDB.open(DATABASE_NAME, DB_VERSION);
+        const openRequest = getIndexedDB().open(DATABASE_NAME, DB_VERSION);
         openRequest.onupgradeneeded = upgradeDb;
         openRequest.onerror = (event) => {
             reject(`Database open error: ${event.target.error.message}`);
@@ -44,7 +44,7 @@ export const getDatabaseAsObject = () => {
 
 export const deleteDatabase = () => {
     return new Promise((resolve, reject) => {
-        const request = indexedDB.deleteDatabase(DATABASE_NAME);
+        const request = getIndexedDB().deleteDatabase(DATABASE_NAME);
         request.onerror = (event) => {
             reject(`Database delete error: ${event.target.error.message}`);
         };
@@ -213,7 +213,7 @@ const readItemCount = (objectStoreName, parentItemID) => {
         const objectStore = transaction.objectStore(objectStoreName);
         const index = objectStore.index('order');
         const range = (parentItemID)
-            ? IDBKeyRange.bound(
+            ? getIDBKeyRange().bound(
                 [parentItemID, -Infinity],
                 [parentItemID, +Infinity])
             : null;
@@ -231,8 +231,8 @@ const readItemByOrder = (objectStoreName, order, parentItemID) => {
         const objectStore = transaction.objectStore(objectStoreName);
         const index = objectStore.index('order');
         const range = (parentItemID)
-            ? IDBKeyRange.only([parentItemID, order])
-            : IDBKeyRange.only(order);
+            ? getIDBKeyRange().only([parentItemID, order])
+            : getIDBKeyRange().only(order);
         const request = index.get(range);
         request.onsuccess = (event) => {
             const item = event.target.result;
@@ -248,7 +248,7 @@ export const readItems = (objectStoreName, parentItemID) => {
         const objectStore = transaction.objectStore(objectStoreName);
         const index = objectStore.index('order');
         const range = (parentItemID)
-            ? IDBKeyRange.bound(
+            ? getIDBKeyRange().bound(
                 [parentItemID, -Infinity],
                 [parentItemID, +Infinity])
             : null;
@@ -296,7 +296,7 @@ const getCascadeObjectStoreNameItemIDs = (objectStoreName, itemID) => {
         const action = (transaction, resolve) => {
             const objectStore = transaction.objectStore(WAYPOINTS);
             const index = objectStore.index('parentItemID');
-            const range = IDBKeyRange.only(itemID);
+            const range = getIDBKeyRange().only(itemID);
             const request = index.getAllKeys(range);
             request.onsuccess = async (event) => {
                 const waypointItemIDs = event.target.result;
