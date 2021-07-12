@@ -4,8 +4,7 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
-// TODO: most of these should be deleted.  Modules should reference fields in the src/utils/Global.js module, mock those all fields here
-Object.defineProperties(global, {
+Object.defineProperties(window, {
     'localStorage': {
         value: {
             getItem: jest.fn(),
@@ -14,15 +13,6 @@ Object.defineProperties(global, {
             clear: jest.fn(),
             key: jest.fn(),
             length: 0,
-        },
-        writable: true,
-    },
-    'location': {
-        value: {
-            assign: jest.fn(),
-            reload: jest.fn(),
-            protocol: 'https:',
-            hostname: 'macro-measure.herokuapp.com',
         },
         writable: true,
     },
