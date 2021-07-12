@@ -1,6 +1,7 @@
 import { isFullscreen, getIndexedDB, getLocalStorage, getIDBKeyRange, getGeolocation, isOnLine, isProductionEnv, canUseServiceWorker, getCurrentDate } from './Global';
 
 describe('Global', () => {
+    Object.defineProperty(window, 'navigator', { value: {}, writable: true });
     describe('isFullscreen', () => {
         const isFullscreenTests = [
             [{}, true],
