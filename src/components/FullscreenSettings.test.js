@@ -4,12 +4,17 @@ import { FullscreenSettings } from './FullscreenSettings';
 
 import { useFullscreen, useOnLine, useInstallPromptEvent } from '../hooks/Window';
 
+import { reloadWindow } from '../utils/Global';
+
 jest.mock('../hooks/Window', () => ({
     useFullscreen: jest.fn(),
     useOnLine: jest.fn(),
     useInstallPromptEvent: jest.fn(),
 }));
 
+jest.mock('../utils/Global', () => ({
+    reloadWindow: jest.fn(),
+}));
 
 describe('FullscreenSettings', () => {
     beforeEach(() => {
@@ -90,7 +95,7 @@ describe('FullscreenSettings', () => {
                 const element = screen.queryByRole('button');
                 element.click();
                 await waitFor(expect(installPromptEvent.prompt).toBeCalled);
-                expect(window.location.reload).toBeCalledTimes(expected);
+                expect(reloadWindow).toBeCalledTimes(expected);
             });
         });
     });

@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { LocalStorageSettings } from './LocalStorageSettings';
 
 import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
-import { getCurrentDate } from '../utils/Global'
+import { getCurrentDate, reloadWindow } from '../utils/Global'
 
 jest.mock('../utils/LocalStorage', () => ({
     clearLocalStorage: jest.fn(),
@@ -13,7 +13,9 @@ jest.mock('../utils/LocalStorage', () => ({
 
 jest.mock('../utils/Global', () => ({
     getCurrentDate: jest.fn(),
+    reloadWindow: jest.fn(),
 }));
+
 
 describe('LocalStorageSettings', () => {
     describe('clear storage', () => {
@@ -22,7 +24,7 @@ describe('LocalStorageSettings', () => {
             const clearStorageElement = screen.getByLabelText(/clear/i);
             fireEvent.click(clearStorageElement);
             expect(clearLocalStorage).toBeCalled();
-            expect(window.location.reload).toBeCalled();
+            expect(reloadWindow).toBeCalled();
         });
     });
     describe('import/export', () => {
@@ -60,7 +62,7 @@ describe('LocalStorageSettings', () => {
             await waitFor(expect(textFn).toBeCalled);
             expect(clearLocalStorage).toBeCalled();
             expect(setLocalStorage).toBeCalledWith(allJSON);
-            expect(window.location.reload).toBeCalled();
+            expect(reloadWindow).toBeCalled();
         });
         it('should revokeObjectURL', async () => {
             const expectedURLs = ['url1', 'url2', 'url3']
@@ -81,7 +83,7 @@ describe('LocalStorageSettings', () => {
             render(<LocalStorageSettings />);
             const reloadButtonElement = screen.getByLabelText(/reload/i);
             fireEvent.click(reloadButtonElement);
-            expect(window.location.reload).toBeCalled();
+            expect(reloadWindow).toBeCalled();
         });
     });
 });

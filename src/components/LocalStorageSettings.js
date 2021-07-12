@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Fieldset, Label, ButtonInput, FileInput } from './Form';
 
 import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
-import { getCurrentDate }  from '../utils/Global';
+import { getCurrentDate, reloadWindow }  from '../utils/Global';
 
 export const LocalStorageSettings = () => {
     const [exportURL, setExportURL] = useState(null);
@@ -48,7 +48,7 @@ const render = (props) => (
         <Label caption="Reload page and Saved Data">
             <ButtonInput
                 value="Reload"
-                onClick={reload}
+                onClick={reloadWindow}
             />
         </Label>
     </Fieldset>
@@ -66,16 +66,12 @@ const handleImportStorage = () => async (file) => {
     const allJSON = await file.text();
     clearLocalStorage();
     setLocalStorage(allJSON);
-    reload();
+    reloadWindow();
 };
 
 const handleResetStorage = () => () => {
     clearLocalStorage();
-    reload();
-};
-
-const reload = () => {
-    window.location.reload(); // force all states to be refreshed
+    reloadWindow();
 };
 
 const jsonMimeType = "application/json";

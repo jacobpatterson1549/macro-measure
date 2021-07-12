@@ -2,6 +2,8 @@ import { Fieldset, Label, CheckboxInput, ButtonInput } from './Form';
 
 import { useFullscreen, useOnLine, useInstallPromptEvent } from '../hooks/Window';
 
+import { reloadWindow } from '../utils/Global';
+
 export const FullscreenSettings = (props) => {
     const [fullscreen, setFullscreen] = useFullscreen();
     const onLine = useOnLine();
@@ -48,7 +50,7 @@ const handlePromptInstall = (installPromptEvent) => async () => {
     installPromptEvent.prompt();
     const choiceResult = await installPromptEvent.userChoice;
     if (choiceResult.outcome === 'accepted') {
-        // reload force the event to be removed, as it will no longer be triggered
-        window.location.reload();
+        // reload forces the event to be removed, as it will no longer be triggered
+        reloadWindow();
     }
 };
