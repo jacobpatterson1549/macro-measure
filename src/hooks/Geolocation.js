@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 
 import { roundLatLng } from '../utils/Geolocation';
 import { View } from '../utils/View';
+import { getGeolocation } from '../utils/Global';
 
 export const useGeolocation = (props) => {
     const watchID = useRef(null);
@@ -56,9 +57,5 @@ const handleError = (watchID, setLatLng, setAccuracy, setGPSOn) => () => {
     setAccuracy(noAccuracy)
     stopWatch(watchID, setGPSOn);
 };
-
-const getGeolocation = () => (
-    window.navigator.geolocation
-);
 
 const noAccuracy = '∞';

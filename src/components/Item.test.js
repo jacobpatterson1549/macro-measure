@@ -236,7 +236,6 @@ describe('Item', () => {
             expect(screen.queryByRole('img')).toBeInTheDocument();
         });
         it('should say map disabled when it does not have geolocation', () => {
-            navigator.geolocation = null;
             useItems.mockReturnValue([[]]);
             useGeolocation.mockReturnValue({
                 valid: false,

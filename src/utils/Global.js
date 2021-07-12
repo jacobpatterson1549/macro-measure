@@ -11,7 +11,9 @@ export const IDBKeyRange = window.IDBKeyRange;
 export const addWindowEventListener = window.addEventListener;
 export const removeWindowEventListener = window.removeEventListener;
 export const reloadWindow = window.location.reload;
-export const geolocation = navigator.geolocation; // TODO: use this
+export const getGeolocation = () => (
+    navigator.geolocation
+);
 export const isProductionEnv = () => (
     process.env.NODE_ENV = 'production'
 );
