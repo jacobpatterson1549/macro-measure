@@ -1,5 +1,3 @@
-jest.spyOn(window, 'addEventListener');
-
 import { registerSW } from './serviceWorkerRegistration';
 
 import { canUseServiceWorker, registerServiceWorker, isProductionEnv } from './utils/Global';

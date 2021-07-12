@@ -7,8 +7,8 @@ export const exitFullscreen = window.document.exitFullscreen; // TODO: use this
 export const indexedDB = window.indexedDB;
 export const localStorage = window.localStorage; // TODO: use this everywhere
 export const IDBKeyRange = window.IDBKeyRange;
-export const addWindowEventListener = window.addEventListener; // TODO: use this, especially in index/sw
-export const removeWindowEventListener = window.removeEventListener; // TODO: use this
+export const addWindowEventListener = window.addEventListener;
+export const removeWindowEventListener = window.removeEventListener;
 export const reloadWindow = window.location.reload;
 export const geolocation = navigator.geolocation; // TODO: use this
 export const isProductionEnv = () => (

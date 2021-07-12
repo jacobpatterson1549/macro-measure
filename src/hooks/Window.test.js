@@ -1,12 +1,14 @@
-import { fireEvent, createEvent } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks'
 
 import { useFullscreen, useOnLine, useInstallPromptEvent } from './Window';
 
-import { isOnLine } from '../utils/Global';
+import { isOnLine, addWindowEventListener } from '../utils/Global';
 
 jest.mock('../utils/Global', () => ({
     isOnLine: jest.fn(),
+    addWindowEventListener: jest.fn(),
+    removeWindowEventListener: jest.fn(),
 }));
 
 describe('Window', () => {
@@ -21,13 +23,16 @@ describe('Window', () => {
             const [fullscreen, setFullscreen] = result.current;
             expect(fullscreen).toBe(initial);
         });
-        it.each(tests)('should transition to fullscreen=%s', (transition, transitionFullscreenElement) => {
+        it.each(tests)('should transition to fullscreen=%s', async (transition, transitionFullscreenElement) => {
             const { result } = renderHook(() => useFullscreen());
             document.fullscreenElement = transitionFullscreenElement;
-            const event = createEvent('fullscreenchange', window);
-            fireEvent(window, event);
-            const [fullscreen, setFullscreen] = result.current;
-            expect(fullscreen).toBe(transition);
+            expect(addWindowEventListener.mock.calls[0][0]).toBe('fullscreenchange');
+            const fullscreenChangeHandler = addWindowEventListener.mock.calls[0][1];
+            await waitFor(() => {
+                fullscreenChangeHandler();
+                const [fullscreen, setFullscreen] = result.current;
+                expect(fullscreen).toBe(transition);
+            });
         });
         it('should request fullscreen when set to true', () => {
             document.body.requestFullscreen = jest.fn();
@@ -46,44 +51,49 @@ describe('Window', () => {
     });
     describe('onLine', () => {
         const tests = [
-            [true, true, 'online'],
-            [true, false, 'offline'],
-            [false, true, 'online'],
-            [false, false, 'offline'],
+            [true, true, 'online', 0],
+            [true, false, 'offline', 1],
+            [false, true, 'online', 0],
+            [false, false, 'offline', 1],
         ];
-        it.each(tests)('should initially be onLine=%s then transition to onLine=%s when %s event is fired', (initial, expected, eventName) => {
+        it.each(tests)('should initially be onLine=%s then transition to onLine=%s when %s event is fired', async (initial, expected, eventName, eventIndex) => {
             isOnLine.mockReturnValueOnce(initial);
             const { result } = renderHook(() => useOnLine());
             const onLine = result.current;
             expect(onLine).toBe(initial);
-            const event = createEvent(eventName, window);
-            fireEvent(window, event);
-            const onLine2 = result.current;
-            expect(onLine2).toBe(expected);
+            expect(addWindowEventListener.mock.calls[eventIndex][0]).toBe(eventName);
+            const eventHandler = addWindowEventListener.mock.calls[eventIndex][1];
+            await waitFor(() => {
+                eventHandler();
+                const onLine2 = result.current;
+                expect(onLine2).toBe(expected);
+            });
         });
     });
     describe('promptInstall', () => {
-        const mockAndFireOnBeforeInstallPromptEvent = () => {
-            // test procedure from https://github.com/testing-library/testing-library-docs/issues/798
-            const event = createEvent('beforeinstallprompt', window);
-            Object.defineProperty(event, 'preventDefault', { value: jest.fn() });
-            fireEvent(window, event);
-            return event
+        const mockAndFireOnBeforeInstallPromptEvent = async () => {
+            expect(addWindowEventListener.mock.calls[0][0]).toBe('beforeinstallprompt');
+            const handlePreventDefault = addWindowEventListener.mock.calls[0][1];
+            const event = {
+                preventDefault: jest.fn(),
+            };
+            await waitFor(() => handlePreventDefault(event));
+            return event;
         };
         it('should not have event when no beforeinstallprompt event is fired', () => {
             const { result } = renderHook(() => useInstallPromptEvent());
             const installPromptEvent = result.current;
             expect(installPromptEvent).toBeFalsy();
         });
-        it('should have event when the event is fired', () => {
+        it('should have event when the event is fired', async () => {
             const { result } = renderHook(() => useInstallPromptEvent());
-            mockAndFireOnBeforeInstallPromptEvent();
+            await mockAndFireOnBeforeInstallPromptEvent();
             const installPromptEvent = result.current;
             expect(installPromptEvent).toBeTruthy();
         });
-        it('should preventDefault when the event is fired', () => {
+        it('should preventDefault when the event is fired', async () => {
             renderHook(() => useInstallPromptEvent());
-            const event = mockAndFireOnBeforeInstallPromptEvent();
+            const event = await mockAndFireOnBeforeInstallPromptEvent();
             expect(event.preventDefault).toBeCalled();
         });
     });

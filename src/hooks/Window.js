@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { handlePreventDefault } from '../components/Form';
 
-import { isOnLine } from '../utils/Global';
+import { isOnLine, addWindowEventListener, removeWindowEventListener } from '../utils/Global';
 
 export const useFullscreen = () => {
     const [fullscreen, setFullscreen] = useState(isFullscreen());
@@ -30,8 +30,8 @@ export const useInstallPromptEvent = () => {
 
 const useWindowEffect = (type, listener) => {
     useEffect(() => {
-        window.addEventListener(type, listener);
-        return () => window.removeEventListener(type, listener);
+        addWindowEventListener(type, listener);
+        return () => removeWindowEventListener(type, listener);
     });
 };
 

@@ -5,8 +5,9 @@ import './index.css';
 import { App } from './components/App';
 import { registerSW } from './serviceWorkerRegistration';
 import { initDatabase } from './utils/Database';
+import { addWindowEventListener } from './utils/Global';
 
-window.addEventListener('load', async () => {
+addWindowEventListener('load', async () => {
     await registerSW();
     await initDatabase();
     render(
