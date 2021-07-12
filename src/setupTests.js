@@ -4,6 +4,7 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+Object.defineProperty(window, 'navigator', { value: {}, writable: true });
 // TODO: most of these should be deleted.  Modules should reference fields in the src/utils/Global.js module, mock those all fields here
 Object.defineProperties(global, {
     'localStorage': {
@@ -15,6 +16,7 @@ Object.defineProperties(global, {
             key: jest.fn(),
             length: 0,
         },
+        writable: true,
     },
     'location': {
         value: {
