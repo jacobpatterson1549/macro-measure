@@ -7,6 +7,7 @@ import { App } from './components/App';
 import { initDatabase } from './utils/Database'
 import { addWindowEventListener, getElementById } from './utils/Global'
 
+jest.spyOn(window, 'addEventListener');
 jest.mock('react-dom', () => ({
     render: jest.fn(),
 }));
@@ -29,22 +30,20 @@ describe('index', () => {
     };
     it('should not render until the window is loaded', () => {
         jest.isolateModules(() => require('./index'));
-        expect(addWindowEventListener).toBeCalled();
         expect(registerSW).not.toBeCalled();
         expect(initDatabase).not.toBeCalled();
         expect(render).not.toBeCalled();
     });
     it('should load sw, db, app', async () => {
-        const rootElement = '[mock root element]'
-        getElementById.mockReturnValue(rootElement);
+        const rootElement = document.createElement('div');
+        rootElement.setAttribute('id', 'root');
+        document.body.appendChild(rootElement);
         requireIndex();
-        expect(addWindowEventListener.mock.calls[0][0]).toBe('load');
-        const loadFn = addWindowEventListener.mock.calls[0][1];
+        expect(window.addEventListener.mock.calls[0][0]).toBe('load');
+        const loadFn = window.addEventListener.mock.calls[0][1];
         await loadFn();
-        expect(addWindowEventListener).toBeCalled();
         expect(registerSW).toBeCalled();
         expect(initDatabase).toBeCalled();
-        expect(getElementById).toHaveBeenCalledWith('root');
         expect(render).toHaveBeenCalledWith(<App />, rootElement);
     });
 });

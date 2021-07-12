@@ -1,8 +1,6 @@
-import { canUseServiceWorker, registerServiceWorker, isProductionEnv } from "./utils/Global";
-
 export const registerSW = () => {
-    if (canUseServiceWorker() && isProductionEnv()) {
+    if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
         const swURL = `${process.env.PUBLIC_URL}/service-worker.js`;
-        return registerServiceWorker(swURL);
+        return window.navigator.serviceWorker.register(swURL);
     }
 };

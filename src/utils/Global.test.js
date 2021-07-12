@@ -1,4 +1,4 @@
-import { isFullscreen, getIndexedDB, getLocalStorage, getIDBKeyRange, getGeolocation, isOnLine, isProductionEnv, canUseServiceWorker, getCurrentDate } from './Global';
+import { isFullscreen, getIndexedDB, getLocalStorage, getIDBKeyRange, getGeolocation, isOnLine, getCurrentDate } from './Global';
 
 describe('Global', () => {
     Object.defineProperty(window, 'navigator', { value: {}, writable: true });
@@ -56,37 +56,6 @@ describe('Global', () => {
         expect(actual).toBe(expected);
         window.navigator.onLine = oldOnLine;
     });
-    describe('isProductionEnv', () => {
-        const tests = [
-            [true, 'production'],
-            [false, 'development'],
-            [false, null],
-        ];
-        let oldEnv;
-        beforeAll(() => oldEnv = process.env.NODE_ENV);
-        afterAll(() => process.env.NODE_ENV = oldEnv);
-        it.each(tests)('should return %s from isProductionEnv when process.env.NODE_ENV is %s', (expected, nodeEnv) => {
-            process.env.NODE_ENV = nodeEnv;
-            const actual = isProductionEnv();
-            expect(actual).toBe(expected);
-        });
-    });
-    describe('canUseServiceWorker', () => {
-        const tests = [
-            [true, { 'something': 1, 'serviceWorker': 2, 'other': 3 }],
-            [true, { 'serviceWorker': 1 }],
-            [false, { 'something': 1, 'other': 2 },],
-            [false, {},], // the test fails if navigator is null, which is acceptable
-        ];
-        let oldNavigator;
-        beforeAll(() => oldNavigator = window.navigator);
-        afterAll(() => window.navigator = oldNavigator);
-        it.each(tests)('should return %s from canUseServiceWorker when navigator is %s', (expected, navigator) => {
-            window.navigator = navigator;
-            const actual = canUseServiceWorker();
-            expect(actual).toBe(expected);
-        })
-    })
     describe('getCurrentDate', () => {
         const getCurrentDateTests = [
             ['should have contain digits and UTC (Zulu) timezone (Z)', Date.UTC(2021, 5, 1, 17, 22, 30, 554), '20210601172230554Z'],

@@ -1,7 +1,6 @@
 import { registerSW } from './serviceWorkerRegistration';
 
-import { canUseServiceWorker, registerServiceWorker, isProductionEnv } from './utils/Global';
-
+jest.spyOn(window, 'addEventListener');
 jest.mock('./utils/Global', () => ({
     canUseServiceWorker: jest.fn(),
     registerServiceWorker: jest.fn(),
@@ -9,21 +8,30 @@ jest.mock('./utils/Global', () => ({
 }));
 
 describe('register', () => {
-    it('should NOT register service worker when NOT in navigator', () => {
-        canUseServiceWorker.mockReturnValue(false);
-        isProductionEnv.mockReturnValue(true);
-        expect(registerServiceWorker).not.toBeCalled();
+    let oldEnv;
+    let oldNavigator
+    beforeEach(() => {
+        oldEnv = process.env.NODE_ENV;
+        oldNavigator = window.navigator;
     });
-    it('should NOT register service worker when NOT in production', () => {
-        canUseServiceWorker.mockReturnValue(true);
-        isProductionEnv.mockReturnValue(false);
-        registerSW()
-        expect(registerServiceWorker).not.toBeCalled();
+    afterEach(() => {
+        process.env.NODE_ENV = oldEnv;
+        window.navigator = oldNavigator;
     });
-    it('should register service worker when in production', () => {
-        canUseServiceWorker.mockReturnValue(true);
-        isProductionEnv.mockReturnValue(true);
+    it('should NOT add listener to register service worker when NOT in navigator', () => {
+        delete navigator.serviceWorker;
+        expect(registerSW).not.toThrow();
+    });
+    it('should NOT add listener to register service worker when NOT in production', () => {
+        navigator.serviceWorker = { register: jest.fn() };
+        process.env.NODE_ENV = 'development';
         registerSW();
-        expect(registerServiceWorker).toBeCalled();
+        expect(navigator.serviceWorker.register).not.toBeCalled();
+    });
+    it('should register service worker', () => {
+        navigator.serviceWorker = { register: jest.fn() };
+        process.env.NODE_ENV = 'production';
+        registerSW();
+        expect(navigator.serviceWorker.register).toBeCalled();
     });
 });

@@ -2,7 +2,6 @@
 export const isFullscreen = () => !!window.document.fullscreenElement;
 export const requestFullscreen = window.document.body.requestFullscreen;
 export const exitFullscreen = window.document.exitFullscreen;
-export const getElementById = window.document.getElementById;
 export const getIndexedDB = () => window.indexedDB;
 export const getIDBKeyRange = () => window.IDBKeyRange;
 export const getLocalStorage = () => window.localStorage;
@@ -11,9 +10,6 @@ export const removeWindowEventListener = window.removeEventListener;
 export const reloadWindow = window.location.reload;
 export const getGeolocation = () => window.navigator.geolocation;
 export const isOnLine = () => window.navigator.onLine;
-export const isProductionEnv = () => process.env.NODE_ENV === 'production';
-export const canUseServiceWorker = () => 'serviceWorker' in window.navigator;
-export const registerServiceWorker = window.navigator.serviceWorker?.register;
 export const createObjectURL = URL.createObjectURL;
 export const revokeObjectURL = URL.revokeObjectURL;
 export const getCurrentDate = () => (
