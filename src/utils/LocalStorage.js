@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { deleteDatabase, getDatabaseAsObject } from './Database';
 import { getLocalStorage } from './Global';
 
-
+// TODO: move this to src/hooks
 export const useLocalStorage = (key, defaultValue) => {
     const [value, setValue] = useState(() => (
         JSON.parse(
