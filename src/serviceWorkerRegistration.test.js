@@ -2,31 +2,30 @@ jest.spyOn(window, 'addEventListener');
 
 import { registerSW } from './serviceWorkerRegistration';
 
+import { canUseServiceWorker, registerServiceWorker, isProductionEnv } from './utils/Global';
+
+jest.mock('./utils/Global', () => ({
+    canUseServiceWorker: jest.fn(),
+    registerServiceWorker: jest.fn(),
+    isProductionEnv: jest.fn(),
+}));
+
 describe('register', () => {
-    let oldEnv;
-    beforeEach(() => {
-        oldEnv = process.env.NODE_ENV;
-        navigator.serviceWorker = { register: jest.fn() };
-    });
-    afterEach(() => {
-        process.env.NODE_ENV = oldEnv;
-        jest.resetModules();
-    });
     it('should NOT register service worker when NOT in navigator', () => {
-        delete navigator.serviceWorker;
-        process.env.NODE_ENV = 'production';
-        expect(registerSW).not.toThrow();
+        canUseServiceWorker.mockReturnValue(false);
+        isProductionEnv.mockReturnValue(true);
+        expect(registerServiceWorker).not.toBeCalled();
     });
     it('should NOT register service worker when NOT in production', () => {
-        navigator.serviceWorker = { register: jest.fn() };
-        process.env.NODE_ENV = 'development';
+        canUseServiceWorker.mockReturnValue(true);
+        isProductionEnv.mockReturnValue(false);
         registerSW()
-        expect(navigator.serviceWorker.register).not.toBeCalled();
+        expect(registerServiceWorker).not.toBeCalled();
     });
     it('should register service worker when in production', () => {
-        navigator.serviceWorker = { register: jest.fn() };
-        process.env.NODE_ENV = 'production';
+        canUseServiceWorker.mockReturnValue(true);
+        isProductionEnv.mockReturnValue(true);
         registerSW();
-        expect(navigator.serviceWorker.register).toBeCalled();
+        expect(registerServiceWorker).toBeCalled();
     });
 });

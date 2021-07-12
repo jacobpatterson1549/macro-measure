@@ -11,7 +11,13 @@ export const addWindowEventListener = window.addEventListener; // TODO: use this
 export const removeWindowEventListener = window.removeEventListener; // TODO: use this
 export const reloadWindow = window.location.reload;
 export const geolocation = navigator.geolocation; // TODO: use this
-export const serviceWorker = navigator.serviceWorker; // TODO: use this
+export const isProductionEnv = () => (
+    process.env.NODE_ENV = 'production'
+);
+export const canUseServiceWorker = () => (
+    'serviceWorker' in navigator
+);
+export const registerServiceWorker = navigator.serviceWorker?.register;
 export const isOnLine = () => (
     navigator.onLine
 );
