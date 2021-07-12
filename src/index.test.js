@@ -5,7 +5,7 @@ import { registerSW } from './serviceWorkerRegistration';
 import { App } from './components/App';
 
 import { initDatabase } from './utils/Database'
-import { addWindowEventListener } from './utils/Global'
+import { addWindowEventListener, getElementById } from './utils/Global'
 
 jest.mock('react-dom', () => ({
     render: jest.fn(),
@@ -18,6 +18,7 @@ jest.mock('./utils/Database', () => ({
 }));
 jest.mock('./utils/Global', () => ({
     addWindowEventListener: jest.fn(),
+    getElementById: jest.fn(),
 }));
 
 describe('index', () => {
@@ -34,9 +35,8 @@ describe('index', () => {
         expect(render).not.toBeCalled();
     });
     it('should load sw, db, app', async () => {
-        const rootElement = document.createElement('div');
-        rootElement.setAttribute('id', 'root');
-        document.body.appendChild(rootElement);
+        const rootElement = '[mock root element]'
+        getElementById.mockReturnValue(rootElement);
         requireIndex();
         expect(addWindowEventListener.mock.calls[0][0]).toBe('load');
         const loadFn = addWindowEventListener.mock.calls[0][1];
@@ -44,6 +44,7 @@ describe('index', () => {
         expect(addWindowEventListener).toBeCalled();
         expect(registerSW).toBeCalled();
         expect(initDatabase).toBeCalled();
+        expect(getElementById).toHaveBeenCalledWith('root');
         expect(render).toHaveBeenCalledWith(<App />, rootElement);
     });
 });

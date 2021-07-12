@@ -3,9 +3,12 @@ import { renderHook } from '@testing-library/react-hooks'
 
 import { useFullscreen, useOnLine, useInstallPromptEvent } from './Window';
 
-import { isOnLine, addWindowEventListener } from '../utils/Global';
+import { isOnLine, addWindowEventListener, isFullscreen, requestFullscreen, exitFullscreen } from '../utils/Global';
 
 jest.mock('../utils/Global', () => ({
+    isFullscreen: jest.fn(),
+    requestFullscreen: jest.fn(),
+    exitFullscreen: jest.fn(),
     isOnLine: jest.fn(),
     addWindowEventListener: jest.fn(),
     removeWindowEventListener: jest.fn(),
@@ -14,39 +17,38 @@ jest.mock('../utils/Global', () => ({
 describe('Window', () => {
     describe('fullscreen', () => {
         const tests = [
-            [true, {}],
-            [false, null],
+            [true],
+            [false],
         ];
-        it.each(tests)('should initially be fullscreen=%s', (initial, initialFullscreenElement) => {
-            document.fullscreenElement = initialFullscreenElement;
+        it.each(tests)('should initially be fullscreen=%s', (expected) => {
+            isFullscreen.mockReturnValue(expected);
             const { result } = renderHook(() => useFullscreen());
-            const [fullscreen, setFullscreen] = result.current;
-            expect(fullscreen).toBe(initial);
+            const [fullscreen, _] = result.current;
+            expect(fullscreen).toBe(expected);
         });
-        it.each(tests)('should transition to fullscreen=%s', async (transition, transitionFullscreenElement) => {
+        it.each(tests)('should transition to fullscreen=%s', async (expected) => {
+            isFullscreen.mockReturnValue(!expected);
             const { result } = renderHook(() => useFullscreen());
-            document.fullscreenElement = transitionFullscreenElement;
+            const [fullscreen, _] = result.current;
+            expect(fullscreen).toBe(!expected); // sanity check
             expect(addWindowEventListener.mock.calls[0][0]).toBe('fullscreenchange');
             const fullscreenChangeHandler = addWindowEventListener.mock.calls[0][1];
             await waitFor(() => {
+                isFullscreen.mockReturnValue(expected);
                 fullscreenChangeHandler();
-                const [fullscreen, setFullscreen] = result.current;
-                expect(fullscreen).toBe(transition);
+                const [fullscreen, _] = result.current;
+                expect(fullscreen).toBe(expected);
             });
         });
-        it('should request fullscreen when set to true', () => {
-            document.body.requestFullscreen = jest.fn();
+        const setterTests = [
+            [requestFullscreen, true],
+            [exitFullscreen, false],
+        ];
+        it.each(setterTests)('should exit fullscreen when set to false', (mock, requestedFullscreen) => {
             const { result } = renderHook(() => useFullscreen());
-            const [fullscreen, setFullscreen] = result.current;
-            setFullscreen(true);
-            expect(document.body.requestFullscreen).toBeCalled();
-        });
-        it('should exit fullscreen when set to false', () => {
-            document.exitFullscreen = jest.fn();
-            const { result } = renderHook(() => useFullscreen());
-            const [fullscreen, setFullscreen] = result.current;
-            setFullscreen(false);
-            expect(document.exitFullscreen).toBeCalled();
+            const [_, setFullscreen] = result.current;
+            setFullscreen(requestedFullscreen);
+            expect(mock).toBeCalled();
         });
     });
     describe('onLine', () => {

@@ -70,14 +70,7 @@ class MockIDBTransaction extends MockEventTarget {
     set oncomplete(callback) { this.addEventListener('complete', callback); }
 }
 
-const mockEvent = (type, target) => {
-    const event = document.createEvent('Event');
-    Object.defineProperties(event, {
-        'type': { value: type },
-        'target': { value: target },
-    });
-    return event;
-};
+const mockEvent = (type, target) => ({ type, target });
 
 const mockTransaction = async (...transactions) => {
     const openRequest = new MockIDBOpenDBRequest();
@@ -98,7 +91,7 @@ const mockTransaction = async (...transactions) => {
 const mockDOMStringList = (array) => {
     let i = 0;
     const list = {
-        length : array?.length || 0,
+        length: array?.length || 0,
         item: () => array?.toString() || '[]',
         contains: (item) => array?.includes(item) || false,
     };

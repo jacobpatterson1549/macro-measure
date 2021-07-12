@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react';
 
 import { handlePreventDefault } from '../components/Form';
 
-import { isOnLine, addWindowEventListener, removeWindowEventListener } from '../utils/Global';
+import { isFullscreen, requestFullscreen, exitFullscreen, isOnLine, addWindowEventListener, removeWindowEventListener } from '../utils/Global';
 
 export const useFullscreen = () => {
     const [fullscreen, setFullscreen] = useState(isFullscreen());
     useWindowEffect('fullscreenchange', handleFullscreenChanged(setFullscreen));
     const setFullscreenOnDocument = (state) => (
         state
-            ? document.body.requestFullscreen()
-            : document.exitFullscreen()
+            ? requestFullscreen()
+            : exitFullscreen()
     );
     return [fullscreen, setFullscreenOnDocument];
 };
@@ -35,14 +35,11 @@ const useWindowEffect = (type, listener) => {
     });
 };
 
-const handleFullscreenChanged = (setFullscreen) => () => (
-    setFullscreen(isFullscreen())
-);
+const handleFullscreenChanged = (setFullscreen) => () => {
+    const current = isFullscreen();
+    setFullscreen(current);
+};
 
 const handleOnLineChanged = (setOnLine, onLine) => () => (
     setOnLine(onLine)
-);
-
-const isFullscreen = () => (
-    !!document.fullscreenElement
 );
