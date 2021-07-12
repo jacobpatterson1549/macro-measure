@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { Fieldset, Label, ButtonInput, FileInput } from './Form';
 
-import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
+import { getLocalStorageJSON, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL }  from '../utils/Global';
 
 export const LocalStorageSettings = () => {
@@ -55,7 +55,7 @@ const render = (props) => (
 );
 
 const handleExportStorage = (exportURL, setExportURL) => async () => {
-    const allJSON = await getLocalStorage();
+    const allJSON = await getLocalStorageJSON();
     const file = new Blob([allJSON], { type: jsonMimeType });
     revokeExportURL(exportURL);
     const newExportURL = createExportURL(file);

@@ -1,15 +1,30 @@
 import { render, screen } from '@testing-library/react';
 
-import { useLocalStorage, clearLocalStorage, getLocalStorage, setLocalStorage } from './LocalStorage';
+import { useLocalStorage, clearLocalStorage, getLocalStorageJSON, setLocalStorage } from './LocalStorage';
 
-import { deleteDatabase, getDatabaseAsObject } from './Database';
+import { deleteDatabase, getDatabaseAsObject } from './Database'
+import { getLocalStorage } from './Global';
 
 jest.mock('./Database', () => ({
     deleteDatabase: jest.fn(),
     getDatabaseAsObject: jest.fn(),
 }));
+jest.mock('./Global', () => ({
+    getLocalStorage: jest.fn(),
+}));
 
 describe('LocalStorage', () => {
+    let localStorage;
+    beforeEach(() => {
+        localStorage = {
+            key: jest.fn(),
+            getItem: jest.fn(),
+            setItem: jest.fn(),
+            removeItem: jest.fn(),
+            clear: jest.fn(),
+        }
+        getLocalStorage.mockReturnValue(localStorage);
+    });
     describe('useLocalStorage', () => {
         // these tests use the mock defined in setupTests.js
         const key = 'key';
@@ -28,16 +43,16 @@ describe('LocalStorage', () => {
             render(<MockComponent defaultValue={expected} />);
             const element = screen.getByText(expected);
             expect(element).toBeInTheDocument();
-            expect(window.localStorage.getItem).toBeCalledWith(key);
+            expect(localStorage.getItem).toBeCalledWith(key);
         });
         it('should get the saved value', () => {
             const expected = 'test2';
             const json = `"${expected}"`;
-            window.localStorage.getItem.mockReturnValue(json);
+            localStorage.getItem.mockReturnValue(json);
             render(<MockComponent />);
             const element = screen.getByText(expected);
             expect(element).toBeInTheDocument();
-            expect(window.localStorage.getItem).toBeCalledWith(key);
+            expect(localStorage.getItem).toBeCalledWith(key);
         });
         it('should setItem when clicked', () => {
             const before = 'this should not be saved';
@@ -46,7 +61,7 @@ describe('LocalStorage', () => {
             render(<MockComponent defaultValue={before} clickValue={expected} />);
             const element = screen.getByText(before);
             element.click();
-            expect(window.localStorage.setItem).toBeCalledWith(key, expectedJSON);
+            expect(localStorage.setItem).toBeCalledWith(key, expectedJSON);
         });
         it('should setItem five times when clicked five times', () => {
             const before = 'this should not be saved';
@@ -58,13 +73,13 @@ describe('LocalStorage', () => {
             element.click();
             element.click();
             element.click();
-            expect(window.localStorage.setItem).toBeCalledTimes(5);
+            expect(localStorage.setItem).toBeCalledTimes(5);
         });
     });
     describe('clearLocalStorage', () => {
         it('should call clear on localStorage', () => {
             clearLocalStorage();
-            expect(window.localStorage.clear).toBeCalled();
+            expect(localStorage.clear).toBeCalled();
         });
         it('should delete the database', () => {
             clearLocalStorage();
@@ -74,14 +89,14 @@ describe('LocalStorage', () => {
     describe('import/export', () => {
         const localStorageJSON = '{"key1":"text","key2":42,"key3":{"obj":"prop"},"dbData":true}';
         it('should getAllLocalStorage', async () => {
-            window.localStorage.length = 3;
-            window.localStorage.key.mockReturnValueOnce('key1').mockReturnValueOnce('key2').mockReturnValueOnce('key3');
-            window.localStorage.getItem.mockReturnValueOnce('"text"').mockReturnValueOnce('42').mockReturnValueOnce('{"obj":"prop"}');
+            localStorage.length = 3;
+            localStorage.key.mockReturnValueOnce('key1').mockReturnValueOnce('key2').mockReturnValueOnce('key3');
+            localStorage.getItem.mockReturnValueOnce('"text"').mockReturnValueOnce('42').mockReturnValueOnce('{"obj":"prop"}');
             getDatabaseAsObject.mockReturnValue({ dbData: true})
             const expected = localStorageJSON;
-            const actual = await getLocalStorage();
-            expect(window.localStorage.key.mock.calls).toEqual([[0], [1], [2]]);
-            expect(window.localStorage.getItem.mock.calls).toEqual([['key1'], ['key2'], ['key3']]);
+            const actual = await getLocalStorageJSON();
+            expect(localStorage.key.mock.calls).toEqual([[0], [1], [2]]);
+            expect(localStorage.getItem.mock.calls).toEqual([['key1'], ['key2'], ['key3']]);
             expect(actual).toEqual(expected);
         });
         it('should setAllLocalStorage', () => {
@@ -92,7 +107,7 @@ describe('LocalStorage', () => {
                 ['dbData', 'true'],
             ];
             setLocalStorage(localStorageJSON);
-            expect(window.localStorage.setItem.mock.calls).toEqual(expected);
+            expect(localStorage.setItem.mock.calls).toEqual(expected);
         });
     });
 });

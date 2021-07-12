@@ -1,4 +1,4 @@
-import { indexedDB, localStorage, IDBKeyRange, getCurrentDate } from "./Global";
+import { indexedDB, getLocalStorage, IDBKeyRange, getCurrentDate } from "./Global";
 
 const DATABASE_NAME = 'MACRO_MEASURE_DB';
 const DB_VERSION = parseInt('2'); // must be integer
@@ -101,17 +101,22 @@ const refreshIndexes = (transaction) => {
     waypointsObjectStore.createIndex('name', ['parentItemID', 'name'], { unique: true });
 };
 
-const addLocalStorage = () => {
+const addLocalStorage = async () => {
     const promises = [];
-    const groupsJSON = localStorage.getItem('groups');
-    const waypointsJSON = localStorage.getItem('waypoints');
-    if (groupsJSON) {
-        promises.push(backfillGroups(JSON.parse(groupsJSON)));
+    const cleanups = [];
+    const backfillActions = {
+        'groups': backfillGroups,
+        'waypoints': backfillWaypoints,
     }
-    if (waypointsJSON) {
-        promises.push(backfillWaypoints(JSON.parse(waypointsJSON)));
-    }
-    return Promise.all(promises);
+    Object.entries(backfillActions).forEach(([key, backfillFn]) => {
+        const valueJSON = getLocalStorage().getItem(key);
+        if (valueJSON) {
+            promises.push(backfillFn(JSON.parse(valueJSON)));
+            cleanups.push(() => getLocalStorage().removeItem(key));
+        }
+    });
+    await Promise.all(promises);
+    cleanups.forEach(fn => fn());
 };
 
 const backfillGroups = async (oldGroups) => {

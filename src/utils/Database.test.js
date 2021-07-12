@@ -1,7 +1,7 @@
 import { waitFor } from '@testing-library/react';
 
 import { initDatabase, getDatabaseAsObject, deleteDatabase, createItem, readItem, readItems, updateItem, deleteItem, moveItemUp, moveItemDown } from './Database';
-import { indexedDB, localStorage, IDBKeyRange, getCurrentDate } from "./Global";
+import { indexedDB, localStorage, IDBKeyRange, getCurrentDate, getLocalStorage } from "./Global";
 
 const mockIDBKeyRange = (lower, upper, lowerOpen, upperOpen) => (
     { lower, upper, lowerOpen, upperOpen }
@@ -12,14 +12,11 @@ jest.mock('./Global', () => ({
         open: jest.fn(),
         deleteDatabase: jest.fn(),
     },
-    localStorage: {
-        getItem: jest.fn(),
-        removeItem: jest.fn(),
-    },
     IDBKeyRange: {
         only: (z) => mockIDBKeyRange(z, z, false, false),
         bound: (x, y) => mockIDBKeyRange(x, y, false, false),
     },
+    getLocalStorage: jest.fn(),
     getCurrentDate: jest.fn(),
 }));
 
@@ -117,6 +114,14 @@ const mockUpgradeObjectStore = (indexNames) => {
 };
 
 describe('Database', () => {
+    let localStorage;
+    beforeEach(() => {
+        localStorage = {
+            getItem: jest.fn(),
+            removeItem: jest.fn(),
+        };
+        getLocalStorage.mockReturnValue(localStorage);
+    });
     it('should have previously called initDB', () => { // KEEP THIS TEST FIRST, or reset the module between tests
         const expected = 'call initDatabase() first';
         const request = readItem('os1', 'key1');
@@ -435,6 +440,22 @@ describe('Database', () => {
                 expect(initRequest).resolves.toBeTruthy();
                 expect(db.transaction).toBeCalledTimes(0);
             });
+            const removeTests = [
+                ['groups', ['[]', null]],
+                ['waypoints', [null, '[]']],
+            ];
+            it.each(removeTests)('should remove localStorage for %s', async (expected, getItemReturnValues) => {
+                const openRequest = new MockIDBOpenDBRequest();
+                indexedDB.open = () => openRequest;
+                getItemReturnValues.forEach((value) => {
+                    localStorage.getItem.mockReturnValueOnce(value);
+                });
+                const initRequest = initDatabase();
+                const db = { transaction: jest.fn() };
+                openRequest.dispatchEvent(mockEvent('success', { result: db }));
+                await initRequest;
+                expect(localStorage.removeItem).toBeCalledWith(expected);
+            })
         });
         it('should resolve when successful', async () => {
             const openRequest = new MockIDBRequest();

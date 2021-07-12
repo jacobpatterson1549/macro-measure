@@ -6,8 +6,10 @@ export const requestFullscreen = window.document.body.requestFullscreen;
 export const exitFullscreen = window.document.exitFullscreen;
 export const getElementById = window.document.getElementById;
 export const indexedDB = window.indexedDB;
-export const localStorage = window.localStorage; // TODO: use this everywhere
 export const IDBKeyRange = window.IDBKeyRange;
+export const getLocalStorage = () => (
+    window.localStorage
+);
 export const addWindowEventListener = window.addEventListener;
 export const removeWindowEventListener = window.removeEventListener;
 export const reloadWindow = window.location.reload;

@@ -1,35 +1,35 @@
 import { useState } from 'react';
 
 import { deleteDatabase, getDatabaseAsObject } from './Database';
+import { getLocalStorage } from './Global';
 
-const storage = window.localStorage;
 
 export const useLocalStorage = (key, defaultValue) => {
     const [value, setValue] = useState(() => (
         JSON.parse(
-            storage.getItem(key)
+            getLocalStorage().getItem(key)
             || JSON.stringify(defaultValue))
     ));
     return [value, handleSetValue(key, setValue)];
 };
 
 export const clearLocalStorage = async () => {
-    storage.clear();
+    getLocalStorage().clear();
     // TODO add another button to clear storage, but not database (this might fix some problems)
     await deleteDatabase();
 };
 
-export const getLocalStorage = async () => {
+export const getLocalStorageJSON = async () => { // TODO: rename to getLocalStorageAsObject, have component combine with db
     const ls =  Object.fromEntries(
-        Array.from(Array(storage.length).keys()) // [0 .. storage.length)
+        Array.from(Array(getLocalStorage().length).keys()) // [0 .. storage.length)
             .map(
                 (i) => (
-                    storage.key(i)))
+                    getLocalStorage().key(i)))
             .reduce(
                 (map, key) => (
                     map.set(
                         key,
-                        JSON.parse(storage.getItem(key)))),
+                        JSON.parse(getLocalStorage().getItem(key)))),
                 new Map())
             .entries());
     const db = await getDatabaseAsObject();
@@ -42,13 +42,13 @@ export const setLocalStorage = (localStorageJSON) => (
         JSON.parse(localStorageJSON))
         .forEach(
             ([key, value]) => (
-                storage.setItem(
+                getLocalStorage().setItem(
                     key,
                     JSON.stringify(value))))
 );
 
 const handleSetValue = (key, setValue) => (value) => {
-    storage.setItem(
+    getLocalStorage().setItem(
         key,
         JSON.stringify(value));
     setValue(value);

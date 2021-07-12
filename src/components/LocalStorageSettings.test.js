@@ -2,12 +2,12 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 import { LocalStorageSettings } from './LocalStorageSettings';
 
-import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
+import { getLocalStorageJSON, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL } from '../utils/Global'
 
 jest.mock('../utils/LocalStorage', () => ({
     clearLocalStorage: jest.fn(),
-    getLocalStorage: jest.fn(),
+    getLocalStorageJSON: jest.fn(),
     setLocalStorage: jest.fn(),
 }));
 
@@ -39,7 +39,7 @@ describe('LocalStorageSettings', () => {
             render(<LocalStorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
             fireEvent.click(exportElement);
-            await waitFor(expect(getLocalStorage).toBeCalled);
+            await waitFor(expect(getLocalStorageJSON).toBeCalled);
             expect(createObjectURL).toBeCalled();
             const exportLink = screen.getByRole('link');
             expect(exportLink.href).toMatch(expectedURL);
@@ -68,7 +68,7 @@ describe('LocalStorageSettings', () => {
             fireEvent.click(exportElement);
             fireEvent.click(exportElement);
             fireEvent.click(exportElement);
-            await waitFor(expect(getLocalStorage).toBeCalled);
+            await waitFor(expect(getLocalStorageJSON).toBeCalled);
             expect(revokeObjectURL.mock.calls).toEqual([['url1'], ['url2']]);
             unmount();
             expect(revokeObjectURL.mock.calls).toEqual([['url1'], ['url2'], ['url3']]);
