@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { handlePreventDefault } from '../components/Form';
 
+import { isOnLine } from '../utils/Global';
+
 export const useFullscreen = () => {
     const [fullscreen, setFullscreen] = useState(isFullscreen());
     useWindowEffect('fullscreenchange', handleFullscreenChanged(setFullscreen));
@@ -14,7 +16,7 @@ export const useFullscreen = () => {
 };
 
 export const useOnLine = () => {
-    const [onLine, setOnLine] = useState(window.navigator.onLine);
+    const [onLine, setOnLine] = useState(isOnLine);
     useWindowEffect('online', handleOnLineChanged(setOnLine, true));
     useWindowEffect('offline', handleOnLineChanged(setOnLine, false));
     return onLine;

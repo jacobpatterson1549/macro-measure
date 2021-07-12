@@ -3,13 +3,13 @@ import { renderHook } from '@testing-library/react-hooks'
 
 import { useFullscreen, useOnLine, useInstallPromptEvent } from './Window';
 
+import { isOnLine } from '../utils/Global';
+
+jest.mock('../utils/Global', () => ({
+    isOnLine: jest.fn(),
+}));
+
 describe('Window', () => {
-    beforeAll(() => {
-        Object.defineProperty(global.navigator, 'onLine', {
-            value: true,
-            writable: true,
-        });
-    })
     describe('fullscreen', () => {
         const tests = [
             [true, {}],
@@ -52,7 +52,7 @@ describe('Window', () => {
             [false, false, 'offline'],
         ];
         it.each(tests)('should initially be onLine=%s then transition to onLine=%s when %s event is fired', (initial, expected, eventName) => {
-            window.navigator.onLine = initial;
+            isOnLine.mockReturnValueOnce(initial);
             const { result } = renderHook(() => useOnLine());
             const onLine = result.current;
             expect(onLine).toBe(initial);
