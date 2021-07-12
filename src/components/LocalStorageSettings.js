@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Fieldset, Label, ButtonInput, FileInput } from './Form';
 
 import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
-import { getCurrentDate, reloadWindow }  from '../utils/Global';
+import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL }  from '../utils/Global';
 
 export const LocalStorageSettings = () => {
     const [exportURL, setExportURL] = useState(null);
@@ -76,10 +76,8 @@ const handleResetStorage = () => () => {
 
 const jsonMimeType = "application/json";
 
-const createExportURL = (file) => (
-    URL.createObjectURL(file)
-);
+const createExportURL = createObjectURL;
 
 const revokeExportURL = (exportURL) => (
-    exportURL && URL.revokeObjectURL(exportURL)
+    exportURL && revokeObjectURL(exportURL)
 );

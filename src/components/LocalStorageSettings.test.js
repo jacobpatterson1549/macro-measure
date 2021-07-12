@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { LocalStorageSettings } from './LocalStorageSettings';
 
 import { getLocalStorage, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
-import { getCurrentDate, reloadWindow } from '../utils/Global'
+import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL } from '../utils/Global'
 
 jest.mock('../utils/LocalStorage', () => ({
     clearLocalStorage: jest.fn(),
@@ -14,6 +14,8 @@ jest.mock('../utils/LocalStorage', () => ({
 jest.mock('../utils/Global', () => ({
     getCurrentDate: jest.fn(),
     reloadWindow: jest.fn(),
+    createObjectURL: jest.fn(),
+    revokeObjectURL: jest.fn()
 }));
 
 
@@ -28,23 +30,17 @@ describe('LocalStorageSettings', () => {
         });
     });
     describe('import/export', () => {
-        beforeAll(() => {
-            Object.defineProperties(URL, {
-                createObjectURL: { value: jest.fn() },
-                revokeObjectURL: { value: jest.fn() },
-            });
-        });
         const allJSON = '{"groups":[{"name":"backup","items":[]}]}';
         it('should export storage when clicked', async () => {
             const expectedURL = 'some_export_url'
             const expectedCurrentDate = 'MOCK_CURRENT_DATE';
-            URL.createObjectURL.mockReturnValue(expectedURL);
+            createObjectURL.mockReturnValue(expectedURL);
             getCurrentDate.mockReturnValue(expectedCurrentDate);
             render(<LocalStorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
             fireEvent.click(exportElement);
             await waitFor(expect(getLocalStorage).toBeCalled);
-            expect(URL.createObjectURL).toBeCalled();
+            expect(createObjectURL).toBeCalled();
             const exportLink = screen.getByRole('link');
             expect(exportLink.href).toMatch(expectedURL);
             expect(exportLink.download).toContain(expectedCurrentDate);
@@ -66,16 +62,16 @@ describe('LocalStorageSettings', () => {
         });
         it('should revokeObjectURL', async () => {
             const expectedURLs = ['url1', 'url2', 'url3']
-            expectedURLs.forEach((url) => URL.createObjectURL.mockReturnValueOnce(url))
+            expectedURLs.forEach((url) => createObjectURL.mockReturnValueOnce(url))
             const { unmount } = render(<LocalStorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
             fireEvent.click(exportElement);
             fireEvent.click(exportElement);
             fireEvent.click(exportElement);
             await waitFor(expect(getLocalStorage).toBeCalled);
-            expect(URL.revokeObjectURL.mock.calls).toEqual([['url1'], ['url2']]);
+            expect(revokeObjectURL.mock.calls).toEqual([['url1'], ['url2']]);
             unmount();
-            expect(URL.revokeObjectURL.mock.calls).toEqual([['url1'], ['url2'], ['url3']]);
+            expect(revokeObjectURL.mock.calls).toEqual([['url1'], ['url2'], ['url3']]);
         });
     });
     describe('reload button', () => {
