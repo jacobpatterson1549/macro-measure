@@ -17,6 +17,12 @@ jest.mock('../hooks/Geolocation', () => ({
 }));
 
 describe('Item', () => {
+    beforeEach(() => {
+        getLocalStorage.mockReturnValue({
+            getItem: jest.fn(),
+            setItem: jest.fn(),
+        });
+    });
     describe('View', () => {
         const actionButtonNames = [
             'create item',
@@ -66,7 +72,7 @@ describe('Item', () => {
                 setGPSOn={jest.fn()}
             />);
             expect(getLocalStorage().getItem.mock.calls).toEqual(expected);
-        })
+        });
     });
     describe('read action', () => {
         it('should NOT show distance when reading item without currentLatLng', () => {

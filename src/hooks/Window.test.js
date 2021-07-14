@@ -5,15 +5,6 @@ import { useFullscreen, useOnLine, useInstallPromptEvent } from './Window';
 
 import { isOnLine, addWindowEventListener, isFullscreen, requestFullscreen, exitFullscreen } from '../utils/Global';
 
-jest.mock('../utils/Global', () => ({
-    isFullscreen: jest.fn(),
-    requestFullscreen: jest.fn(),
-    exitFullscreen: jest.fn(),
-    isOnLine: jest.fn(),
-    addWindowEventListener: jest.fn(),
-    removeWindowEventListener: jest.fn(),
-}));
-
 describe('Window', () => {
     describe('fullscreen', () => {
         const tests = [

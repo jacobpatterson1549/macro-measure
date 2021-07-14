@@ -9,10 +9,6 @@ import { getLocalStorage } from '../utils/Global';
 
 jest.mock('../hooks/Database', () => ({
     useItems: jest.fn(),
-    getLocalStorage: jest.fn(),
-}));
-jest.mock('../utils/Global', () => ({
-    getLocalStorage: jest.fn(),
 }));
 
 describe('NameList', () => {
@@ -22,13 +18,13 @@ describe('NameList', () => {
         { name: 'c', id: '3Z' },
     ];
     const reloadItems = jest.fn();
-    let getItem;
     beforeEach(() => {
         reloadItems.mockReset();
-        getItem = jest.fn();
-        const setItem = jest.fn();
         useItems.mockReturnValue([items, reloadItems]);
-        getLocalStorage.mockReturnValue({ getItem, setItem });
+        getLocalStorage.mockReturnValue({
+            getItem: jest.fn(),
+            setItem: jest.fn(),
+        });
     });
     describe('View', () => {
         const viewTests = [
@@ -94,7 +90,7 @@ describe('NameList', () => {
             it('should finish creating when the form is submitted', () => {
                 const name = 'create_name_8';
                 const expected = { name: name };
-                getLocalStorage.mockReturnValue({ getItem: () => JSON.stringify(name) });
+                getLocalStorage().getItem.mockReturnValue(JSON.stringify(name));
                 const createEnd = jest.fn();
                 render(<NameList
                     type={'test'}
@@ -108,7 +104,7 @@ describe('NameList', () => {
             it('should finish updating when the form is submitted', () => {
                 const name = 'update_name_6';
                 const expected = { name: name, id: '2Z' };
-                getLocalStorage.mockReturnValue({ getItem: () => JSON.stringify(name) });
+                getLocalStorage().getItem.mockReturnValue(JSON.stringify(name));
                 const updateEnd = jest.fn();
                 render(<NameList
                     type={'test'}

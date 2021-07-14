@@ -109,7 +109,6 @@ const mockUpgradeObjectStore = (indexNames) => {
 
 describe('Database', () => {
     let indexedDB;
-    let localStorage;
     beforeEach(() => {
         indexedDB = {
             open: jest.fn(),
@@ -119,13 +118,12 @@ describe('Database', () => {
             only: (z) => mockIDBKeyRange(z, z, false, false),
             bound: (x, y) => mockIDBKeyRange(x, y, false, false),
         };
-        localStorage = {
-            getItem: jest.fn(),
-            removeItem: jest.fn(),
-        };
         getIndexedDB.mockReturnValue(indexedDB);
         getIDBKeyRange.mockReturnValue(idbKeyRange);
-        getLocalStorage.mockReturnValue(localStorage);
+        getLocalStorage.mockReturnValue({
+            getItem: jest.fn(),
+            removeItem: jest.fn(),
+        });
     });
     it('should have previously called initDB', () => { // KEEP THIS TEST FIRST, or reset the module between tests
         const expected = 'call initDatabase() first';
@@ -221,7 +219,7 @@ describe('Database', () => {
                 const event = mockEvent('success', {});
                 initDatabase();
                 openRequest.dispatchEvent(event);
-                expect(localStorage.getItem.mock.calls).toEqual([['groups'], ['waypoints']]);
+                expect(getLocalStorage().getItem.mock.calls).toEqual([['groups'], ['waypoints']]);
             });
             it('should backfill groups', async () => {
                 const openRequest = new MockIDBOpenDBRequest();
@@ -245,7 +243,7 @@ describe('Database', () => {
                         name: 'group 3', // exported group or old group with no items
                     },
                 ]);
-                localStorage.getItem
+                getLocalStorage().getItem
                     .mockReturnValueOnce(groupsJSON)
                     .mockReturnValueOnce(null);
                 const groupsCountRequest = new MockIDBRequest();
@@ -347,7 +345,7 @@ describe('Database', () => {
                     { name: 'item2', lat: 22, lng: 7, parentItemID: 'a' },
                     { name: 'item7', lat: 20, lng: 31, parentItemID: 'b' },
                 ]);
-                localStorage.getItem
+                getLocalStorage().getItem
                     .mockReturnValueOnce(null)
                     .mockReturnValueOnce(waypointsJSON);
                 const groupsCountRequest = new MockIDBRequest();
@@ -436,7 +434,7 @@ describe('Database', () => {
             it('should backfill empty groups and waypoints', () => {
                 const openRequest = new MockIDBOpenDBRequest();
                 indexedDB.open = () => openRequest;
-                localStorage.getItem
+                getLocalStorage().getItem
                     .mockReturnValueOnce('[]')
                     .mockReturnValueOnce('[]');
                 const initRequest = initDatabase();
@@ -453,13 +451,13 @@ describe('Database', () => {
                 const openRequest = new MockIDBOpenDBRequest();
                 indexedDB.open = () => openRequest;
                 getItemReturnValues.forEach((value) => {
-                    localStorage.getItem.mockReturnValueOnce(value);
+                    getLocalStorage().getItem.mockReturnValueOnce(value);
                 });
                 const initRequest = initDatabase();
                 const db = { transaction: jest.fn() };
                 openRequest.dispatchEvent(mockEvent('success', { result: db }));
                 await initRequest;
-                expect(localStorage.removeItem).toBeCalledWith(expected);
+                expect(getLocalStorage().removeItem).toBeCalledWith(expected);
             })
         });
         it('should resolve when successful', async () => {

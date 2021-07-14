@@ -12,17 +12,15 @@ jest.mock('../hooks/Database', () => ({
   useItem: jest.fn(),
   useItems: jest.fn(),
 }));
-jest.mock('../utils/Global', () => ({
-  addWindowEventListener: jest.fn(),
-  removeWindowEventListener: jest.fn(),
-  getLocalStorage: jest.fn(),
-}));
 
 describe('Root', () => {
   beforeEach(() => {
     useItem.mockReturnValue([]);
     useItems.mockReturnValue([]);
-    getLocalStorage.mockReturnValue({ getItem: jest.fn() });
+    getLocalStorage.mockReturnValue({
+      getItem: jest.fn(),
+      setItem: jest.fn(),
+    });
   });
   it('should have help header in the document', () => {
     render(<Root />);
@@ -37,10 +35,7 @@ describe('Root', () => {
     expect(element).toBeInTheDocument();
   });
   it('should switch view to Waypoint_List when on Group_Read', () => {
-    getLocalStorage.mockReturnValue({
-      getItem: () => View.Group_Read,
-      setItem: jest.fn(),
-    });
+    getLocalStorage().getItem.mockReturnValue(View.Group_Read);
     render(<Root />);
     const element = screen.getByText(/waypoint values/i);
     expect(element).toBeInTheDocument();

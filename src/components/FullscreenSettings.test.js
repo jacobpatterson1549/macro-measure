@@ -12,10 +12,6 @@ jest.mock('../hooks/Window', () => ({
     useInstallPromptEvent: jest.fn(),
 }));
 
-jest.mock('../utils/Global', () => ({
-    reloadWindow: jest.fn(),
-}));
-
 describe('FullscreenSettings', () => {
     beforeEach(() => {
         useFullscreen.mockReturnValue([]);

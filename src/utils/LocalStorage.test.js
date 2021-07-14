@@ -22,7 +22,7 @@ describe('LocalStorage', () => {
             setItem: jest.fn(),
             removeItem: jest.fn(),
             clear: jest.fn(),
-        }
+        };
         getLocalStorage.mockReturnValue(localStorage);
     });
     describe('useLocalStorage', () => {
@@ -92,7 +92,7 @@ describe('LocalStorage', () => {
             localStorage.length = 3;
             localStorage.key.mockReturnValueOnce('key1').mockReturnValueOnce('key2').mockReturnValueOnce('key3');
             localStorage.getItem.mockReturnValueOnce('"text"').mockReturnValueOnce('42').mockReturnValueOnce('{"obj":"prop"}');
-            getDatabaseAsObject.mockReturnValue({ dbData: true})
+            getDatabaseAsObject.mockReturnValue({ dbData: true })
             const expected = localStorageJSON;
             const actual = await getLocalStorageJSON();
             expect(localStorage.key.mock.calls).toEqual([[0], [1], [2]]);

@@ -5,16 +5,9 @@ import {  useGeolocation } from './Geolocation';
 
 import { roundLatLng } from '../utils/Geolocation';
 import { View } from '../utils/View';
-import { getGeolocation } from '../utils/Global'
+import { getGeolocation } from '../utils/Global';
 
 jest.mock('../utils/Geolocation');
-jest.mock('../utils/Global', () => ({
-    getGeolocation: jest.fn(),
-}));
-
-beforeEach(() => {
-    roundLatLng.mockImplementation((latLng) => latLng);
-});
 
 describe('Geolocation', () => {
     let geolocation;
@@ -24,6 +17,7 @@ describe('Geolocation', () => {
             clearWatch: jest.fn(),
         };
         getGeolocation.mockReturnValue(geolocation);
+        roundLatLng.mockImplementation((latLng) => latLng);
     });
     describe('views', () => {
         const viewTests = [

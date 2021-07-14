@@ -6,6 +6,7 @@ import { createHandlers, useItem, useItems } from '../hooks/Database';
 import { useGeolocation } from '../hooks/Geolocation';
 
 import { View } from '../utils/View';
+import { getLocalStorage } from '../utils/Global';
 
 jest.mock('../hooks/Database', () => ({
   createHandlers: jest.fn(),
@@ -23,6 +24,10 @@ describe('Main', () => {
     useItems.mockReturnValue([[]]);
     useGeolocation.mockReturnValue({
       valid: true,
+    });
+    getLocalStorage.mockReturnValue({
+      getItem: jest.fn(),
+      setItem: jest.fn(),
     });
   });
   describe('views', () => {
