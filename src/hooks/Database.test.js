@@ -25,7 +25,7 @@ describe('Database', () => {
             objectStoreNames: [GROUPS, WAYPOINTS],
             viewType: [View.isGroup, View.isWaypoint],
             handlerParams: { // [inParams, outParams]
-                createStart: [[], []],
+                createStart: [[], [Number.MAX_SAFE_INTEGER]], // max integer to make it clear that new item is after others
                 createEnd: [['item'], ['item']],
                 read: [[{ id: 'id' }], ['id']],
                 list: [[], []],
@@ -49,6 +49,7 @@ describe('Database', () => {
                 moveDown: [View.Group_List, View.Waypoint_List],
             },
             expectedSetItemIDActions: [
+                'createStart',
                 'read',
                 'updateStart',
                 'deleteStart',

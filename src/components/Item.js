@@ -15,9 +15,9 @@ import { View } from '../utils/View';
 export const Item = (props) => {
     const geolocation = useGeolocation(props);
     const [moveAmount, setMoveAmount] = useLocalStorage('moveAmount', 1);
-    const [name, setName] = useLocalStorage('itemInputName', '?'); // same name as NameList.js
-    const [lat, setLat] = useLocalStorage('itemInputLat', 0);
-    const [lng, setLng] = useLocalStorage('itemInputLng', 0);
+    const [name, setName] = useLocalStorage(`${props.type}InputName`, '?'); // same name as NameList.js
+    const [lat, setLat] = useLocalStorage(`${props.type}InputLat`, 0);
+    const [lng, setLng] = useLocalStorage(`${props.type}InputLng`, 0);
     const [items] = useItems(props.objectStoreName, props.parentItemID);
     const [item, setItem] = useState(null);
     // const [distanceHeading, setDistanceHeading] = useState(null);

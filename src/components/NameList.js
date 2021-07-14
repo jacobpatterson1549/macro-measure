@@ -7,8 +7,8 @@ import { useLocalStorage } from '../utils/LocalStorage';
 import { View } from '../utils/View';
 
 export const NameList = (props) => {
-    const [name, setName] = useLocalStorage(props.type + 'NameListTitle', '?');
-    const [nameInput, setNameInput] = useLocalStorage(props.type + 'InputName', '?'); // same name as Item.js
+    const [name, setName] = useLocalStorage(`${props.type}NameListTitle`, '?');
+    const [nameInput, setNameInput] = useLocalStorage(`${props.type}InputName`, '?'); // same name as Item.js
     const [items, reloadItems] = useItems(props.objectStoreName, props.parentItemID);
     const state = {
         name, setName,

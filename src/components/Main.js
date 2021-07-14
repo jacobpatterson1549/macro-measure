@@ -71,7 +71,7 @@ const getProps = (props) => {
             view: props.view,
             itemID: props.groupID,
             objectStoreName: GROUPS,
-            type: 'groups',
+            type: 'group',
             ...createHandlers(GROUPS, props.setGroupID, props.setView, View.isGroup),
         };
     }

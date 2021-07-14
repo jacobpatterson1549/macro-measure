@@ -51,6 +51,21 @@ describe('Item', () => {
             const element = screen.queryByTitle('item list')
             expect(element.textContent).toBe(expected);
         });
+        it('should read localStorage with props.type', () => {
+            const expected = [
+                ['moveAmount'],
+                ['XYZInputName'],
+                ['XYZInputLat'],
+                ['XYZInputLng'],
+            ];
+            useItems.mockReturnValue([[]]);
+            useGeolocation.mockReturnValue({});
+            render(<Item
+                type={'XYZ'}
+                setGPSOn={jest.fn()}
+            />);
+            expect(window.localStorage.getItem.mock.calls).toEqual(expected);
+        })
     });
     describe('read action', () => {
         it('should NOT show distance when reading item without currentLatLng', () => {
