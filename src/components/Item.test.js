@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import { Item } from './Item';
 
@@ -6,6 +6,7 @@ import { useItems } from '../hooks/Database';
 import { useGeolocation } from '../hooks/Geolocation';
 
 import { View } from '../utils/View';
+import { getLocalStorage } from '../utils/Global';
 
 jest.mock('../hooks/Database', () => ({
     useItems: jest.fn(),
@@ -64,7 +65,7 @@ describe('Item', () => {
                 type={'XYZ'}
                 setGPSOn={jest.fn()}
             />);
-            expect(window.localStorage.getItem.mock.calls).toEqual(expected);
+            expect(getLocalStorage().getItem.mock.calls).toEqual(expected);
         })
     });
     describe('read action', () => {

@@ -1,7 +1,8 @@
+jest.unmock('./Global');
 import { isFullscreen, getIndexedDB, getLocalStorage, getIDBKeyRange, getGeolocation, isOnLine, getCurrentDate } from './Global';
 
+
 describe('Global', () => {
-    Object.defineProperty(window, 'navigator', { value: {}, writable: true });
     describe('isFullscreen', () => {
         const isFullscreenTests = [
             [{}, true],
@@ -33,6 +34,7 @@ describe('Global', () => {
         window.IDBKeyRange = oldIDBKeyRange;
     });
     it('should return localStorage', () => {
+        Object.defineProperty(window, 'localStorage', { value: {}, writable: true });
         const oldLocalStorage = window.localStorage;
         const expected = 'test 3';
         window.localStorage = expected;
@@ -49,6 +51,7 @@ describe('Global', () => {
         window.navigator.geolocation = oldGeolocation;
     });
     it('should return onLine', () => {
+        Object.defineProperty(window, 'navigator', { value: {}, writable: true });
         const oldOnLine = window.navigator.onLine;
         const expected = 'test 5';
         window.navigator.onLine = expected;
