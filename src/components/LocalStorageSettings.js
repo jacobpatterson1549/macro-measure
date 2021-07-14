@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 
 import { Fieldset, Label, ButtonInput, FileInput } from './Form';
 
-import { getLocalStorageJSON, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL }  from '../utils/Global';
+import { deleteDatabase, getDatabaseAsObject } from '../utils/Database';
+import { getLocalStorageAsObject, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
 
+// TODO: rename to storage, update html
 export const LocalStorageSettings = () => {
     const [exportURL, setExportURL] = useState(null);
     const [exportLink, setExportLink] = useState(null);
@@ -29,7 +31,7 @@ const render = (props) => (
         <Label caption="Export ALL Saved Data">
             <ButtonInput
                 value="Export File"
-                onClick={handleExportStorage(props.exportURL, props.setExportURL)}
+                onClick={handleExportStorage(props)}
             />
             {props.exportLink}
         </Label>
@@ -42,7 +44,7 @@ const render = (props) => (
         <Label caption="Clear ALL Saved Data">
             <ButtonInput
                 value="Clear"
-                onClick={handleResetStorage()}
+                onClick={handleResetStorage(props)}
             />
         </Label>
         <Label caption="Reload page and Saved Data">
@@ -54,9 +56,14 @@ const render = (props) => (
     </Fieldset>
 );
 
-const handleExportStorage = (exportURL, setExportURL) => async () => {
-    const allJSON = await getLocalStorageJSON();
-    const file = new Blob([allJSON], { type: jsonMimeType });
+const handleExportStorage = ({ db, exportURL, setExportURL }) => async () => {
+    const localStorageObject = getLocalStorageAsObject();
+    const databaseObject = await getDatabaseAsObject(db);
+    const storage = {
+        ...localStorageObject,
+        ...databaseObject,
+    };
+    const file = new Blob([storage], { type: jsonMimeType });
     revokeExportURL(exportURL);
     const newExportURL = createExportURL(file);
     setExportURL(newExportURL);
@@ -69,8 +76,9 @@ const handleImportStorage = () => async (file) => {
     reloadWindow();
 };
 
-const handleResetStorage = () => () => {
+const handleResetStorage = () => async () => {
     clearLocalStorage();
+    await deleteDatabase();
     reloadWindow();
 };
 

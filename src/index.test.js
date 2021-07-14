@@ -30,6 +30,8 @@ describe('index', () => {
         expect(render).not.toBeCalled();
     });
     it('should load sw, db, app', async () => {
+        const mockDB = 'mock database';
+        initDatabase.mockReturnValue(mockDB);
         const rootElement = document.createElement('div');
         rootElement.setAttribute('id', 'root');
         document.body.appendChild(rootElement);
@@ -39,6 +41,6 @@ describe('index', () => {
         await loadFn();
         expect(registerSW).toBeCalled();
         expect(initDatabase).toBeCalled();
-        expect(render).toHaveBeenCalledWith(<App />, rootElement);
+        expect(render).toHaveBeenCalledWith(<App db={mockDB} />, rootElement);
     });
 });

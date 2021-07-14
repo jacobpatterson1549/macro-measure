@@ -6,7 +6,6 @@ const READ = 'readonly';
 const READWRITE = 'readwrite';
 export const GROUPS = 'groups';
 export const WAYPOINTS = 'waypoints';
-let db; // !!! internal state in module !!!
 
 export const initDatabase = () => {
     return new Promise((resolve, reject) => {
@@ -16,14 +15,14 @@ export const initDatabase = () => {
             reject(`Database open error: ${event.target.error.message}`);
         };
         openRequest.onsuccess = async (event) => {
-            db = event.target.result;
-            await addLocalStorage();
-            resolve(true);
+            const db = event.target.result;
+            await addLocalStorage(db);
+            resolve(db);
         };
     });
 };
 
-export const getDatabaseAsObject = () => {
+export const getDatabaseAsObject = (db) => {
     const objectStoreNames = [GROUPS, WAYPOINTS];
     const action = (transaction, resolve) => {
         const objectStores = {};
@@ -101,7 +100,7 @@ const refreshIndexes = (transaction) => {
     waypointsObjectStore.createIndex('name', ['parentItemID', 'name'], { unique: true });
 };
 
-const addLocalStorage = async () => {
+const addLocalStorage = async (db) => {
     const promises = [];
     const cleanups = [];
     const backfillActions = {
@@ -111,7 +110,7 @@ const addLocalStorage = async () => {
     Object.entries(backfillActions).forEach(([key, backfillFn]) => {
         const valueJSON = getLocalStorage().getItem(key);
         if (valueJSON) {
-            promises.push(backfillFn(JSON.parse(valueJSON)));
+            promises.push(backfillFn(db, JSON.parse(valueJSON)));
             cleanups.push(() => getLocalStorage().removeItem(key));
         }
     });
@@ -119,7 +118,7 @@ const addLocalStorage = async () => {
     cleanups.forEach(fn => fn());
 };
 
-const backfillGroups = async (oldGroups) => {
+const backfillGroups = async (db, oldGroups) => {
     if (!oldGroups.length) {
         return;
     }
@@ -133,7 +132,7 @@ const backfillGroups = async (oldGroups) => {
     const oldGroupsByName = Object.fromEntries(oldGroups.map((group, index) => (
         [getUniqueItemName(group, index), group]
     )));
-    const createdGroupIDs = await createItems(GROUPS, dbGroups); // // { createdID: dbGroup, ... }
+    const createdGroupIDs = await createItems(db, GROUPS, dbGroups); // // { createdID: dbGroup, ... }
     const backfillWaypointsPromises = Object.entries(createdGroupIDs).map(([groupID, group]) => {
         const oldGroup = oldGroupsByName[group.name];
         if (!oldGroup.items) {
@@ -145,12 +144,12 @@ const backfillGroups = async (oldGroups) => {
                 parentItemID: parseInt(groupID),
             })
         ));
-        return createItems(WAYPOINTS, dbWaypoints);
+        return createItems(db, WAYPOINTS, dbWaypoints);
     });
     await Promise.all(backfillWaypointsPromises);
 };
 
-const backfillWaypoints = (oldWaypoints) => {
+const backfillWaypoints = (db, oldWaypoints) => {
     const oldWaypointsByParentItemIDs = {};
     oldWaypoints.forEach((oldWaypoint) => {
         if (!(oldWaypoint.parentItemID in oldWaypointsByParentItemIDs)) {
@@ -163,16 +162,16 @@ const backfillWaypoints = (oldWaypoints) => {
             name: index,
             items: oldWaypoints,
         }));
-    return backfillGroups(oldGroups);
+    return backfillGroups(db, oldGroups);
 };
 
-const createItems = async (objectStoreName, items) => {
+const createItems = async (db, objectStoreName, items) => {
     const parentItemID = items[0].parentItemID;
     // const differentParentIDs = !items.every((element, index) => index === 0 || parentItemID === element.parentItemID);
     // if (differentParentIDs) {
     //     throw new Error("different parent IDs among items"); // this is unreachable.
     // }
-    const numItems = await readItemCount(objectStoreName, parentItemID);
+    const numItems = await readItemCount(db, objectStoreName, parentItemID);
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
         let itemIDs = {};
@@ -191,12 +190,12 @@ const createItems = async (objectStoreName, items) => {
     return handle(db, [objectStoreName], action, READWRITE);
 };
 
-export const createItem = async (objectStoreName, item) => {
-    const createItemIDs = await createItems(objectStoreName, [item]); // { createdID: item }
+export const createItem = async (db, objectStoreName, item) => {
+    const createItemIDs = await createItems(db, objectStoreName, [item]); // { createdID: item }
     return parseInt(Object.entries(createItemIDs)[0][0]);
 };
 
-export const readItem = (objectStoreName, itemID) => {
+export const readItem = (db, objectStoreName, itemID) => {
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
         const request = objectStore.get(itemID);
@@ -208,7 +207,7 @@ export const readItem = (objectStoreName, itemID) => {
     return handle(db, [objectStoreName], action, READ);
 };
 
-const readItemCount = (objectStoreName, parentItemID) => {
+const readItemCount = (db, objectStoreName, parentItemID) => {
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
         const index = objectStore.index('order');
@@ -226,7 +225,7 @@ const readItemCount = (objectStoreName, parentItemID) => {
     return handle(db, [objectStoreName], action, READ);
 };
 
-const readItemByOrder = (objectStoreName, order, parentItemID) => {
+const readItemByOrder = (db, objectStoreName, order, parentItemID) => {
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
         const index = objectStore.index('order');
@@ -243,7 +242,7 @@ const readItemByOrder = (objectStoreName, order, parentItemID) => {
 };
 
 // TODO: rename readItems to readItemNames -> return [{itemID, parentItemID, order, name}...]
-export const readItems = (objectStoreName, parentItemID) => {
+export const readItems = (db, objectStoreName, parentItemID) => {
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
         const index = objectStore.index('order');
@@ -261,7 +260,7 @@ export const readItems = (objectStoreName, parentItemID) => {
     return handle(db, [objectStoreName], action, READ);
 };
 
-export const updateItem = (objectStoreName, item) => {
+export const updateItem = (db, objectStoreName, item) => {
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
         objectStore.put(item);
@@ -272,8 +271,8 @@ export const updateItem = (objectStoreName, item) => {
     return handle(db, [objectStoreName], action, READWRITE);
 };
 
-export const deleteItem = async (objectStoreName, itemID) => {
-    const cascadeObjectStoreKeys = await getCascadeObjectStoreNameItemIDs(objectStoreName, itemID);
+export const deleteItem = async (db, objectStoreName, itemID) => {
+    const cascadeObjectStoreKeys = await getCascadeObjectStoreNameItemIDs(db, objectStoreName, itemID);
     const objectStoreNames = [objectStoreName, ...Object.keys(cascadeObjectStoreKeys)];
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
@@ -291,7 +290,7 @@ export const deleteItem = async (objectStoreName, itemID) => {
     return handle(db, objectStoreNames, action, READWRITE);
 };
 
-const getCascadeObjectStoreNameItemIDs = (objectStoreName, itemID) => {
+const getCascadeObjectStoreNameItemIDs = (db, objectStoreName, itemID) => {
     if (objectStoreName === GROUPS) {
         const action = (transaction, resolve) => {
             const objectStore = transaction.objectStore(WAYPOINTS);
@@ -309,17 +308,17 @@ const getCascadeObjectStoreNameItemIDs = (objectStoreName, itemID) => {
     return {};
 };
 
-export const moveItemUp = (objectStoreName, item) => {
-    return moveItem(objectStoreName, item, -1);
+export const moveItemUp = (db, objectStoreName, item) => {
+    return moveItem(db, objectStoreName, item, -1);
 };
 
-export const moveItemDown = (objectStoreName, item) => {
-    return moveItem(objectStoreName, item, +1);
+export const moveItemDown = (db, objectStoreName, item) => {
+    return moveItem(db, objectStoreName, item, +1);
 };
 
-const moveItem = async (objectStoreName, item, delta) => {
+const moveItem = async (db, objectStoreName, item, delta) => {
     const order = item.order;
-    const otherItem = await readItemByOrder(objectStoreName, order + delta, item.parentItemID);
+    const otherItem = await readItemByOrder(db, objectStoreName, order + delta, item.parentItemID);
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
         item.order += delta;

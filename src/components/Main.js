@@ -68,21 +68,23 @@ const getListView = (props) => (
 const getProps = (props) => {
     if (View.isGroup(props.view)) {
         return {
+            db: props.db,
             view: props.view,
             itemID: props.groupID,
             objectStoreName: GROUPS,
             type: 'group',
-            ...createHandlers(GROUPS, props.setGroupID, props.setView, View.isGroup),
+            ...createHandlers(props.db, GROUPS, props.setGroupID, props.setView, View.isGroup),
         };
     }
     if (View.isWaypoint(props.view)) {
         return {
+            db: props.db,
             view: props.view,
             itemID: props.waypointID,
             parentItemID: props.groupID,
             objectStoreName: WAYPOINTS,
             type: 'waypoint',
-            ...createHandlers(WAYPOINTS, props.setWaypointID, props.setView, View.isWaypoint),
+            ...createHandlers(props.db, WAYPOINTS, props.setWaypointID, props.setView, View.isWaypoint),
         };
     }
     return {};

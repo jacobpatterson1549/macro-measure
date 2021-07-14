@@ -17,6 +17,7 @@ jest.mock('../utils/Database', () => ({
 }));
 
 describe('Database', () => {
+    const db = '[mock database]';
     describe('createHandlers', () => {
         beforeEach(() => {
             jest.resetAllMocks();
@@ -69,7 +70,7 @@ describe('Database', () => {
                 const viewType = testData.viewType[index];
                 const params = testData.handlerParams[handlerFuncName];
                 const [inParams] = params;
-                const handlers = createHandlers(objectStoreName, setItemID, setView, viewType);
+                const handlers = createHandlers(db, objectStoreName, setItemID, setView, viewType);
                 const expected = views[index];
                 handlers[handlerFuncName](...inParams);
                 expect(setView).toBeCalledWith(expected);
@@ -80,7 +81,7 @@ describe('Database', () => {
                 const viewType = testData.viewType[index];
                 const params = testData.handlerParams[handlerFuncName];
                 const [inParams, outParams] = params
-                const handlers = createHandlers(objectStoreName, setItemID, setView, viewType);
+                const handlers = createHandlers(db, objectStoreName, setItemID, setView, viewType);
                 const expected = outParams;
                 handlers[handlerFuncName](...inParams);
                 expect(setItemID).toBeCalledWith(...expected);
@@ -91,8 +92,8 @@ describe('Database', () => {
                 const viewType = testData.viewType[index];
                 const params = testData.handlerParams[handlerFuncName];
                 const [inParams, outParams] = params
-                const handlers = createHandlers(objectStoreName, setItemID, setView, viewType);
-                const expected = [objectStoreName, ...outParams];
+                const handlers = createHandlers(db, objectStoreName, setItemID, setView, viewType);
+                const expected = [db, objectStoreName, ...outParams];
                 handlers[handlerFuncName](...inParams);
                 expect(databaseFunc).toBeCalledWith(...expected);
             });
@@ -104,7 +105,7 @@ describe('Database', () => {
                 const setView = jest.fn();
                 const viewType = testData.viewType[index];
                 const inParam = { name: 'name' };
-                const handlers = createHandlers(objectStoreName, setItemID, setView, viewType);
+                const handlers = createHandlers(db, objectStoreName, setItemID, setView, viewType);
                 handlers[handlerFuncName](inParam);
                 await waitFor(() => expect(setItemID).toBeCalledWith(expected));
             });
@@ -120,9 +121,9 @@ describe('Database', () => {
                 const filter = 'f1';
                 const expected = 'value1'
                 readItem.mockReturnValue(expected);
-                const { result } = renderHook(() => useItem(objectStoreName, filter));
+                const { result } = renderHook(() => useItem(db, objectStoreName, filter));
                 expect(result.current[0]).toBeFalsy();
-                await waitFor(() => expect(readItem).toBeCalledWith(objectStoreName, filter));
+                await waitFor(() => expect(readItem).toBeCalledWith(db, objectStoreName, filter));
                 const value = result.current[0];
                 expect(value).toBe(expected);
             });
@@ -133,8 +134,8 @@ describe('Database', () => {
                 const filter = 'f2';
                 const expected = 'value2'
                 readItems.mockReturnValue(expected);
-                const { result } = renderHook(() => useItems(objectStoreName, filter));
-                await waitFor(() => expect(readItems).toBeCalledWith(objectStoreName, filter));
+                const { result } = renderHook(() => useItems(db, objectStoreName, filter));
+                await waitFor(() => expect(readItems).toBeCalledWith(db, objectStoreName, filter));
                 const value = result.current[0];
                 expect(value).toBe(expected);
             });
@@ -144,7 +145,7 @@ describe('Database', () => {
                 const initialItems = 'value3'; // will be overwritten after button is clicked
                 const expected = 'value4';
                 readItems.mockReturnValueOnce(initialItems).mockReturnValueOnce(expected);
-                const { result } = renderHook(() => useItems(objectStoreName, filter));
+                const { result } = renderHook(() => useItems(db, objectStoreName, filter));
                 const reloadValue = result.current[1];
                 await waitFor(reloadValue);
                 const value = result.current[0];
@@ -156,7 +157,7 @@ describe('Database', () => {
                 let lateResolve;
                 const longRead = new Promise((resolve) => lateResolve = resolve);
                 readItems.mockReturnValue(longRead);
-                const { unmount } = renderHook(() => useItems(objectStoreName, filter));
+                const { unmount } = renderHook(() => useItems(db, objectStoreName, filter));
                 unmount(); // the test will throw an error from the late resolve
                 lateResolve();
             });

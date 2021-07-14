@@ -101,11 +101,6 @@ describe('Database', () => {
     beforeEach(() => {
         indexedDB = getIndexedDB();
     });
-    it('should have previously called initDB', () => { // KEEP THIS TEST FIRST, or reset the module between tests
-        const expected = 'call initDatabase() first';
-        const request = readItem('os1', 'key1');
-        expect(request).rejects.toContain(expected);
-    });
     describe('initDatabase', () => {
         describe('onupgradeneeded', () => {
             const upgradeTests = [
@@ -189,7 +184,7 @@ describe('Database', () => {
             expect(request).rejects.toContain(expected);
         });
         describe('addLocalStorage', () => {
-            it('should be load local storage when successful', () => {
+            it('should load local storage when successful', () => {
                 const openRequest = new MockIDBOpenDBRequest();
                 indexedDB.open = () => openRequest;
                 const event = mockEvent('success', {});
@@ -259,7 +254,7 @@ describe('Database', () => {
                 const transactionWW2 = new MockIDBTransaction(waypointsObjectStore);
                 transactionWW1.name = 'transactionWW1';
                 transactionWW2.name = 'transactionWW2';
-                const db = {
+                const mockDB = {
                     transaction: jest.fn()
                         .mockReturnValueOnce(transactionGR)
                         .mockReturnValueOnce(transactionGW)
@@ -271,24 +266,24 @@ describe('Database', () => {
                 getCurrentDate.mockReturnValue('XYZ');
                 // actions
                 const initRequest = initDatabase();
-                openRequest.dispatchEvent(mockEvent('success', { result: db }));
-                await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readonly'));
+                openRequest.dispatchEvent(mockEvent('success', { result: mockDB }));
+                await waitFor(() => expect(mockDB.transaction).toBeCalledWith(['groups'], 'readonly'));
                 groupsCountRequest.dispatchEvent(mockEvent('success', { result: 111 }));
-                await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readwrite'));
+                await waitFor(() => expect(mockDB.transaction).toBeCalledWith(['groups'], 'readwrite'));
                 groupsAddRequest1.dispatchEvent(mockEvent('success', { result: 1 }));
                 groupsAddRequest1b.dispatchEvent(mockEvent('success', { result: 11 }));
                 groupsAddRequest2.dispatchEvent(mockEvent('success', { result: 2 }));
                 groupsAddRequest3.dispatchEvent(mockEvent('success', { result: 3 }));
                 transactionGW.dispatchEvent(mockEvent('complete', {}));
                 await waitFor(() => {
-                    expect(db.transaction).toBeCalledWith(['waypoints'], 'readonly'); // i1, i2
-                    expect(db.transaction).toBeCalledWith(['waypoints'], 'readonly'); // i7
+                    expect(mockDB.transaction).toBeCalledWith(['waypoints'], 'readonly'); // i1, i2
+                    expect(mockDB.transaction).toBeCalledWith(['waypoints'], 'readonly'); // i7
                 });
                 waypointsCountRequest.dispatchEvent(mockEvent('success', { result: 0 })); // i1, i2
                 waypointsCountRequest.dispatchEvent(mockEvent('success', { result: 0 })); // i7
                 await waitFor(() => {
-                    expect(db.transaction).toBeCalledWith(['waypoints'], 'readwrite'); // i1, i2
-                    expect(db.transaction).toBeCalledWith(['waypoints'], 'readwrite'); // i7
+                    expect(mockDB.transaction).toBeCalledWith(['waypoints'], 'readwrite'); // i1, i2
+                    expect(mockDB.transaction).toBeCalledWith(['waypoints'], 'readwrite'); // i7
                 });
                 waypointsAddRequest1.dispatchEvent(mockEvent('success', { result: 'i1' }));
                 waypointsAddRequest2.dispatchEvent(mockEvent('success', { result: 'i2' }));
@@ -439,14 +434,15 @@ describe('Database', () => {
         it('should resolve when successful', async () => {
             const openRequest = new MockIDBRequest();
             indexedDB.open = () => openRequest;
-            const event = mockEvent('success', {});
+            const expected = 'the database created by init'
+            const event = mockEvent('success', { result: expected });
             const request = initDatabase();
             openRequest.dispatchEvent(event);
-            expect(request).resolves.toBeTruthy();
+            expect(request).resolves.toBe(expected);
         });
     });
     describe('getDatabaseAsObject', () => {
-        it('should resolve to object', () => {
+        it('should resolve to object', async () => {
             const groups = [1, 'art', true];
             const waypoints = [2, 'bat', false];
             const expected = {
@@ -461,8 +457,8 @@ describe('Database', () => {
                 groupsGetAllObjectStore,
                 waypointsGetAllObjectStore,
             );
-            mockTransaction(transaction);
-            const request = getDatabaseAsObject();
+            const db = await mockTransaction(transaction);
+            const request = getDatabaseAsObject(db);
             groupsGetAllRequest.dispatchEvent(mockEvent('success', { result: groups }));
             waypointsGetAllRequest.dispatchEvent(mockEvent('success', { result: waypoints }));
             transaction.dispatchEvent(mockEvent('complete', {}));
@@ -489,13 +485,19 @@ describe('Database', () => {
         });
     });
     describe('C.R.U.D. handlers', () => {
+        it('should have previously called initDB', () => { // KEEP THIS TEST FIRST, or reset the module between tests
+            const expected = 'call initDatabase() first';
+            const db = null;
+            const request = readItem(db, 'os1', 'key1');
+            expect(request).rejects.toContain(expected);
+        });
         it('should handle transaction errors', async () => {
             const expected = 'mock key missing message';
             const getRequest = new MockIDBRequest();
             const objectStore = { get: jest.fn().mockReturnValue(getRequest) };
             const transaction = new MockIDBTransaction(objectStore);
             const db = await mockTransaction(transaction);
-            const request = readItem('os1', 'key1');
+            const request = readItem(db, 'os1', 'key1');
             transaction.dispatchEvent(mockEvent('error', { error: new Error(expected) }));
             expect(db.transaction.mock.calls).toEqual([[['os1'], 'readonly'],]);
             expect(request).rejects.toContain(expected);
@@ -525,7 +527,7 @@ describe('Database', () => {
             const transactionR = new MockIDBTransaction(objectStoreR);
             const transactionW = new MockIDBTransaction(objectStoreW);
             const db = await mockTransaction(transactionR, transactionW);
-            const request = createItem('os1', item);
+            const request = createItem(db, 'os1', item);
             countRequest.dispatchEvent(mockEvent('success', { result: expectedCount }));
             await waitFor(() => expect(db.transaction.mock.calls).toEqual([
                 [['os1'], 'readonly'],
@@ -545,7 +547,7 @@ describe('Database', () => {
             const objectStore = { get: jest.fn().mockReturnValue(getRequest) };
             const transaction = new MockIDBTransaction(objectStore);
             const db = await mockTransaction(transaction);
-            const request = readItem('os1', 'key1');
+            const request = readItem(db, 'os1', 'key1');
             getRequest.dispatchEvent(mockEvent('success', { result: expected }));
             transaction.dispatchEvent(mockEvent('complete', {}));
             expect(db.transaction.mock.calls).toEqual([[['os1'], 'readonly']]);
@@ -568,7 +570,7 @@ describe('Database', () => {
             };
             const transaction = new MockIDBTransaction(objectStore);
             const db = await mockTransaction(transaction);
-            const request = readItems('os1', parentItemID);
+            const request = readItems(db, 'os1', parentItemID);
             getAllRequest.dispatchEvent(mockEvent('success', { result: expectedItems }));
             expect(db.transaction.mock.calls).toEqual([[['os1'], 'readonly']]);
             const actual = await request;
@@ -582,7 +584,7 @@ describe('Database', () => {
             const objectStore = { put: jest.fn().mockReturnValue(putRequest) };
             const transaction = new MockIDBTransaction(objectStore);
             const db = await mockTransaction(transaction);
-            const request = updateItem('os1', expected);
+            const request = updateItem(db, 'os1', expected);
             putRequest.dispatchEvent(mockEvent('success', {}));
             transaction.dispatchEvent(mockEvent('complete', {}));
             await request;
@@ -595,7 +597,7 @@ describe('Database', () => {
             const objectStore = { delete: jest.fn().mockReturnValue(deleteRequest) };
             const transaction = new MockIDBTransaction(objectStore);
             const db = await mockTransaction(transaction);
-            const request = deleteItem('child_object_store', itemID);
+            const request = deleteItem(db, 'child_object_store', itemID);
             await waitFor(() => expect(db.transaction.mock.calls).toEqual([[['child_object_store'], 'readwrite']]));
             transaction.dispatchEvent(mockEvent('complete', {}));
             expect(objectStore.delete).toBeCalledWith(itemID);
@@ -612,7 +614,7 @@ describe('Database', () => {
             const transactionR = new MockIDBTransaction(objectStoreR);
             const transactionW = new MockIDBTransaction(objectStoreGW, objectStoreWW);
             const db = await mockTransaction(transactionR, transactionW);
-            const request = deleteItem('groups', groupID);
+            const request = deleteItem(db, 'groups', groupID);
             getAllKeysRequest.dispatchEvent(mockEvent('success', { result: [7, 8, 14] }));
             transactionW.dispatchEvent(mockEvent('complete', {}));
             await waitFor(() => expect(db.transaction.mock.calls).toEqual([
@@ -653,7 +655,7 @@ describe('Database', () => {
                 const transactionR = new MockIDBTransaction(objectStoreR);
                 const transactionW = new MockIDBTransaction(objectStoreW);
                 const db = await mockTransaction(transactionR, transactionW);
-                const request = moveItem('os1', srcItem);
+                const request = moveItem(db, 'os1', srcItem);
                 getRequest.dispatchEvent(mockEvent('success', { result: dstItem }));
                 await waitFor(() => expect(db.transaction.mock.calls).toEqual([
                     [['os1'], 'readonly'],

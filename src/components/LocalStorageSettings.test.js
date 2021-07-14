@@ -2,22 +2,28 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 import { LocalStorageSettings } from './LocalStorageSettings';
 
-import { getLocalStorageJSON, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
+import { getLocalStorageAsObject, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
+import { getDatabaseAsObject, deleteDatabase } from '../utils/Database';
 import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL } from '../utils/Global'
 
 jest.mock('../utils/LocalStorage', () => ({
-    clearLocalStorage: jest.fn(),
-    getLocalStorageJSON: jest.fn(),
+    getLocalStorageAsObject: jest.fn(),
     setLocalStorage: jest.fn(),
+    clearLocalStorage: jest.fn(),
 }));
+jest.mock('../utils/Database', () => ({
+    getDatabaseAsObject: jest.fn().mockResolvedValue(),
+    deleteDatabase: jest.fn().mockResolvedValue(),
+}))
 
 describe('LocalStorageSettings', () => {
     describe('clear storage', () => {
-        it('should clear storage when clicked', () => {
+        it('should clear storage when clicked', async () => {
             render(<LocalStorageSettings />);
             const clearStorageElement = screen.getByLabelText(/clear/i);
             fireEvent.click(clearStorageElement);
             expect(clearLocalStorage).toBeCalled();
+            await waitFor(deleteDatabase);
             expect(reloadWindow).toBeCalled();
         });
     });
@@ -31,13 +37,15 @@ describe('LocalStorageSettings', () => {
             render(<LocalStorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
             fireEvent.click(exportElement);
-            await waitFor(expect(getLocalStorageJSON).toBeCalled);
+            expect(getLocalStorageAsObject).toBeCalled();
+            await waitFor(getDatabaseAsObject);
             expect(createObjectURL).toBeCalled();
             const exportLink = screen.getByRole('link');
             expect(exportLink.href).toMatch(expectedURL);
             expect(exportLink.download).toContain(expectedCurrentDate);
             expect(exportLink.download).toMatch(/^\S+$/); // expect link to have no spaces
         });
+        // TODO: test combination of exported localStorage/database
         it('should import storage when changed', async () => {
             const textFn = jest.fn().mockReturnValue(allJSON);
             render(<LocalStorageSettings />);
@@ -60,7 +68,8 @@ describe('LocalStorageSettings', () => {
             fireEvent.click(exportElement);
             fireEvent.click(exportElement);
             fireEvent.click(exportElement);
-            await waitFor(expect(getLocalStorageJSON).toBeCalled);
+            expect(getLocalStorageAsObject).toBeCalledTimes(3);
+            await waitFor(getDatabaseAsObject);
             expect(revokeObjectURL.mock.calls).toEqual([['url1'], ['url2']]);
             unmount();
             expect(revokeObjectURL.mock.calls).toEqual([['url1'], ['url2'], ['url3']]);

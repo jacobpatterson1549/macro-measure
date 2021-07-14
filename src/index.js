@@ -8,8 +8,9 @@ import { initDatabase } from './utils/Database';
 
 window.addEventListener('load', async () => {
     await registerSW();
-    await initDatabase();
+    const db = await initDatabase();
+    const state = { db };
     render(
-        <App />,
+        <App {...state} />,
         document.getElementById('root'));
 });

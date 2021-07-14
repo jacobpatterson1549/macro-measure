@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { deleteDatabase, getDatabaseAsObject } from './Database';
 import { getLocalStorage } from './Global';
 
 // TODO: move this to src/hooks
@@ -13,14 +12,12 @@ export const useLocalStorage = (key, defaultValue) => {
     return [value, handleSetValue(key, setValue)];
 };
 
-export const clearLocalStorage = async () => {
+export const clearLocalStorage = () => {
     getLocalStorage().clear();
-    // TODO add another button to clear storage, but not database (this might fix some problems)
-    await deleteDatabase();
 };
 
-export const getLocalStorageJSON = async () => { // TODO: rename to getLocalStorageAsObject, have component combine with db
-    const ls =  Object.fromEntries(
+export const getLocalStorageAsObject = () => (
+    Object.fromEntries(
         Array.from(Array(getLocalStorage().length).keys()) // [0 .. storage.length)
             .map(
                 (i) => (
@@ -31,11 +28,8 @@ export const getLocalStorageJSON = async () => { // TODO: rename to getLocalStor
                         key,
                         JSON.parse(getLocalStorage().getItem(key)))),
                 new Map())
-            .entries());
-    const db = await getDatabaseAsObject();
-    const combinedStorage = Object.assign(ls, db);
-    return JSON.stringify(combinedStorage);
-};
+            .entries())
+);
 
 export const setLocalStorage = (localStorageJSON) => (
     Object.entries(

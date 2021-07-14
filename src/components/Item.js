@@ -18,7 +18,7 @@ export const Item = (props) => {
     const [name, setName] = useLocalStorage(`${props.type}InputName`, '?'); // same name as NameList.js
     const [lat, setLat] = useLocalStorage(`${props.type}InputLat`, 0);
     const [lng, setLng] = useLocalStorage(`${props.type}InputLng`, 0);
-    const [items] = useItems(props.objectStoreName, props.parentItemID);
+    const [items] = useItems(props.db, props.objectStoreName, props.parentItemID);
     const [item, setItem] = useState(null);
     // const [distanceHeading, setDistanceHeading] = useState(null);
     useEffect(() => {

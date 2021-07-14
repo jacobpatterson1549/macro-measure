@@ -2,6 +2,10 @@ import { screen, render } from '@testing-library/react';
 
 import { ErrorBoundary } from './ErrorBoundary';
 
+import { clearLocalStorage } from '../utils/LocalStorage'; // TODO: rename clearLocalStore to clear, alias it here, do this for other utils
+
+jest.mock('../utils/LocalStorage')
+
 describe('ErrorBoundary', () => {
     beforeAll(() => {
         jest.spyOn(console, 'error'); // disable error logging for tests
@@ -36,5 +40,6 @@ describe('ErrorBoundary', () => {
             </ErrorBoundary>
         );
         expect(screen.queryByText(errorBoundaryText)).toBeInTheDocument();
+        expect(clearLocalStorage).toBeCalled();
     });
 });

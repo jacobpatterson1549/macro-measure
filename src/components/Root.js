@@ -31,11 +31,13 @@ export const Root = (props) => {
 const render = (props) => (
   <div className="Root">
     <Header
+      db={props.db}
       view={props.view}
       groupID={props.groupID}
       setView={props.setView}
     />
     <Main
+      db={props.db}
       view={props.view}
       groupID={props.groupID}
       waypointID={props.waypointID}

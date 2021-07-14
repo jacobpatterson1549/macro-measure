@@ -6,7 +6,7 @@ import { View } from '../utils/View';
 import { GROUPS } from '../utils/Database';
 
 export const Header = (props) => {
-    const [group] = useItem(GROUPS, props.groupID);
+    const [group] = useItem(props.db, GROUPS, props.groupID);
     const state = {
         group,
     };
