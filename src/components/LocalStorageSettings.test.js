@@ -10,12 +10,6 @@ jest.mock('../utils/LocalStorage', () => ({
     getLocalStorageJSON: jest.fn(),
     setLocalStorage: jest.fn(),
 }));
-jest.mock('../utils/Global', () => ({
-    getCurrentDate: jest.fn(),
-    reloadWindow: jest.fn(),
-    createObjectURL: jest.fn(),
-    revokeObjectURL: jest.fn(),
-}));
 
 describe('LocalStorageSettings', () => {
     describe('clear storage', () => {

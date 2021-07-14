@@ -5,7 +5,6 @@ import { registerSW } from './serviceWorkerRegistration';
 import { App } from './components/App';
 
 import { initDatabase } from './utils/Database'
-import { addWindowEventListener, getElementById } from './utils/Global'
 
 jest.spyOn(window, 'addEventListener');
 jest.mock('react-dom', () => ({
@@ -16,10 +15,6 @@ jest.mock('./serviceWorkerRegistration', () => ({
 }))
 jest.mock('./utils/Database', () => ({
     initDatabase: jest.fn(),
-}));
-jest.mock('./utils/Global', () => ({
-    addWindowEventListener: jest.fn(),
-    getElementById: jest.fn(),
 }));
 
 describe('index', () => {

@@ -17,12 +17,6 @@ jest.mock('../hooks/Geolocation', () => ({
 }));
 
 describe('Item', () => {
-    beforeEach(() => {
-        getLocalStorage.mockReturnValue({
-            getItem: jest.fn(),
-            setItem: jest.fn(),
-        });
-    });
     describe('View', () => {
         const actionButtonNames = [
             'create item',

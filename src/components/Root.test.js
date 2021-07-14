@@ -17,10 +17,6 @@ describe('Root', () => {
   beforeEach(() => {
     useItem.mockReturnValue([]);
     useItems.mockReturnValue([]);
-    getLocalStorage.mockReturnValue({
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-    });
   });
   it('should have help header in the document', () => {
     render(<Root />);

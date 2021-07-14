@@ -1,11 +1,6 @@
 import { registerSW } from './serviceWorkerRegistration';
 
 jest.spyOn(window, 'addEventListener');
-jest.mock('./utils/Global', () => ({
-    canUseServiceWorker: jest.fn(),
-    registerServiceWorker: jest.fn(),
-    isProductionEnv: jest.fn(),
-}));
 
 describe('register', () => {
     let oldEnv;

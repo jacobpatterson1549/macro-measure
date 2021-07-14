@@ -10,13 +10,7 @@ import { getGeolocation } from '../utils/Global';
 jest.mock('../utils/Geolocation');
 
 describe('Geolocation', () => {
-    let geolocation;
     beforeEach(() => {
-        geolocation = {
-            watchPosition: jest.fn(),
-            clearWatch: jest.fn(),
-        };
-        getGeolocation.mockReturnValue(geolocation);
         roundLatLng.mockImplementation((latLng) => latLng);
     });
     describe('views', () => {
@@ -33,7 +27,7 @@ describe('Geolocation', () => {
                 setGPSOn: jest.fn(),
             };
             renderHook(() => useGeolocation(props));
-            expect(geolocation.watchPosition).toBeCalledTimes(expected);
+            expect(getGeolocation().watchPosition).toBeCalledTimes(expected);
         });
     });
     it('should not watch position if geolocation is falsy', () => {
@@ -64,7 +58,7 @@ describe('Geolocation', () => {
                 setGPSOn: jest.fn(),
             };
             renderHook(() => useGeolocation(props));
-            expect(geolocation.watchPosition.mock.calls[0][2].enableHighAccuracy).toBe(expected);
+            expect(getGeolocation().watchPosition.mock.calls[0][2].enableHighAccuracy).toBe(expected);
         });
     });
     it('should show positions when success is called', async () => {
@@ -73,7 +67,7 @@ describe('Geolocation', () => {
             setGPSOn: jest.fn(),
         };
         const { result } = renderHook(() => useGeolocation(props));
-        const successCallback = geolocation.watchPosition.mock.calls[0][0];
+        const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
         await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
         const expected = { lat: 7, lng: -9 };
         const state = result.current;
@@ -85,7 +79,7 @@ describe('Geolocation', () => {
             setGPSOn: jest.fn(),
         };
         const { result } = renderHook(() => useGeolocation(props));
-        const successCallback = geolocation.watchPosition.mock.calls[0][0];
+        const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
         const expected = 20;
         await waitFor(() => successCallback({ coords: { accuracy: expected, } }));
         const state = result.current;
@@ -97,7 +91,7 @@ describe('Geolocation', () => {
             setGPSOn: jest.fn(),
         };
         const { result } = renderHook(() => useGeolocation(props));
-        const successCallback = geolocation.watchPosition.mock.calls[0][0];
+        const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
         await waitFor(() => {
             successCallback({ coords: { latitude: 7, longitude: -9, } });
             successCallback({ coords: { latitude: 1, longitude: 8, } });
@@ -112,7 +106,7 @@ describe('Geolocation', () => {
             setGPSOn: jest.fn(),
         };
         renderHook(() => useGeolocation(props));
-        const successCallback = geolocation.watchPosition.mock.calls[0][0];
+        const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
         await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
         const expected = { lat: 7, lng: -9 };
         expect(roundLatLng).toBeCalledWith(expected);
@@ -123,7 +117,7 @@ describe('Geolocation', () => {
             setGPSOn: jest.fn(),
         };
         const { result } = renderHook(() => useGeolocation(props));
-        const [successCallback, errorCallback] = geolocation.watchPosition.mock.calls[0];
+        const [successCallback, errorCallback] = getGeolocation().watchPosition.mock.calls[0];
         await waitFor(() => {
             successCallback({ coords: { latitude: 7, longitude: -9, } });
             errorCallback({ message: 'unavailable', code: 2 });
@@ -137,12 +131,12 @@ describe('Geolocation', () => {
             setGPSOn: jest.fn(),
         };
         renderHook(() => useGeolocation(props));
-        const [successCallback, errorCallback] = geolocation.watchPosition.mock.calls[0];
+        const [successCallback, errorCallback] = getGeolocation().watchPosition.mock.calls[0];
         await waitFor(() => {
             successCallback({ coords: { latitude: 7, longitude: -9, } });
             errorCallback({ message: 'unavailable', code: 2 });
         });
-        expect(geolocation.clearWatch).toBeCalledTimes(2); // 1 to start watch, 1 on error
+        expect(getGeolocation().clearWatch).toBeCalledTimes(2); // 1 to start watch, 1 on error
     });
     describe('valid', () => {
         const validTests = [

@@ -9,22 +9,8 @@ jest.mock('./Database', () => ({
     deleteDatabase: jest.fn(),
     getDatabaseAsObject: jest.fn(),
 }));
-jest.mock('./Global', () => ({
-    getLocalStorage: jest.fn(),
-}));
 
 describe('LocalStorage', () => {
-    let localStorage;
-    beforeEach(() => {
-        localStorage = {
-            key: jest.fn(),
-            getItem: jest.fn(),
-            setItem: jest.fn(),
-            removeItem: jest.fn(),
-            clear: jest.fn(),
-        };
-        getLocalStorage.mockReturnValue(localStorage);
-    });
     describe('useLocalStorage', () => {
         // these tests use the mock defined in setupTests.js
         const key = 'key';
@@ -43,16 +29,16 @@ describe('LocalStorage', () => {
             render(<MockComponent defaultValue={expected} />);
             const element = screen.getByText(expected);
             expect(element).toBeInTheDocument();
-            expect(localStorage.getItem).toBeCalledWith(key);
+            expect(getLocalStorage().getItem).toBeCalledWith(key);
         });
         it('should get the saved value', () => {
             const expected = 'test2';
             const json = `"${expected}"`;
-            localStorage.getItem.mockReturnValue(json);
+            getLocalStorage().getItem.mockReturnValue(json);
             render(<MockComponent />);
             const element = screen.getByText(expected);
             expect(element).toBeInTheDocument();
-            expect(localStorage.getItem).toBeCalledWith(key);
+            expect(getLocalStorage().getItem).toBeCalledWith(key);
         });
         it('should setItem when clicked', () => {
             const before = 'this should not be saved';
@@ -61,7 +47,7 @@ describe('LocalStorage', () => {
             render(<MockComponent defaultValue={before} clickValue={expected} />);
             const element = screen.getByText(before);
             element.click();
-            expect(localStorage.setItem).toBeCalledWith(key, expectedJSON);
+            expect(getLocalStorage().setItem).toBeCalledWith(key, expectedJSON);
         });
         it('should setItem five times when clicked five times', () => {
             const before = 'this should not be saved';
@@ -73,13 +59,13 @@ describe('LocalStorage', () => {
             element.click();
             element.click();
             element.click();
-            expect(localStorage.setItem).toBeCalledTimes(5);
+            expect(getLocalStorage().setItem).toBeCalledTimes(5);
         });
     });
     describe('clearLocalStorage', () => {
         it('should call clear on localStorage', () => {
             clearLocalStorage();
-            expect(localStorage.clear).toBeCalled();
+            expect(getLocalStorage().clear).toBeCalled();
         });
         it('should delete the database', () => {
             clearLocalStorage();
@@ -89,14 +75,14 @@ describe('LocalStorage', () => {
     describe('import/export', () => {
         const localStorageJSON = '{"key1":"text","key2":42,"key3":{"obj":"prop"},"dbData":true}';
         it('should getAllLocalStorage', async () => {
-            localStorage.length = 3;
-            localStorage.key.mockReturnValueOnce('key1').mockReturnValueOnce('key2').mockReturnValueOnce('key3');
-            localStorage.getItem.mockReturnValueOnce('"text"').mockReturnValueOnce('42').mockReturnValueOnce('{"obj":"prop"}');
+            getLocalStorage().length = 3;
+            getLocalStorage().key.mockReturnValueOnce('key1').mockReturnValueOnce('key2').mockReturnValueOnce('key3');
+            getLocalStorage().getItem.mockReturnValueOnce('"text"').mockReturnValueOnce('42').mockReturnValueOnce('{"obj":"prop"}');
             getDatabaseAsObject.mockReturnValue({ dbData: true })
             const expected = localStorageJSON;
             const actual = await getLocalStorageJSON();
-            expect(localStorage.key.mock.calls).toEqual([[0], [1], [2]]);
-            expect(localStorage.getItem.mock.calls).toEqual([['key1'], ['key2'], ['key3']]);
+            expect(getLocalStorage().key.mock.calls).toEqual([[0], [1], [2]]);
+            expect(getLocalStorage().getItem.mock.calls).toEqual([['key1'], ['key2'], ['key3']]);
             expect(actual).toEqual(expected);
         });
         it('should setAllLocalStorage', () => {
@@ -107,7 +93,7 @@ describe('LocalStorage', () => {
                 ['dbData', 'true'],
             ];
             setLocalStorage(localStorageJSON);
-            expect(localStorage.setItem.mock.calls).toEqual(expected);
+            expect(getLocalStorage().setItem.mock.calls).toEqual(expected);
         });
     });
 });

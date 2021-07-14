@@ -21,10 +21,6 @@ describe('NameList', () => {
     beforeEach(() => {
         reloadItems.mockReset();
         useItems.mockReturnValue([items, reloadItems]);
-        getLocalStorage.mockReturnValue({
-            getItem: jest.fn(),
-            setItem: jest.fn(),
-        });
     });
     describe('View', () => {
         const viewTests = [

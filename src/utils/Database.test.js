@@ -1,18 +1,7 @@
 import { waitFor } from '@testing-library/react';
 
 import { initDatabase, getDatabaseAsObject, deleteDatabase, createItem, readItem, readItems, updateItem, deleteItem, moveItemUp, moveItemDown } from './Database';
-import { indexedDB, getIDBKeyRange, getCurrentDate, getLocalStorage, getIndexedDB } from "./Global";
-
-const mockIDBKeyRange = (lower, upper, lowerOpen, upperOpen) => (
-    { lower, upper, lowerOpen, upperOpen }
-);
-
-jest.mock('./Global', () => ({
-    getIndexedDB: jest.fn(),
-    getIDBKeyRange: jest.fn(),
-    getLocalStorage: jest.fn(),
-    getCurrentDate: jest.fn(),
-}));
+import { getIndexedDB, getIDBKeyRange, getCurrentDate, getLocalStorage } from "./Global";
 
 // implements EventTarget, derived from MDN example
 class MockEventTarget {
@@ -110,20 +99,7 @@ const mockUpgradeObjectStore = (indexNames) => {
 describe('Database', () => {
     let indexedDB;
     beforeEach(() => {
-        indexedDB = {
-            open: jest.fn(),
-            deleteDatabase: jest.fn(),
-        };
-        const idbKeyRange = {
-            only: (z) => mockIDBKeyRange(z, z, false, false),
-            bound: (x, y) => mockIDBKeyRange(x, y, false, false),
-        };
-        getIndexedDB.mockReturnValue(indexedDB);
-        getIDBKeyRange.mockReturnValue(idbKeyRange);
-        getLocalStorage.mockReturnValue({
-            getItem: jest.fn(),
-            removeItem: jest.fn(),
-        });
+        indexedDB = getIndexedDB();
     });
     it('should have previously called initDB', () => { // KEEP THIS TEST FIRST, or reset the module between tests
         const expected = 'call initDatabase() first';
@@ -525,17 +501,13 @@ describe('Database', () => {
             expect(request).rejects.toContain(expected);
         });
         const createItemTests = [
-            [{ name: 'root item' }, null],
-            [{ name: 'item with parent', parentItemID: 7 }, mockIDBKeyRange(
-                [7, -Infinity],
-                [7, Infinity],
-                false,
-                false,
-            )],
+            [{ name: 'root item' }, () => null],
+            [{ name: 'item with parent', parentItemID: 7 }, () => getIDBKeyRange().bound([7, -Infinity], [7, Infinity])],
         ];
-        it.each(createItemTests)('should createItem when item is %s, using a range of %s', async (item, range) => {
+        it.each(createItemTests)('should createItem when item is %s, using a range of %s', async (item, rangeFn) => {
             const expectedItemID = 5;
             const expectedCount = 93;
+            const expectedRange = rangeFn();
             const expectedItem = Object.assign({}, item, {
                 order: expectedCount,
             });
@@ -563,7 +535,7 @@ describe('Database', () => {
             transactionW.dispatchEvent(mockEvent('complete', {}));
             const actualItemID = await request;
             expect(objectStoreR.index).toBeCalledWith('order');
-            expect(orderIndex.count).toBeCalledWith(range);
+            expect(orderIndex.count).toBeCalledWith(expectedRange);
             expect(objectStoreW.add.mock.calls).toEqual([[expectedItem]]);
             expect(actualItemID).toEqual(expectedItemID);
         });
@@ -581,16 +553,12 @@ describe('Database', () => {
             expect(request).resolves.toEqual(expected);
         });
         const readItemTests = [
-            [null, null],
-            [7, mockIDBKeyRange(
-                [7, -Infinity],
-                [7, Infinity],
-                false,
-                false,
-            )],
+            [null, () => null],
+            [7, () => getIDBKeyRange().bound([7, -Infinity], [7, Infinity])],
         ];
-        it.each(readItemTests)('should readItems when parentID is %s, using a range of %s', async (parentItemID, range) => {
-            const expected = ['some items', 8];
+        it.each(readItemTests)('should readItems when parentID is %s, using a range of %s', async (parentItemID, rangeFn) => {
+            const expectedRange = rangeFn();
+            const expectedItems = ['some items', 8];
             const getAllRequest = new MockIDBRequest();
             const orderIndex = {
                 getAll: jest.fn().mockReturnValue(getAllRequest),
@@ -601,12 +569,12 @@ describe('Database', () => {
             const transaction = new MockIDBTransaction(objectStore);
             const db = await mockTransaction(transaction);
             const request = readItems('os1', parentItemID);
-            getAllRequest.dispatchEvent(mockEvent('success', { result: expected }));
+            getAllRequest.dispatchEvent(mockEvent('success', { result: expectedItems }));
             expect(db.transaction.mock.calls).toEqual([[['os1'], 'readonly']]);
             const actual = await request;
             expect(objectStore.index).toBeCalledWith('order');
-            expect(orderIndex.getAll).toBeCalledWith(range);
-            expect(actual).toEqual(expected);
+            expect(orderIndex.getAll).toBeCalledWith(expectedRange);
+            expect(actual).toEqual(expectedItems);
         });
         it('should updateItem', async () => {
             const expected = 'the item being put, with key';
@@ -657,15 +625,16 @@ describe('Database', () => {
             expect(request).resolves.toBeTruthy();
         });
         describe('moveItem', () => {
-            const rangeOnly = (x) => mockIDBKeyRange(x, x, false, false);
+            const rangeOnly = (x) => getIDBKeyRange().only(x, x, false, false);
             const moveItemTests = [
-                ['down', { name: 'src', order: 1 }, rangeOnly(2), { name: 'dst', order: 2 }, moveItemDown],
-                ['up', { name: 'src', order: 7 }, rangeOnly(6), { name: 'dst', order: 6 }, moveItemUp],
-                ['down', { name: 'src', order: 9, parentItemID: 6 }, rangeOnly([6, 10]), { name: 'dst', order: 10, parentItemID: 6 }, moveItemDown],
-                ['up', { name: 'src', order: 4, parentItemID: 9 }, rangeOnly([9, 3]), { name: 'dst', order: 3, parentItemID: 9 }, moveItemUp],
+                ['down', { name: 'src', order: 1 }, () => rangeOnly(2), { name: 'dst', order: 2 }, moveItemDown],
+                ['up', { name: 'src', order: 7 }, () => rangeOnly(6), { name: 'dst', order: 6 }, moveItemUp],
+                ['down', { name: 'src', order: 9, parentItemID: 6 }, () => rangeOnly([6, 10]), { name: 'dst', order: 10, parentItemID: 6 }, moveItemDown],
+                ['up', { name: 'src', order: 4, parentItemID: 9 }, () => rangeOnly([9, 3]), { name: 'dst', order: 3, parentItemID: 9 }, moveItemUp],
             ];
-            it.each(moveItemTests)('should moveItem %s when item is %s using a range of %s', async (direction, srcItem, range, dstItem, moveItem) => {
-                const expected = [
+            it.each(moveItemTests)('should moveItem %s when item is %s using a range of %s', async (direction, srcItem, rangeFn, dstItem, moveItem) => {
+                const expectedRange = rangeFn();
+                const expectedPuts = [
                     [Object.assign({}, srcItem, { order: -1 })],
                     [Object.assign({}, dstItem, { order: srcItem.order })],
                     [Object.assign({}, srcItem, { order: dstItem.order })],
@@ -693,8 +662,8 @@ describe('Database', () => {
                 transactionW.dispatchEvent(mockEvent('complete', {}));
                 await request;
                 expect(objectStoreR.index).toBeCalledWith('order');
-                expect(orderIndex.get).toBeCalledWith(range);
-                expect(objectStoreW.put.mock.calls).toEqual(expected);
+                expect(orderIndex.get).toBeCalledWith(expectedRange);
+                expect(objectStoreW.put.mock.calls).toEqual(expectedPuts);
             });
         });
     });
