@@ -97,10 +97,6 @@ const mockUpgradeObjectStore = (indexNames) => {
 };
 
 describe('Database', () => {
-    let indexedDB;
-    beforeEach(() => {
-        indexedDB = getIndexedDB();
-    });
     describe('initDatabase', () => {
         describe('onupgradeneeded', () => {
             const upgradeTests = [
@@ -109,7 +105,7 @@ describe('Database', () => {
             ];
             it.each(upgradeTests)('should create %d object stores when version is %d', (expected, oldVersion) => {
                 const openRequest = new MockIDBOpenDBRequest();
-                indexedDB.open = () => openRequest;
+                getIndexedDB().open = () => openRequest;
                 const db = {
                     objectStoreNames: mockDOMStringList(),
                     createObjectStore: jest.fn().mockReturnValue({
@@ -132,7 +128,7 @@ describe('Database', () => {
             ]
             it.each(createObjectStoreCountTests)('should create %d object stores when object stores were previously %s', (expected, oldObjectStoresNames) => {
                 const openRequest = new MockIDBOpenDBRequest();
-                indexedDB.open = () => openRequest;
+                getIndexedDB().open = () => openRequest;
                 const db = {
                     objectStoreNames: mockDOMStringList(oldObjectStoresNames),
                     createObjectStore: jest.fn().mockReturnValue({
@@ -153,7 +149,7 @@ describe('Database', () => {
             ];
             it.each(oldIndexesTests)('should remove remove old indexes and create new ones when old indexes are %s', (oldIndexes) => {
                 const openRequest = new MockIDBOpenDBRequest();
-                indexedDB.open = () => openRequest;
+                getIndexedDB().open = () => openRequest;
                 const groupsObjectStore = mockUpgradeObjectStore(oldIndexes['groups']);
                 const waypointsObjectStore = mockUpgradeObjectStore(oldIndexes['waypoints']);
                 const transaction = new MockIDBTransaction(groupsObjectStore, waypointsObjectStore);
@@ -176,7 +172,7 @@ describe('Database', () => {
         });
         it('should reject with the error message when an error is thrown', () => {
             const openRequest = new MockIDBOpenDBRequest();
-            indexedDB.open = () => openRequest;
+            getIndexedDB().open = () => openRequest;
             const expected = 'custom error massage';
             const event = mockEvent('error', { error: new Error(expected) });
             const request = initDatabase();
@@ -186,7 +182,7 @@ describe('Database', () => {
         describe('addLocalStorage', () => {
             it('should load local storage when successful', () => {
                 const openRequest = new MockIDBOpenDBRequest();
-                indexedDB.open = () => openRequest;
+                getIndexedDB().open = () => openRequest;
                 const event = mockEvent('success', {});
                 initDatabase();
                 openRequest.dispatchEvent(event);
@@ -194,7 +190,7 @@ describe('Database', () => {
             });
             it('should backfill groups', async () => {
                 const openRequest = new MockIDBOpenDBRequest();
-                indexedDB.open = () => openRequest;
+                getIndexedDB().open = () => openRequest;
                 const groupsJSON = JSON.stringify([
                     {
                         name: 'group 1', // really old group with items
@@ -310,7 +306,7 @@ describe('Database', () => {
             });
             it('should backfill waypoints', async () => {
                 const openRequest = new MockIDBOpenDBRequest();
-                indexedDB.open = () => openRequest;
+                getIndexedDB().open = () => openRequest;
                 const waypointsJSON = JSON.stringify([
                     { name: 'item1', lat: 2, lng: 3, parentItemID: 'a' },
                     { name: 'item2', lat: 22, lng: 7, parentItemID: 'a' },
@@ -404,7 +400,7 @@ describe('Database', () => {
             });
             it('should backfill empty groups and waypoints', () => {
                 const openRequest = new MockIDBOpenDBRequest();
-                indexedDB.open = () => openRequest;
+                getIndexedDB().open = () => openRequest;
                 getLocalStorage().getItem
                     .mockReturnValueOnce('[]')
                     .mockReturnValueOnce('[]');
@@ -420,7 +416,7 @@ describe('Database', () => {
             ];
             it.each(removeTests)('should remove localStorage for %s', async (expected, getItemReturnValues) => {
                 const openRequest = new MockIDBOpenDBRequest();
-                indexedDB.open = () => openRequest;
+                getIndexedDB().open = () => openRequest;
                 getItemReturnValues.forEach((value) => {
                     getLocalStorage().getItem.mockReturnValueOnce(value);
                 });
@@ -433,7 +429,7 @@ describe('Database', () => {
         });
         it('should resolve when successful', async () => {
             const openRequest = new MockIDBRequest();
-            indexedDB.open = () => openRequest;
+            getIndexedDB().open = () => openRequest;
             const expected = 'the database created by init'
             const event = mockEvent('success', { result: expected });
             const request = initDatabase();
@@ -468,7 +464,7 @@ describe('Database', () => {
     describe('deleteDatabase', () => {
         it('should reject when an error is thrown', () => {
             const deleteRequest = new MockIDBRequest();
-            indexedDB.deleteDatabase = () => deleteRequest;
+            getIndexedDB().deleteDatabase = () => deleteRequest;
             const expected = 'db delete error';
             const event = mockEvent('error', { error: new Error(expected) });
             const request = deleteDatabase();
@@ -477,7 +473,7 @@ describe('Database', () => {
         });
         it('should resolve when successful', () => {
             const deleteRequest = new MockIDBRequest();
-            indexedDB.deleteDatabase = () => deleteRequest;
+            getIndexedDB().deleteDatabase = () => deleteRequest;
             const event = mockEvent('success', {});
             const request = deleteDatabase();
             deleteRequest.dispatchEvent(event);

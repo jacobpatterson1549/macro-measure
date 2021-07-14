@@ -58,7 +58,7 @@ const handle = (db, objectStoreNames, action, mode) => {
         if (!db) {
             reject('db not initialized, call initDatabase() first');
         }
-        let transaction = db.transaction(objectStoreNames, mode);
+        const transaction = db.transaction(objectStoreNames, mode);
         action(transaction, resolve);
         transaction.onerror = (event) => {
             reject(`transaction error: ${event.target.error.message}`);
@@ -174,7 +174,7 @@ const createItems = async (db, objectStoreName, items) => {
     const numItems = await readItemCount(db, objectStoreName, parentItemID);
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
-        let itemIDs = {};
+        const itemIDs = {};
         items.forEach((item, index) => {
             const dbItem = Object.assign({}, item, { order: numItems + index });
             const request = objectStore.add(dbItem);

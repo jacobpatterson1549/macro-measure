@@ -46,7 +46,7 @@ const useDatabase = (readFn, db, objectStoreName, filter) => {
     const [value, setValue] = useState(null);
     const [updateCount, setUpdateCount] = useState(0);
     const reloadValue = () => setUpdateCount((c) => c + 1);
-    let isMounted = useRef(true);
+    const isMounted = useRef(true);
     useEffect(() => {
         const loadFromDatabase = async () => {
             isMounted.current = true;

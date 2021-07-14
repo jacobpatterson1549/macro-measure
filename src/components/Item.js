@@ -256,13 +256,11 @@ const handleCreateEnd = ({ createEnd, name, geolocation, parentItemID }) => () =
 };
 
 const handleRead = (delta, { read, items, item }) => () => {
-    let item2;
     items.forEach((item3) => {
         if (item3.order === item.order + delta) {
-            item2 = item3;
+            read(item3);
         }
     })
-    read(item2);
 };
 
 const handleReadItemList = ({ list }) => () => {
