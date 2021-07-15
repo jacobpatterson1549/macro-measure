@@ -7,14 +7,8 @@ import { useGeolocation } from '../hooks/Geolocation';
 
 import { View } from '../utils/View';
 
-jest.mock('../hooks/Database', () => ({
-  createHandlers: jest.fn(),
-  useItem: jest.fn(),
-  useItems: jest.fn(),
-}));
-jest.mock('../hooks/Geolocation', () => ({
-  useGeolocation: jest.fn(),
-}));
+jest.mock('../hooks/Database');
+jest.mock('../hooks/Geolocation');
 
 describe('Main', () => {
   beforeEach(() => { // TODO: is this needed?

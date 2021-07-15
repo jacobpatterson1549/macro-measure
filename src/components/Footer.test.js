@@ -4,9 +4,7 @@ import { Footer } from './Footer';
 
 import { useOnLine } from '../hooks/Window';
 
-jest.mock('../hooks/Window', () => ({
-    useOnLine: jest.fn(),
-}));
+jest.mock('../hooks/Window');
 
 describe('Footer', () => {
     const elementTests = [

@@ -6,11 +6,7 @@ import { useFullscreen, useOnLine, useInstallPromptEvent } from '../hooks/Window
 
 import { reloadWindow } from '../utils/Global';
 
-jest.mock('../hooks/Window', () => ({
-    useFullscreen: jest.fn(),
-    useOnLine: jest.fn(),
-    useInstallPromptEvent: jest.fn(),
-}));
+jest.mock('../hooks/Window');
 
 describe('FullscreenSettings', () => {
     beforeEach(() => {

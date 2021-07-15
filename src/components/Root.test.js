@@ -7,11 +7,7 @@ import { useItem, useItems } from '../hooks/Database';
 import { View } from '../utils/View';
 import { getLocalStorage } from '../utils/Global';
 
-jest.mock('../hooks/Database', () => ({
-  createHandlers: jest.fn(),
-  useItem: jest.fn(),
-  useItems: jest.fn(),
-}));
+jest.mock('../hooks/Database');
 
 describe('Root', () => {
   beforeEach(() => {

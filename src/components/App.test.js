@@ -4,11 +4,7 @@ import { App } from './App';
 
 import { useItem, useItems } from '../hooks/Database';
 
-jest.mock('../hooks/Database', () => ({
-    createHandlers: jest.fn(),
-    useItem: jest.fn(),
-    useItems: jest.fn(),
-}));
+jest.mock('../hooks/Database');
 
 describe('App', () => {
     beforeEach(() => {

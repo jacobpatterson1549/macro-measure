@@ -8,13 +8,8 @@ import { useGeolocation } from '../hooks/Geolocation';
 import { View } from '../utils/View';
 import { getLocalStorage } from '../utils/Global';
 
-jest.mock('../hooks/Database', () => ({
-    useItems: jest.fn(),
-}));
-
-jest.mock('../hooks/Geolocation', () => ({
-    useGeolocation: jest.fn(),
-}));
+jest.mock('../hooks/Database');
+jest.mock('../hooks/Geolocation');
 
 describe('Item', () => {
     describe('View', () => {

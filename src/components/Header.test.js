@@ -6,9 +6,7 @@ import { useItem } from '../hooks/Database';
 
 import { View } from '../utils/View';
 
-jest.mock('../hooks/Database', () => ({
-    useItem: jest.fn(),
-}));
+jest.mock('../hooks/Database');
 
 describe('Header', () => {
     describe('items', () => {

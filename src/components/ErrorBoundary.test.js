@@ -4,7 +4,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 
 import { clear as clearLocalStorage } from '../utils/LocalStorage';
 
-jest.mock('../utils/LocalStorage')
+jest.mock('../utils/LocalStorage');
 
 describe('ErrorBoundary', () => {
     beforeAll(() => {

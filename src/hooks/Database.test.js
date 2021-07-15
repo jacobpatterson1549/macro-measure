@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks'
 
 import { createHandlers, useItem, useItems } from './Database';
@@ -6,15 +6,7 @@ import { createHandlers, useItem, useItems } from './Database';
 import { GROUPS, WAYPOINTS, createItem, readItem, readItems, updateItem, deleteItem, moveItemUp, moveItemDown } from '../utils/Database';
 import { View } from '../utils/View';
 
-jest.mock('../utils/Database', () => ({
-    createItem: jest.fn(),
-    readItem: jest.fn(),
-    readItems: jest.fn(),
-    updateItem: jest.fn(),
-    deleteItem: jest.fn(),
-    moveItemUp: jest.fn(),
-    moveItemDown: jest.fn(),
-}));
+jest.mock('../utils/Database');
 
 describe('Database', () => {
     const db = '[mock database]';

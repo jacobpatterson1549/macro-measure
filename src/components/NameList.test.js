@@ -7,9 +7,7 @@ import { useItems } from '../hooks/Database';
 import { View } from '../utils/View';
 import { getLocalStorage } from '../utils/Global';
 
-jest.mock('../hooks/Database', () => ({
-    useItems: jest.fn(),
-}));
+jest.mock('../hooks/Database');
 
 describe('NameList', () => {
     const items = [

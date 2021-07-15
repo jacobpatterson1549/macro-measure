@@ -6,11 +6,7 @@ import { getAll as getAllLocalStorage, setAll as setAllLocalStorage, clear as cl
 import { getAll as getAllDatabase, deleteDatabase } from '../utils/Database';
 import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL } from '../utils/Global'
 
-jest.mock('../utils/LocalStorage', () => ({
-    getAll: jest.fn(),
-    setAll: jest.fn(),
-    clear: jest.fn(),
-}));
+jest.mock('../utils/LocalStorage');
 jest.mock('../utils/Database', () => ({
     getAll: jest.fn().mockResolvedValue(),
     deleteDatabase: jest.fn().mockResolvedValue(),

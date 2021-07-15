@@ -7,15 +7,9 @@ import { App } from './components/App';
 import { initDatabase } from './utils/Database'
 
 jest.spyOn(window, 'addEventListener');
-jest.mock('react-dom', () => ({
-    render: jest.fn(),
-}));
-jest.mock('./serviceWorkerRegistration', () => ({
-    registerSW: jest.fn(),
-}))
-jest.mock('./utils/Database', () => ({
-    initDatabase: jest.fn(),
-}));
+jest.mock('react-dom');
+jest.mock('./serviceWorkerRegistration');
+jest.mock('./utils/Database');
 
 describe('index', () => {
     const requireIndex = () => {
