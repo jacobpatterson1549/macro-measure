@@ -1,7 +1,6 @@
 import './Main.css'
 
 import { Settings } from './Settings';
-import { DefaultDistanceUnit } from './GPSSettings';
 import { About } from './About';
 import { Help } from './Help';
 import { NameList } from './NameList';
@@ -12,9 +11,10 @@ import { useLocalStorage } from '../hooks/LocalStorage';
 
 import { View } from '../utils/View';
 import { GROUPS, WAYPOINTS } from '../utils/Database';
+import { units as distanceUnits } from '../utils/Distance';
 
 export const Main = (props) => {
-    const [distanceUnit, setDistanceUnit] = useLocalStorage('distanceUnit', DefaultDistanceUnit);
+    const [distanceUnit, setDistanceUnit] = useLocalStorage('distanceUnit', distanceUnits[0]);
     const [highAccuracyGPS, setHighAccuracyGPS] = useLocalStorage('highAccuracyGPS', false);
     const state = {
         distanceUnit, setDistanceUnit,

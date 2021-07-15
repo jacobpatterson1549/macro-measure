@@ -1,5 +1,7 @@
 import { Fieldset, Label, SelectInput, CheckboxInput } from './Form';
 
+import { units as distanceUnits } from '../utils/Distance';
+
 export const GPSSettings = (props) => (
     <Fieldset caption="GPS Settings">
         <Label caption="Distance Unit">
@@ -17,13 +19,3 @@ export const GPSSettings = (props) => (
         </Label>
     </Fieldset>
 );
-
-export const DefaultDistanceUnit = 'm';
-
-const distanceUnits = [
-    'm',
-    'km',
-    'ft',
-    'yd',
-    'mi',
-];
