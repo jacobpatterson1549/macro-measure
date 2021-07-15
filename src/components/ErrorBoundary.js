@@ -1,6 +1,6 @@
 import { Component } from 'react';
 
-import { LocalStorageSettings } from './LocalStorageSettings';
+import { StorageSettings } from './StorageSettings';
 
 import { clear as clearLocalStorage } from '../utils/LocalStorage';
 
@@ -21,13 +21,14 @@ export class ErrorBoundary extends Component {
           this.state.error.message &&
           <h3>{this.state.error.message}</h3>
         }
+        <p>The local-storage cache has been automatically cleared.</p>
         <h2>Possible fixes:</h2>
         <ol>
           <li>Reload the page</li>
           <li>Delete or import saved data</li>
           <li>File a bug report</li>
         </ol>
-        <LocalStorageSettings />
+        <StorageSettings />
       </div>
     );
   };

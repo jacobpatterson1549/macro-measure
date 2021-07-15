@@ -1,6 +1,6 @@
 import { GPSSettings } from './GPSSettings';
 import { FullscreenSettings } from './FullscreenSettings';
-import { LocalStorageSettings } from './LocalStorageSettings';
+import { StorageSettings } from './StorageSettings';
 
 export const Settings = (props) => (
     <div>
@@ -12,6 +12,6 @@ export const Settings = (props) => (
             setHighAccuracyGPS={props.setHighAccuracyGPS}
         />
         <FullscreenSettings />
-        <LocalStorageSettings />
+        <StorageSettings />
     </div>
 );

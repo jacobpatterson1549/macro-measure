@@ -6,8 +6,7 @@ import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL }  from 
 import { getAll as getAllDatabase, deleteDatabase } from '../utils/Database';
 import { getAll as getAllLocalStorage, setAll as setAllLocalStorage, clear as clearLocalStorage } from '../utils/LocalStorage';
 
-// TODO: rename to storage, update html
-export const LocalStorageSettings = () => {
+export const StorageSettings = () => {
     const [exportURL, setExportURL] = useState(null);
     const [exportLink, setExportLink] = useState(null);
     useEffect(() => {
@@ -27,7 +26,7 @@ export const LocalStorageSettings = () => {
 };
 
 const render = (props) => (
-    <Fieldset caption="LocalStorage Settings">
+    <Fieldset caption="Storage Settings">
         <Label caption="Export ALL Saved Data">
             <ButtonInput
                 value="Export File"

@@ -6,11 +6,11 @@ describe('Settings', () => {
     const groups = [
         'GPS Settings',
         'Fullscreen Settings',
-        'LocalStorage Settings',
+        'Storage Settings',
     ];
-    it.each(groups)('should have local storage settings for group %s', (group) => {
+    it.each(groups)('should have settings for group %s', (groupName) => {
         render(<Settings />)
-        const element = screen.getByRole('group', { name: group });
+        const element = screen.getByRole('group', { name: groupName });
         expect(element).toBeInTheDocument()
     });
 });

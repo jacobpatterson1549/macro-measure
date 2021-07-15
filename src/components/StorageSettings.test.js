@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
-import { LocalStorageSettings } from './LocalStorageSettings';
+import { StorageSettings } from './StorageSettings';
 
 import { getAll as getAllLocalStorage, setAll as setAllLocalStorage, clear as clearLocalStorage } from '../utils/LocalStorage';
 import { getAll as getAllDatabase, deleteDatabase } from '../utils/Database';
@@ -12,10 +12,10 @@ jest.mock('../utils/Database', () => ({
     deleteDatabase: jest.fn().mockResolvedValue(),
 }));
 
-describe('LocalStorageSettings', () => {
+describe('StorageSettings', () => {
     describe('clear storage', () => {
         it('should clear storage when clicked', async () => {
-            render(<LocalStorageSettings />);
+            render(<StorageSettings />);
             const clearStorageElement = screen.getByLabelText(/clear/i);
             fireEvent.click(clearStorageElement);
             expect(clearLocalStorage).toBeCalled();
@@ -30,7 +30,7 @@ describe('LocalStorageSettings', () => {
             const expectedCurrentDate = 'MOCK_CURRENT_DATE';
             createObjectURL.mockReturnValue(expectedURL);
             getCurrentDate.mockReturnValue(expectedCurrentDate);
-            render(<LocalStorageSettings />);
+            render(<StorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
             fireEvent.click(exportElement);
             expect(getAllLocalStorage).toBeCalled();
@@ -44,7 +44,7 @@ describe('LocalStorageSettings', () => {
         // TODO: test combination of exported localStorage/database
         it('should import storage when changed', async () => {
             const textFn = jest.fn().mockReturnValue(allJSON);
-            render(<LocalStorageSettings />);
+            render(<StorageSettings />);
             const importElement = screen.getByLabelText(/import/i);
             fireEvent.change(importElement, {
                 target: {
@@ -59,7 +59,7 @@ describe('LocalStorageSettings', () => {
         it('should revokeObjectURL', async () => {
             const expectedURLs = ['url1', 'url2', 'url3']
             expectedURLs.forEach((url) => createObjectURL.mockReturnValueOnce(url))
-            const { unmount } = render(<LocalStorageSettings />);
+            const { unmount } = render(<StorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
             fireEvent.click(exportElement);
             fireEvent.click(exportElement);
@@ -73,7 +73,7 @@ describe('LocalStorageSettings', () => {
     });
     describe('reload button', () => {
         it('should reload window when clicked', () => {
-            render(<LocalStorageSettings />);
+            render(<StorageSettings />);
             const reloadButtonElement = screen.getByLabelText(/reload/i);
             fireEvent.click(reloadButtonElement);
             expect(reloadWindow).toBeCalled();
