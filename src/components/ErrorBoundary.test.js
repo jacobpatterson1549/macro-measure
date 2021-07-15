@@ -2,7 +2,7 @@ import { screen, render } from '@testing-library/react';
 
 import { ErrorBoundary } from './ErrorBoundary';
 
-import { clearLocalStorage } from '../utils/LocalStorage'; // TODO: rename clearLocalStore to clear, alias it here, do this for other utils
+import { clear as clearLocalStorage } from '../utils/LocalStorage';
 
 jest.mock('../utils/LocalStorage')
 

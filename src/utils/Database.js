@@ -22,7 +22,7 @@ export const initDatabase = () => {
     });
 };
 
-export const getDatabaseAsObject = (db) => {
+export const getAll = (db) => {
     const objectStoreNames = [GROUPS, WAYPOINTS];
     const action = (transaction, resolve) => {
         const objectStores = {};

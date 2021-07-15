@@ -12,11 +12,11 @@ export const useLocalStorage = (key, defaultValue) => {
     return [value, handleSetValue(key, setValue)];
 };
 
-export const clearLocalStorage = () => {
+export const clear = () => {
     getLocalStorage().clear();
 };
 
-export const getLocalStorageAsObject = () => (
+export const getAll = () => (
     Object.fromEntries(
         Array.from(Array(getLocalStorage().length).keys()) // [0 .. storage.length)
             .map(
@@ -31,7 +31,7 @@ export const getLocalStorageAsObject = () => (
             .entries())
 );
 
-export const setLocalStorage = (localStorageJSON) => (
+export const setAll = (localStorageJSON) => (
     Object.entries(
         JSON.parse(localStorageJSON))
         .forEach(

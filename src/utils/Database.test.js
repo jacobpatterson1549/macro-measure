@@ -1,6 +1,6 @@
 import { waitFor } from '@testing-library/react';
 
-import { initDatabase, getDatabaseAsObject, deleteDatabase, createItem, readItem, readItems, updateItem, deleteItem, moveItemUp, moveItemDown } from './Database';
+import { initDatabase, getAll, deleteDatabase, createItem, readItem, readItems, updateItem, deleteItem, moveItemUp, moveItemDown } from './Database';
 import { getIndexedDB, getIDBKeyRange, getCurrentDate, getLocalStorage } from "./Global";
 
 // implements EventTarget, derived from MDN example
@@ -437,7 +437,7 @@ describe('Database', () => {
             expect(request).resolves.toBe(expected);
         });
     });
-    describe('getDatabaseAsObject', () => {
+    describe('getAll', () => {
         it('should resolve to object', async () => {
             const groups = [1, 'art', true];
             const waypoints = [2, 'bat', false];
@@ -454,7 +454,7 @@ describe('Database', () => {
                 waypointsGetAllObjectStore,
             );
             const db = await mockTransaction(transaction);
-            const request = getDatabaseAsObject(db);
+            const request = getAll(db);
             groupsGetAllRequest.dispatchEvent(mockEvent('success', { result: groups }));
             waypointsGetAllRequest.dispatchEvent(mockEvent('success', { result: waypoints }));
             transaction.dispatchEvent(mockEvent('complete', {}));

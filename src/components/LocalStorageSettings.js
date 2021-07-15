@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react';
 import { Fieldset, Label, ButtonInput, FileInput } from './Form';
 
 import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL }  from '../utils/Global';
-import { deleteDatabase, getDatabaseAsObject } from '../utils/Database';
-import { getLocalStorageAsObject, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
+import { getAll as getAllDatabase, deleteDatabase } from '../utils/Database';
+import { getAll as getAllLocalStorage, setAll as setAllLocalStorage, clear as clearLocalStorage } from '../utils/LocalStorage';
 
 // TODO: rename to storage, update html
 export const LocalStorageSettings = () => {
@@ -57,8 +57,8 @@ const render = (props) => (
 );
 
 const handleExportStorage = ({ db, exportURL, setExportURL }) => async () => {
-    const localStorageObject = getLocalStorageAsObject();
-    const databaseObject = await getDatabaseAsObject(db);
+    const localStorageObject = getAllLocalStorage();
+    const databaseObject = await getAllDatabase(db);
     const storage = {
         ...localStorageObject,
         ...databaseObject,
@@ -72,7 +72,7 @@ const handleExportStorage = ({ db, exportURL, setExportURL }) => async () => {
 const handleImportStorage = () => async (file) => {
     const allJSON = await file.text();
     clearLocalStorage();
-    setLocalStorage(allJSON);
+    setAllLocalStorage(allJSON);
     reloadWindow();
 };
 

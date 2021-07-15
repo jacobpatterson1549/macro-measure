@@ -2,7 +2,7 @@ import { Component } from 'react';
 
 import { LocalStorageSettings } from './LocalStorageSettings';
 
-import { clearLocalStorage } from '../utils/LocalStorage'; // TODO rename this to clear, alias it here.  Do this for other utils
+import { clear as clearLocalStorage } from '../utils/LocalStorage';
 
 export class ErrorBoundary extends Component {
 

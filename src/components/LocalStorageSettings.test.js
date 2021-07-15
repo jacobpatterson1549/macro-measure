@@ -2,19 +2,19 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 import { LocalStorageSettings } from './LocalStorageSettings';
 
-import { getLocalStorageAsObject, setLocalStorage, clearLocalStorage } from '../utils/LocalStorage';
-import { getDatabaseAsObject, deleteDatabase } from '../utils/Database';
+import { getAll as getAllLocalStorage, setAll as setAllLocalStorage, clear as clearLocalStorage } from '../utils/LocalStorage';
+import { getAll as getAllDatabase, deleteDatabase } from '../utils/Database';
 import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL } from '../utils/Global'
 
 jest.mock('../utils/LocalStorage', () => ({
-    getLocalStorageAsObject: jest.fn(),
-    setLocalStorage: jest.fn(),
-    clearLocalStorage: jest.fn(),
+    getAll: jest.fn(),
+    setAll: jest.fn(),
+    clear: jest.fn(),
 }));
 jest.mock('../utils/Database', () => ({
-    getDatabaseAsObject: jest.fn().mockResolvedValue(),
+    getAll: jest.fn().mockResolvedValue(),
     deleteDatabase: jest.fn().mockResolvedValue(),
-}))
+}));
 
 describe('LocalStorageSettings', () => {
     describe('clear storage', () => {
@@ -37,8 +37,8 @@ describe('LocalStorageSettings', () => {
             render(<LocalStorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
             fireEvent.click(exportElement);
-            expect(getLocalStorageAsObject).toBeCalled();
-            await waitFor(getDatabaseAsObject);
+            expect(getAllLocalStorage).toBeCalled();
+            await waitFor(getAllDatabase);
             expect(createObjectURL).toBeCalled();
             const exportLink = screen.getByRole('link');
             expect(exportLink.href).toMatch(expectedURL);
@@ -57,7 +57,7 @@ describe('LocalStorageSettings', () => {
             });
             await waitFor(expect(textFn).toBeCalled);
             expect(clearLocalStorage).toBeCalled();
-            expect(setLocalStorage).toBeCalledWith(allJSON);
+            expect(setAllLocalStorage).toBeCalledWith(allJSON);
             expect(reloadWindow).toBeCalled();
         });
         it('should revokeObjectURL', async () => {
@@ -68,8 +68,8 @@ describe('LocalStorageSettings', () => {
             fireEvent.click(exportElement);
             fireEvent.click(exportElement);
             fireEvent.click(exportElement);
-            expect(getLocalStorageAsObject).toBeCalledTimes(3);
-            await waitFor(getDatabaseAsObject);
+            expect(getAllLocalStorage).toBeCalledTimes(3);
+            await waitFor(getAllDatabase);
             expect(revokeObjectURL.mock.calls).toEqual([['url1'], ['url2']]);
             unmount();
             expect(revokeObjectURL.mock.calls).toEqual([['url1'], ['url2'], ['url3']]);
