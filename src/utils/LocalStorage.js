@@ -1,20 +1,4 @@
-import { useState } from 'react';
-
 import { getLocalStorage } from './Global';
-
-// TODO: move this to src/hooks
-export const useLocalStorage = (key, defaultValue) => {
-    const [value, setValue] = useState(() => (
-        JSON.parse(
-            getLocalStorage().getItem(key)
-            || JSON.stringify(defaultValue))
-    ));
-    return [value, handleSetValue(key, setValue)];
-};
-
-export const clear = () => {
-    getLocalStorage().clear();
-};
 
 export const getAll = () => (
     Object.fromEntries(
@@ -41,9 +25,6 @@ export const setAll = (localStorageJSON) => (
                     JSON.stringify(value))))
 );
 
-const handleSetValue = (key, setValue) => (value) => {
-    getLocalStorage().setItem(
-        key,
-        JSON.stringify(value));
-    setValue(value);
-};
+export const clear = () => (
+    getLocalStorage().clear()
+);

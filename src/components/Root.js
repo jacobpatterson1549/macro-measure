@@ -6,7 +6,8 @@ import { Header } from './Header';
 import { Main } from './Main';
 import { Footer } from './Footer';
 
-import { useLocalStorage } from '../utils/LocalStorage';
+import { useLocalStorage } from '../hooks/LocalStorage';
+
 import { View } from '../utils/View';
 
 export const Root = (props) => {

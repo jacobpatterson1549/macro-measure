@@ -8,8 +8,8 @@ import { NameList } from './NameList';
 import { Item } from './Item';
 
 import { createHandlers } from '../hooks/Database';
+import { useLocalStorage } from '../hooks/LocalStorage';
 
-import { useLocalStorage } from '../utils/LocalStorage';
 import { View } from '../utils/View';
 import { GROUPS, WAYPOINTS } from '../utils/Database';
 

@@ -2,8 +2,8 @@ import { NameTable } from './NameTable';
 import { Form, Fieldset, Label, NameInput } from './Form';
 
 import { useItems } from '../hooks/Database';
+import { useLocalStorage } from '../hooks/LocalStorage';
 
-import { useLocalStorage } from '../utils/LocalStorage';
 import { View } from '../utils/View';
 
 export const NameList = (props) => {

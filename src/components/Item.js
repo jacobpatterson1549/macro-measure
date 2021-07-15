@@ -7,8 +7,8 @@ import { Form, Fieldset, Label, NameInput, TextInput, NumberInput, ButtonInput }
 
 import { useItems } from '../hooks/Database';
 import { useGeolocation } from '../hooks/Geolocation';
+import { useLocalStorage } from '../hooks/LocalStorage';
 
-import { useLocalStorage } from '../utils/LocalStorage';
 import { getDistanceHeading, moveLatLngTo, Heading, roundLatLng as latLngOnly } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
