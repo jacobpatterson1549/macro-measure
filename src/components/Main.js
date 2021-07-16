@@ -43,6 +43,7 @@ const getHelpView = (props) => (
 
 const getSettingsView = (props) => (
     <Settings
+        db={props.db}
         distanceUnit={props.distanceUnit}
         setDistanceUnit={props.setDistanceUnit}
         highAccuracyGPS={props.highAccuracyGPS}

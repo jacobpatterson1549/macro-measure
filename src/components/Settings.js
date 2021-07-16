@@ -12,6 +12,8 @@ export const Settings = (props) => (
             setHighAccuracyGPS={props.setHighAccuracyGPS}
         />
         <FullscreenSettings />
-        <StorageSettings />
+        <StorageSettings
+            db={props.db}
+        />
     </div>
 );

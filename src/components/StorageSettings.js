@@ -6,7 +6,7 @@ import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL }  from 
 import { getAll as getAllDatabase, deleteDatabase } from '../utils/Database';
 import { getAll as getAllLocalStorage, setAll as setAllLocalStorage, clear as clearLocalStorage } from '../utils/LocalStorage';
 
-export const StorageSettings = () => {
+export const StorageSettings = (props) => {
     const [exportURL, setExportURL] = useState(null);
     const [exportLink, setExportLink] = useState(null);
     useEffect(() => {
@@ -22,7 +22,7 @@ export const StorageSettings = () => {
         exportURL, setExportURL,
         exportLink,
     };
-    return render({ ...state });
+    return render({ ...props, ...state });
 };
 
 const render = (props) => (
