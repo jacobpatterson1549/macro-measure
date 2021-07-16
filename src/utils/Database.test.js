@@ -198,6 +198,8 @@ describe('Database', () => {
                                 items: [
                                     { name: 'item1', lat: 2, lng: 3 },
                                     { name: 'item2', lat: 22, lng: 7 },
+                                    { name: 'item2_2', lat: 22, lng: 7 },
+                                    { name: 'item2_3', lat: 22, lng: 7 },
                                 ],
                             },
                             {
@@ -208,14 +210,34 @@ describe('Database', () => {
                                 items: [{ name: 'item7', lat: 20, lng: 31 }],
                             },
                             {
-                                name: 'group 3', // exported group or old group with no items
+                                name: 'group 3_2', // exported group or old group with no items
                             },
                         ]),
                         waypointsJSON: null,
+                        existingGroups: [],
                     }
                 ],
                 [
                     'normal import',
+                    { 
+                        groupsJSON: JSON.stringify([
+                            { name: 'group 1', id: 'a' },
+                            { name: 'group 1b', id: 'a1' },
+                            { name: 'group 2', id: 'b' },
+                            { name: 'group 3_2', id: 'c' },
+                        ]),
+                        waypointsJSON: JSON.stringify([
+                            { name: 'item1', lat: 2, lng: 3, parentItemID: 'a' },
+                            { name: 'item2', lat: 22, lng: 7, parentItemID: 'a' },
+                            { name: 'item2_2', lat: 22, lng: 7, parentItemID: 'a' },
+                            { name: 'item2_3', lat: 22, lng: 7, parentItemID: 'a' },
+                            { name: 'item7', lat: 20, lng: 31, parentItemID: 'b' },
+                        ]),
+                        existingGroups: [],
+                    },
+                ],
+                [
+                    'import with duplicate/existing names',
                     { 
                         groupsJSON: JSON.stringify([
                             { name: 'group 1', id: 'a' },
@@ -226,27 +248,38 @@ describe('Database', () => {
                         waypointsJSON: JSON.stringify([
                             { name: 'item1', lat: 2, lng: 3, parentItemID: 'a' },
                             { name: 'item2', lat: 22, lng: 7, parentItemID: 'a' },
+                            { name: 'item2', lat: 22, lng: 7, parentItemID: 'a' },
+                            { name: 'item2', lat: 22, lng: 7, parentItemID: 'a' },
                             { name: 'item7', lat: 20, lng: 31, parentItemID: 'b' },
                         ]),
+                        existingGroups: [
+                            { name: 'group 3', id: 'OLD_C' },
+                        ],
                     },
-                ],
+                ]
             ];
-            it.each(backfillTests)('should backfill groups for %s', async (testName, { groupsJSON, waypointsJSON }) => {
+            it.each(backfillTests)('should backfill groups for %s', async (testName, { groupsJSON, waypointsJSON, existingGroups }) => {
                 getIndexedDB().open = () => openRequest;
                 getLocalStorage().getItem
                     .mockReturnValueOnce(groupsJSON)
                     .mockReturnValueOnce(waypointsJSON);
                 const openRequest = new MockIDBOpenDBRequest();
+                const getAllGroupsRequest = new MockIDBRequest();
                 const groupsCountRequest = new MockIDBRequest();
                 const waypointsCountRequest = new MockIDBRequest();
                 const groupsAddRequest1 = new MockIDBRequest();
                 const groupsAddRequest1b = new MockIDBRequest();
                 const groupsAddRequest2 = new MockIDBRequest();
-                const groupsAddRequest3 = new MockIDBRequest();
+                const groupsAddRequest3_2 = new MockIDBRequest();
                 const waypointsAddRequest1 = new MockIDBRequest();
                 const waypointsAddRequest2 = new MockIDBRequest();
+                const waypointsAddRequest2_2 = new MockIDBRequest();
+                const waypointsAddRequest2_3 = new MockIDBRequest();
                 const waypointsAddRequest7 = new MockIDBRequest();
-                const groupsOrderIndex = { count: jest.fn().mockReturnValue(groupsCountRequest) };
+                const groupsOrderIndex = {
+                    getAll: jest.fn().mockReturnValue(getAllGroupsRequest),
+                    count: jest.fn().mockReturnValue(groupsCountRequest),
+                };
                 const waypointsOrderIndex = { count: jest.fn().mockReturnValue(waypointsCountRequest) };
                 const groupsObjectStore = {
                     index: jest.fn().mockReturnValue(groupsOrderIndex),
@@ -254,18 +287,22 @@ describe('Database', () => {
                         .mockReturnValueOnce(groupsAddRequest1)
                         .mockReturnValueOnce(groupsAddRequest1b)
                         .mockReturnValueOnce(groupsAddRequest2)
-                        .mockReturnValueOnce(groupsAddRequest3),
+                        .mockReturnValueOnce(groupsAddRequest3_2),
                 };
                 const waypointsObjectStore = {
                     index: jest.fn().mockReturnValue(waypointsOrderIndex),
                     add: jest.fn()
                         .mockReturnValueOnce(waypointsAddRequest1)
                         .mockReturnValueOnce(waypointsAddRequest2)
+                        .mockReturnValueOnce(waypointsAddRequest2_2)
+                        .mockReturnValueOnce(waypointsAddRequest2_3)
                         .mockReturnValueOnce(waypointsAddRequest7),
                 };
+                const groupsReadAllRange = null;
                 const groupsCountRange = null;
                 const waypointsGroup1Range = getIDBKeyRange().bound([1, -Infinity], [1, +Infinity], false, false);
                 const waypointsGroup2Range = getIDBKeyRange().bound([2, -Infinity], [2, +Infinity], false, false);
+                const transactionGRAll = new MockIDBTransaction(groupsObjectStore);
                 const transactionGR = new MockIDBTransaction(groupsObjectStore);
                 const transactionGW = new MockIDBTransaction(groupsObjectStore);
                 const transactionWR1 = new MockIDBTransaction(waypointsObjectStore);
@@ -276,6 +313,7 @@ describe('Database', () => {
                 transactionWW2.name = 'transactionWW2';
                 const db = {
                     transaction: jest.fn()
+                        .mockReturnValueOnce(transactionGRAll)
                         .mockReturnValueOnce(transactionGR)
                         .mockReturnValueOnce(transactionGW)
                         .mockReturnValueOnce(transactionWR1)
@@ -288,43 +326,50 @@ describe('Database', () => {
                 const initRequest = initDatabase();
                 openRequest.dispatchEvent(mockEvent('success', { result: db }));
                 await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readonly'));
+                getAllGroupsRequest.dispatchEvent(mockEvent('success', { result: existingGroups }));
+                await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readonly'));
                 groupsCountRequest.dispatchEvent(mockEvent('success', { result: 111 }));
                 await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readwrite'));
                 groupsAddRequest1.dispatchEvent(mockEvent('success', { result: 1 }));
                 groupsAddRequest1b.dispatchEvent(mockEvent('success', { result: 11 }));
                 groupsAddRequest2.dispatchEvent(mockEvent('success', { result: 2 }));
-                groupsAddRequest3.dispatchEvent(mockEvent('success', { result: 3 }));
+                groupsAddRequest3_2.dispatchEvent(mockEvent('success', { result: 3 }));
                 transactionGW.dispatchEvent(mockEvent('complete', {}));
                 await waitFor(() => {
                     expect(db.transaction).toBeCalledWith(['waypoints'], 'readonly'); // i1, i2
                     expect(db.transaction).toBeCalledWith(['waypoints'], 'readonly'); // i7
                 });
-                waypointsCountRequest.dispatchEvent(mockEvent('success', { result: 0 })); // i1, i2
+                waypointsCountRequest.dispatchEvent(mockEvent('success', { result: 0 })); // i1, i2, i2_2, i2_3
                 waypointsCountRequest.dispatchEvent(mockEvent('success', { result: 0 })); // i7
                 await waitFor(() => {
-                    expect(db.transaction).toBeCalledWith(['waypoints'], 'readwrite'); // i1, i2
+                    expect(db.transaction).toBeCalledWith(['waypoints'], 'readwrite'); // i1, i2, i2_2, i2_3
                     expect(db.transaction).toBeCalledWith(['waypoints'], 'readwrite'); // i7
                 });
                 waypointsAddRequest1.dispatchEvent(mockEvent('success', { result: 'i1' }));
                 waypointsAddRequest2.dispatchEvent(mockEvent('success', { result: 'i2' }));
+                waypointsAddRequest2_2.dispatchEvent(mockEvent('success', { result: 'i2_2' }));
+                waypointsAddRequest2_3.dispatchEvent(mockEvent('success', { result: 'i2_3' }));
                 waypointsAddRequest7.dispatchEvent(mockEvent('success', { result: 'i7' }));
                 transactionWW1.dispatchEvent(mockEvent('complete', {}));
                 transactionWW2.dispatchEvent(mockEvent('complete', {}));
                 await initRequest;
                 // checks
+                expect(groupsOrderIndex.getAll).toBeCalledWith(groupsReadAllRange);
                 expect(groupsObjectStore.index).toBeCalledWith('order');
                 expect(groupsOrderIndex.count).toBeCalledWith(groupsCountRange);
                 expect(groupsObjectStore.add.mock.calls).toEqual([
                     [{ name: 'group 1', order: 111 }],
                     [{ name: 'group 1b', order: 112 }],
                     [{ name: 'group 2', order: 113 }],
-                    [{ name: 'group 3', order: 114 }],
+                    [{ name: 'group 3_2', order: 114 }],
                 ]);
                 expect(waypointsObjectStore.index.mock.calls).toEqual([['order'], ['order']]);
                 expect(waypointsOrderIndex.count.mock.calls).toEqual([[waypointsGroup1Range], [waypointsGroup2Range]]);
                 expect(waypointsObjectStore.add.mock.calls).toEqual([
                     [{ name: 'item1', lat: 2, lng: 3, order: 0, parentItemID: 1 }],
                     [{ name: 'item2', lat: 22, lng: 7, order: 1, parentItemID: 1 }],
+                    [{ name: 'item2_2', lat: 22, lng: 7, order: 2, parentItemID: 1 }],
+                    [{ name: 'item2_3', lat: 22, lng: 7, order: 3, parentItemID: 1 }],
                     [{ name: 'item7', lat: 20, lng: 31, order: 0, parentItemID: 2 }],
                 ]);
             });
@@ -340,21 +385,14 @@ describe('Database', () => {
                 expect(initRequest).resolves.toBeTruthy();
                 expect(db.transaction).toBeCalledTimes(0);
             });
-            const removeTests = [
-                ['groups', ['[]', null]],
-                ['waypoints', [null, '[]']],
-            ];
-            it.each(removeTests)('should remove localStorage for %s', async (expected, getItemReturnValues) => {
+            it('should remove localStorage for groups and waypoints after the backfill', async () => {
                 const openRequest = new MockIDBOpenDBRequest();
                 getIndexedDB().open = () => openRequest;
-                getItemReturnValues.forEach((value) => {
-                    getLocalStorage().getItem.mockReturnValueOnce(value);
-                });
                 const initRequest = initDatabase();
                 const db = { transaction: jest.fn() };
                 openRequest.dispatchEvent(mockEvent('success', { result: db }));
                 await initRequest;
-                expect(getLocalStorage().removeItem).toBeCalledWith(expected);
+                expect(getLocalStorage().removeItem.mock.calls).toEqual([['groups'], ['waypoints']]);
             })
         });
         it('should resolve when successful', async () => {

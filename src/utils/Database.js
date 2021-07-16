@@ -101,11 +101,13 @@ const refreshIndexes = (transaction) => {
 };
 
 const addLocalStorage = async (db) => {
-    const existingGroups = []; // await readItems(db, GROUPS); // TODO
     const oldGroups = getListFromLocalStorage(GROUPS);
     const oldWaypoints = getListFromLocalStorage(WAYPOINTS);
-    const groups = getGroupsToBackfill(existingGroups, oldGroups, oldWaypoints);
-    await backfillGroups(db, groups);
+    if (oldGroups.length || oldWaypoints.length) {
+        const existingGroups = await readItems(db, GROUPS);
+        const groups = getGroupsToBackfill(existingGroups, oldGroups, oldWaypoints);
+        await backfillGroups(db, groups);
+    }
     getLocalStorage().removeItem(GROUPS);
     getLocalStorage().removeItem(WAYPOINTS);
 };
@@ -167,19 +169,21 @@ const getGroupsToBackfill = (existingGroups, oldGroups, oldWaypoints) => {
         // get the group to backfill by name
         const groupName = oldGroups.filter((oldGroup) => (oldGroup.id === oldWaypoint.parentItemID))[0].name;
         const group = groups.filter((group) => (group.name === groupName))[0];
-        group.items.push(oldWaypoint);
+        const waypoint = Object.assign({}, oldWaypoint, { name: getUniqueName(group.items, oldWaypoint.name) });
+        group.items.push(waypoint);
     });
     return groups;
 };
 
 const getUniqueName = (existingNameObjects, name) => {
-    let i = 1;
-    while (existingNameObjects.some((existingNameObject) => existingNameObject.name === name)) {
-        i++;
+    let uniqueName = name;
+    const hasName = (nameItems, name) => (
+        nameItems.some((item) => item.name === name)
+    );
+    for (let i = 2; hasName(existingNameObjects, uniqueName); i++) {
+        uniqueName = `${name}_${i}`;
     }
-    return (i === 1)
-        ? name
-        : `${name}_${i}`
+    return uniqueName;
 };
 
 const createItems = async (db, objectStoreName, items) => {
