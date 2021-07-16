@@ -1,6 +1,5 @@
 jest.unmock('./Global');
-import { isFullscreen, getIndexedDB, getLocalStorage, getIDBKeyRange, getGeolocation, isOnLine, getCurrentDate } from './Global';
-
+import { isFullscreen, requestFullscreen, exitFullscreen, getIndexedDB, getLocalStorage, getIDBKeyRange, reloadWindow, getGeolocation, isOnLine, getCurrentDate } from './Global';
 
 describe('Global', () => {
     describe('isFullscreen', () => {
@@ -16,7 +15,22 @@ describe('Global', () => {
             const actual = isFullscreen();
             expect(actual).toBe(expected);
         });
-    })
+    });
+    it('should request fullscreen on the document body', () => {
+        const oldRequestFullscreen = window.document.body.requestFullscreen;
+        delete window.document.body;
+        window.document.body.requestFullscreen =  jest.fn();
+        requestFullscreen();
+        expect(window.document.body.requestFullscreen).toBeCalled();
+        window.document.body.requestFullscreen = oldRequestFullscreen;
+    });
+    it('should exit fullscreen', () => {
+        const oldExitFullscreen = window.document.exitFullscreen;
+        window.document.exitFullscreen = jest.fn();
+        exitFullscreen();
+        expect(window.document.exitFullscreen).toBeCalled();
+        window.document.exitFullscreen = oldExitFullscreen;
+    });
     it('should return indexedDB', () => {
         const oldIndexedDB = window.indexedDB;
         const expected = 'test 1';
@@ -41,6 +55,14 @@ describe('Global', () => {
         const actual = getLocalStorage();
         expect(actual).toBe(expected);
         window.localStorage = oldLocalStorage;
+    });
+    it('should reload the window', () => {
+        const oldLocation = window.location;
+        delete window.location;
+        window.location = { reload: jest.fn() };
+        reloadWindow();
+        expect(window.location.reload).toBeCalled();
+        window.location = oldLocation;
     });
     it('should return geolocation', () => {
         const oldGeolocation = window.navigator.geolocation;
