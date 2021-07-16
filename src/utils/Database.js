@@ -41,13 +41,13 @@ export const getAll = (db) => {
     return handle(db, objectStoreNames, action, READ);
 };
 
-export const deleteDatabase = () => {
+export const deleteDatabase = async () => {
     return new Promise((resolve, reject) => {
         const request = getIndexedDB().deleteDatabase(DATABASE_NAME);
         request.onerror = (event) => {
             reject(`Database delete error: ${event.target.error.message}`);
         };
-        request.onsuccess = (event) => {
+        request.onblocked = (event) => {
             resolve('database deleted');
         };
     });

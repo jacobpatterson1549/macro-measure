@@ -33,6 +33,7 @@ class MockEventTarget {
 // also implements IDBOpenDBRequest
 class MockIDBRequest extends MockEventTarget {
     set onerror(callback) { this.addEventListener('error', callback); }
+    set onblocked(callback) { this.addEventListener('blocked', callback); }
     set onsuccess(callback) { this.addEventListener('success', callback); }
 }
 class MockIDBOpenDBRequest extends MockIDBRequest {
@@ -430,22 +431,22 @@ describe('Database', () => {
         });
     });
     describe('deleteDatabase', () => {
-        it('should reject when an error is thrown', () => {
+        it('should reject when an error is thrown', async () => {
             const deleteRequest = new MockIDBRequest();
             getIndexedDB().deleteDatabase = () => deleteRequest;
             const expected = 'db delete error';
             const event = mockEvent('error', { error: new Error(expected) });
             const request = deleteDatabase();
             deleteRequest.dispatchEvent(event);
-            expect(request).rejects.toContain(expected);
+            await expect(request).rejects.toContain(expected);
         });
-        it('should resolve when successful', () => {
+        it('should resolve when successful', async () => {
             const deleteRequest = new MockIDBRequest();
             getIndexedDB().deleteDatabase = () => deleteRequest;
-            const event = mockEvent('success', {});
+            const event = mockEvent('blocked', {});
             const request = deleteDatabase();
             deleteRequest.dispatchEvent(event);
-            expect(request).resolves.toBeTruthy();
+            await expect(request).resolves.toBeTruthy();
         });
     });
     describe('C.R.U.D. handlers', () => {
