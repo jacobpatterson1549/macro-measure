@@ -1,4 +1,4 @@
-import { getIndexedDB, getIDBKeyRange, getLocalStorage, getCurrentDate } from "./Global";
+import { getIndexedDB, getIDBKeyRange, getLocalStorage } from "./Global";
 
 const DATABASE_NAME = 'MACRO_MEASURE_DB';
 const DB_VERSION = parseInt('2'); // must be integer
@@ -101,46 +101,35 @@ const refreshIndexes = (transaction) => {
 };
 
 const addLocalStorage = async (db) => {
-    const promises = [];
-    const cleanups = [];
-    const backfillActions = {
-        'groups': backfillGroups,
-        'waypoints': backfillWaypoints,
-    }
-    Object.entries(backfillActions).forEach(([key, backfillFn]) => {
-        const valueJSON = getLocalStorage().getItem(key);
-        if (valueJSON) {
-            promises.push(backfillFn(db, JSON.parse(valueJSON)));
-            cleanups.push(() => getLocalStorage().removeItem(key));
-        }
-    });
-    await Promise.all(promises);
-    cleanups.forEach(fn => fn());
+    const existingGroups = []; // await readItems(db, GROUPS); // TODO
+    const oldGroups = getListFromLocalStorage(GROUPS);
+    const oldWaypoints = getListFromLocalStorage(WAYPOINTS);
+    const groups = getGroupsToBackfill(existingGroups, oldGroups, oldWaypoints);
+    await backfillGroups(db, groups);
+    getLocalStorage().removeItem(GROUPS);
+    getLocalStorage().removeItem(WAYPOINTS);
 };
+
+const getListFromLocalStorage = (objectStoreName) => {
+    const listJSON = getLocalStorage().getItem(objectStoreName);
+    return listJSON ? JSON.parse(listJSON) : [];
+}
 
 const backfillGroups = async (db, oldGroups) => {
     if (!oldGroups.length) {
         return;
     }
-    const currentDate = getCurrentDate();
-    const getUniqueItemName = (item, index) => (
-        `${item.name}, imported ${currentDate} ${index}`
-    );
-    const dbGroups = oldGroups.map((group, index) => (
-        { name: getUniqueItemName(group, index) }
-    ));
-    const oldGroupsByName = Object.fromEntries(oldGroups.map((group, index) => (
-        [getUniqueItemName(group, index), group]
-    )));
-    const createdGroupIDs = await createItems(db, GROUPS, dbGroups); // // { createdID: dbGroup, ... }
+    const dbGroups = oldGroups.map((group) => ({ name: group.name }));
+    const oldGroupsByName = Object.fromEntries(oldGroups.map((group) => ([group.name, group])));
+    const createdGroupIDs = await createItems(db, GROUPS, dbGroups); // { createdID: dbGroup, ... }
     const backfillWaypointsPromises = Object.entries(createdGroupIDs).map(([groupID, group]) => {
         const oldGroup = oldGroupsByName[group.name];
-        if (!oldGroup.items) {
+        if (!oldGroup.items.length) {
             return Promise.resolve();
         }
-        const dbWaypoints = oldGroup.items.map((item, index) => (
+        const dbWaypoints = oldGroup.items.map((item) => (
             Object.assign({}, item, {
-                name: getUniqueItemName(item, index),
+                name: item.name,
                 parentItemID: parseInt(groupID),
             })
         ));
@@ -149,20 +138,48 @@ const backfillGroups = async (db, oldGroups) => {
     await Promise.all(backfillWaypointsPromises);
 };
 
-const backfillWaypoints = (db, oldWaypoints) => {
-    const oldWaypointsByParentItemIDs = {};
-    oldWaypoints.forEach((oldWaypoint) => {
-        if (!(oldWaypoint.parentItemID in oldWaypointsByParentItemIDs)) {
-            oldWaypointsByParentItemIDs[oldWaypoint.parentItemID] = [];
-        }
-        oldWaypointsByParentItemIDs[oldWaypoint.parentItemID].push(oldWaypoint);
+const getGroupsToBackfill = (existingGroups, oldGroups, oldWaypoints) => {
+    const groups = [];
+    oldGroups.forEach((oldGroup) => {
+        const items = [];
+        oldGroup.items?.forEach((oldItem) => {
+            const item = Object.assign({}, oldItem, { name: getUniqueName(items, oldItem.name) });
+            items.push(item);
+        });
+        const group = {
+            name: getUniqueName(existingGroups, oldGroup.name),
+            items: items,
+        };
+        groups.push(group);
     });
-    const oldGroups = Object.entries(oldWaypointsByParentItemIDs)
-        .map(([_, oldWaypoints], index) => ({
-            name: index,
-            items: oldWaypoints,
-        }));
-    return backfillGroups(db, oldGroups);
+    oldWaypoints.forEach((oldWaypoint) => {
+        if (!oldGroups.some((oldGroup) => (oldGroup.id === oldWaypoint.parentItemID))) { // ensure there is a old group with the parent id
+            const name = getUniqueName(oldGroups, 'group');
+            oldGroups.push({
+                name: name,
+                parentItemID: oldWaypoint.parentItemID,
+            });
+            groups.push({ // mark the new 'old' group as a group to backfill
+                name: name,
+                items: [],
+            });
+        }
+        // get the group to backfill by name
+        const groupName = oldGroups.filter((oldGroup) => (oldGroup.id === oldWaypoint.parentItemID))[0].name;
+        const group = groups.filter((group) => (group.name === groupName))[0];
+        group.items.push(oldWaypoint);
+    });
+    return groups;
+};
+
+const getUniqueName = (existingNameObjects, name) => {
+    let i = 1;
+    while (existingNameObjects.some((existingNameObject) => existingNameObject.name === name)) {
+        i++;
+    }
+    return (i === 1)
+        ? name
+        : `${name}_${i}`
 };
 
 const createItems = async (db, objectStoreName, items) => {
