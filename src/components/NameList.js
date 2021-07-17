@@ -22,7 +22,7 @@ const render = (props) => (
     <div>
         <NameTable
             type={props.type}
-            items={props.items} // TODO: use items everywhere instead of values
+            items={props.items}
             reloadItems={props.reloadItems}
             read={props.read}
             update={handleUpdateStart(props.updateStart, props.setName, props.setNameInput)}

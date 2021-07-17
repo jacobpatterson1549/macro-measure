@@ -2,7 +2,7 @@ import './NameTable.css';
 
 export const NameTable = (props) => (
     <table className="Table">
-        <caption>{props.type} Values</caption>
+        <caption>{props.type} items</caption>
         <thead>
             <tr>
                 <th scope="col" title="Name of Value">Name</th>
@@ -22,7 +22,7 @@ const getTableBody = ({ items, reloadItems, read, update, deleteValue, moveUp, m
     (!items) ? <></>
         : (items.length)
             ? tableRows(items, reloadItems, read, update, deleteValue, moveUp, moveDown)
-            : (<tr><td colSpan="5">No values exist.  Create one.</td></tr>)
+            : (<tr><td colSpan="5">No items exist.  Create one.</td></tr>)
 );
 
 const tableRows = (items, reloadItems, read, update, deleteValue, moveUp, moveDown) => (

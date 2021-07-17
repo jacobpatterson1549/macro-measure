@@ -20,18 +20,18 @@ describe('GPSSettings', () => {
         });
     });
     describe('gps', () => {
-        const values = [true, false];
-        it.each(values)('should have checked state of %s', (value) => {
-            render(<GPSSettings highAccuracyGPS={value} />)
+        const highAccuracyGPSValues = [true, false];
+        it.each(highAccuracyGPSValues)('should have checked state of %s', (expected) => {
+            render(<GPSSettings highAccuracyGPS={expected} />)
             const checkboxElement = screen.getByLabelText(/GPS/i);
-            expect(checkboxElement.checked).toBe(value);
+            expect(checkboxElement.checked).toBe(expected);
         });
-        it.each(values)('should flip value when checked was %s', (value) => {
+        it.each(highAccuracyGPSValues)('should flip value when checked was %s', (expected) => {
             const setHighAccuracyGPSFn = jest.fn();
-            render(<GPSSettings highAccuracyGPS={value} setHighAccuracyGPS={setHighAccuracyGPSFn} />);
+            render(<GPSSettings highAccuracyGPS={expected} setHighAccuracyGPS={setHighAccuracyGPSFn} />);
             const checkboxElement = screen.getByLabelText(/GPS/i);
             fireEvent.click(checkboxElement);
-            expect(setHighAccuracyGPSFn).toBeCalledWith(!value);
+            expect(setHighAccuracyGPSFn).toBeCalledWith(!expected);
         });
     });
 });

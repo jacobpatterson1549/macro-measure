@@ -29,7 +29,7 @@ describe('Root', () => {
   it('should switch view to Waypoint_List when on Group_Read', () => {
     getLocalStorage().getItem.mockReturnValue(View.Group_Read);
     render(<Root />);
-    const element = screen.getByText(/waypoint values/i);
+    const element = screen.getByText(/waypoint items/i);
     expect(element).toBeInTheDocument();
   });
 });

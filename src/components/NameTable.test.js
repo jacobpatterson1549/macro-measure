@@ -20,7 +20,7 @@ describe('NameTable', () => {
                 items={[]}
             />);
             const element = screen.queryByRole('cell');
-            expect(element.textContent).toMatch(/no values exist/i);
+            expect(element.textContent).toMatch(/no items exist/i);
         });
         it('should not have cells if items are still being retrieved', () => {
             render(<NameTable
