@@ -27,6 +27,7 @@ beforeEach(() => {
         setItem: jest.fn(),
         removeItem: jest.fn(),
         clear: jest.fn(),
+        length: 0,
     });
     getGeolocation.mockReturnValue({
         watchPosition: jest.fn(),

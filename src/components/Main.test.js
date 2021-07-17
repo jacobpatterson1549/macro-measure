@@ -5,13 +5,16 @@ import { Main } from './Main';
 import { createHandlers, useItem, useItems } from '../hooks/Database';
 import { useGeolocation } from '../hooks/Geolocation';
 
+import { getAll as getAllDatabase } from '../utils/Database';
+
 import { View } from '../utils/View';
 
 jest.mock('../hooks/Database');
 jest.mock('../hooks/Geolocation');
+jest.mock('../utils/Database');
 
 describe('Main', () => {
-  beforeEach(() => { // TODO: is this needed?
+  beforeEach(() => {
     useItem.mockReturnValue([[]]);
     useItems.mockReturnValue([[]]);
     useGeolocation.mockReturnValue({
@@ -371,14 +374,24 @@ describe('Main', () => {
       });
     });
   });
-  describe('settings toggling', () => {
-    it('should setHighAccuracyGPS', () => {
+  describe('settings', () => {
+    it('should toggle setHighAccuracyGPS', () => {
       render(<Main
         view={View.Settings}
       />);
       const element = screen.getByRole('checkbox', { name: /GPS/ });
       element.click(); // will crash if state props are not correctly appended to inherited props
       expect(element.checked).toBe(true);
+    });
+    it('should pass db to settings to export storage', async () => {
+      const mockDB = 'mock database 97';
+      render(<Main
+        view={View.Settings}
+        db={mockDB}
+      />);
+      const exportElement = screen.getByLabelText(/export/i);
+      fireEvent.click(exportElement);
+      await waitFor(() => expect(getAllDatabase).toBeCalledWith(mockDB));
     });
   });
 });
