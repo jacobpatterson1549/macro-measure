@@ -55,5 +55,5 @@ const tableCell = (value, title, isVisible, action, item, reloadItems) => (
 
 const handleOnClick = (action, item, reloadItems) => async () => {
     await action(item);
-    reloadItems(); // TODO: is this needed? Does moving an item up/down work without this line?  If so, remove this entirely
+    reloadItems();
 };
