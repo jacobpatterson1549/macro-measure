@@ -3,15 +3,12 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
-import { getIndexedDB, getIDBKeyRange, getLocalStorage, getGeolocation, createObjectURL } from './utils/Global';
+import { getIndexedDB, getIDBKeyRange, getLocalStorage, getGeolocation } from './utils/Global';
 
 const mockIDBKeyRangeObj = (lower, upper, lowerOpen, upperOpen) => { lower, upper, lowerOpen, upperOpen };
 
-jest.mock('./utils/Global', () => ({
-    ...Object.fromEntries(
-        Object.keys(jest.requireActual('./utils/Global'))
-            .map(name => ([name, jest.fn()]))),
-}));
+jest.mock('./utils/Global');
+
 beforeEach(() => {
     getIDBKeyRange.mockReturnValue({
         only: (z) => mockIDBKeyRangeObj(z, z, false, false),

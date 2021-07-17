@@ -10,8 +10,8 @@ export const removeWindowEventListener = window.removeEventListener;
 export const reloadWindow = () => window.location.reload();
 export const getGeolocation = () => window.navigator.geolocation;
 export const isOnLine = () => window.navigator.onLine;
-export const createObjectURL = URL.createObjectURL;
-export const revokeObjectURL = URL.revokeObjectURL;
+export const createURL = (object) => window.URL.createObjectURL(object);
+export const revokeURL = (objectURL) => URL.revokeObjectURL(objectURL);
 export const getCurrentDate = () => (
     new Date(
         Date.now())

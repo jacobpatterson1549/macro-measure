@@ -4,7 +4,7 @@ import { StorageSettings } from './StorageSettings';
 
 import { getAll as getAllLocalStorage, setAll as setAllLocalStorage, clear as clearLocalStorage } from '../utils/LocalStorage';
 import { getAll as getAllDatabase, deleteDatabase } from '../utils/Database';
-import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL, getLocalStorage } from '../utils/Global'
+import { getCurrentDate, reloadWindow, createURL, revokeURL } from '../utils/Global'
 
 jest.spyOn(window, 'Blob').mockImplementation();
 jest.mock('../utils/LocalStorage');
@@ -31,7 +31,7 @@ describe('StorageSettings', () => {
             const expectedCurrentDate = 'MOCK_CURRENT_DATE';
             getAllLocalStorage.mockReturnValue({ 'localStorage': true });
             getAllDatabase.mockResolvedValue({ 'database': true });
-            createObjectURL.mockReturnValue(expectedURL);
+            createURL.mockReturnValue(expectedURL);
             getCurrentDate.mockReturnValue(expectedCurrentDate);
             render(<StorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
@@ -58,9 +58,9 @@ describe('StorageSettings', () => {
             expect(setAllLocalStorage).toBeCalledWith(allJSON);
             expect(reloadWindow).toBeCalled();
         });
-        it('should revokeObjectURL', async () => {
+        it('should revokeURL', async () => {
             const expectedURLs = ['url1', 'url2', 'url3']
-            expectedURLs.forEach((url) => createObjectURL.mockReturnValueOnce(url))
+            expectedURLs.forEach((url) => createURL.mockReturnValueOnce(url))
             const { unmount } = render(<StorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
             fireEvent.click(exportElement);
@@ -68,9 +68,9 @@ describe('StorageSettings', () => {
             fireEvent.click(exportElement);
             expect(getAllLocalStorage).toBeCalledTimes(3);
             await waitFor(getAllDatabase);
-            expect(revokeObjectURL.mock.calls).toEqual([['url1'], ['url2']]);
+            expect(revokeURL.mock.calls).toEqual([['url1'], ['url2']]);
             unmount();
-            expect(revokeObjectURL.mock.calls).toEqual([['url1'], ['url2'], ['url3']]);
+            expect(revokeURL.mock.calls).toEqual([['url1'], ['url2'], ['url3']]);
         });
     });
     describe('reload button', () => {

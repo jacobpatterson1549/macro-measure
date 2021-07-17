@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { Fieldset, Label, ButtonInput, FileInput } from './Form';
 
-import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL }  from '../utils/Global';
+import { getCurrentDate, reloadWindow, createURL, revokeURL }  from '../utils/Global';
 import { getAll as getAllDatabase, deleteDatabase } from '../utils/Database';
 import { getAll as getAllLocalStorage, setAll as setAllLocalStorage, clear as clearLocalStorage } from '../utils/LocalStorage';
 
@@ -84,8 +84,8 @@ const handleResetStorage = () => async () => {
 
 const jsonMimeType = "application/json";
 
-const createExportURL = createObjectURL;
+const createExportURL = createURL;
 
 const revokeExportURL = (exportURL) => (
-    exportURL && revokeObjectURL(exportURL)
+    exportURL && revokeURL(exportURL)
 );

@@ -1,5 +1,5 @@
 jest.unmock('./Global');
-import { isFullscreen, requestFullscreen, exitFullscreen, getIndexedDB, getLocalStorage, getIDBKeyRange, reloadWindow, getGeolocation, isOnLine, getCurrentDate } from './Global';
+import { isFullscreen, requestFullscreen, exitFullscreen, getIndexedDB, getLocalStorage, getIDBKeyRange, reloadWindow, getGeolocation, isOnLine, createURL, revokeURL, getCurrentDate } from './Global';
 
 describe('Global', () => {
     describe('isFullscreen', () => {
@@ -80,6 +80,22 @@ describe('Global', () => {
         const actual = isOnLine();
         expect(actual).toBe(expected);
         window.navigator.onLine = oldOnLine;
+    });
+    it('should create a URL for an object', () => {
+        const oldCreateObjectURL = window.URL.createObjectURL;
+        window.URL.createObjectURL = jest.fn();
+        const expected = 'test 6';
+        createURL(expected);
+        expect(window.URL.createObjectURL).toBeCalledWith(expected);
+        window.URL.createObjectURL = oldCreateObjectURL;
+    });
+    it('should revoke a URL for an object', () => {
+        const oldRevokeObjectURL = window.URL.revokeObjectURL;
+        window.URL.revokeObjectURL = jest.fn();
+        const expected = 'test 7';
+        revokeURL(expected);
+        expect(window.URL.revokeObjectURL).toBeCalledWith(expected);
+        window.URL.revokeObjectURL = oldRevokeObjectURL;
     });
     describe('getCurrentDate', () => {
         const getCurrentDateTests = [
