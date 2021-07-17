@@ -146,10 +146,12 @@ describe('Database', () => {
             it('should not cause unmounted component to re-render', () => {
                 const objectStoreName = 'os4';
                 const filter = 'f4';
-                const longRead = new Promise((resolve) => {});
+                let lateResolve;
+                const longRead = new Promise((resolve) => lateResolve = resolve);
                 readItems.mockReturnValue(longRead);
                 const { unmount } = renderHook(() => useItems(db, objectStoreName, filter));
                 unmount(); // the test will throw an error from the late resolve
+                lateResolve();
             });
         });
     });
