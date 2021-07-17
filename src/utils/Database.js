@@ -118,9 +118,6 @@ const getListFromLocalStorage = (objectStoreName) => {
 }
 
 const backfillGroups = async (db, oldGroups) => {
-    if (!oldGroups.length) {
-        return;
-    }
     const dbGroups = oldGroups.map((group) => ({ name: group.name }));
     const oldGroupsByName = Object.fromEntries(oldGroups.map((group) => ([group.name, group])));
     const createdGroupIDs = await createItems(db, GROUPS, dbGroups); // { createdID: dbGroup, ... }
