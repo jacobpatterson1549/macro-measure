@@ -260,7 +260,6 @@ const readItemByOrder = (db, objectStoreName, order, parentItemID) => {
     return handle(db, [objectStoreName], action, READ);
 };
 
-// TODO: rename readItems to readItemNames -> return [{itemID, parentItemID, order, name}...]
 export const readItems = (db, objectStoreName, parentItemID) => {
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
