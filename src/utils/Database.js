@@ -156,7 +156,7 @@ const getGroupsToBackfill = (existingGroups, oldGroups, oldWaypoints) => {
             const name = getUniqueName(oldGroups, 'group');
             oldGroups.push({
                 name: name,
-                parentItemID: oldWaypoint.parentItemID,
+                id: oldWaypoint.parentItemID,
             });
             groups.push({ // mark the new 'old' group as a group to backfill
                 name: name,
@@ -164,7 +164,8 @@ const getGroupsToBackfill = (existingGroups, oldGroups, oldWaypoints) => {
             });
         }
         // get the group to backfill by name
-        const groupName = oldGroups.filter((oldGroup) => (oldGroup.id === oldWaypoint.parentItemID))[0].name;
+        const oldGroupsWithID = oldGroups.filter((oldGroup) => (oldGroup.id === oldWaypoint.parentItemID));
+        const groupName = oldGroupsWithID[0].name;
         const group = groups.filter((group) => (group.name === groupName))[0];
         const waypoint = Object.assign({}, oldWaypoint, { name: getUniqueName(group.items, oldWaypoint.name) });
         group.items.push(waypoint);

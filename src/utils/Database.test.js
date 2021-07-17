@@ -207,11 +207,11 @@ describe('Database', () => {
                                 name: 'group 1b', // should get second id
                             },
                             {
-                                name: 'group 2', // older group with item
-                                items: [{ name: 'item7', lat: 20, lng: 31 }],
+                                name: 'group 3_2', // exported group or old group with no items
                             },
                             {
-                                name: 'group 3_2', // exported group or old group with no items
+                                name: 'group', // older group with item
+                                items: [{ name: 'item7', lat: 20, lng: 31 }],
                             },
                         ]),
                         waypointsJSON: null,
@@ -224,8 +224,8 @@ describe('Database', () => {
                         groupsJSON: JSON.stringify([
                             { name: 'group 1', id: 'a' },
                             { name: 'group 1b', id: 'a1' },
-                            { name: 'group 2', id: 'b' },
                             { name: 'group 3_2', id: 'c' },
+                            { name: 'group', id: 'b' },
                         ]),
                         waypointsJSON: JSON.stringify([
                             { name: 'item1', lat: 2, lng: 3, parentItemID: 'a' },
@@ -243,7 +243,6 @@ describe('Database', () => {
                         groupsJSON: JSON.stringify([
                             { name: 'group 1', id: 'a' },
                             { name: 'group 1b', id: 'a1' },
-                            { name: 'group 2', id: 'b' },
                             { name: 'group 3', id: 'c' },
                         ]),
                         waypointsJSON: JSON.stringify([
@@ -257,7 +256,7 @@ describe('Database', () => {
                             { name: 'group 3', id: 'OLD_C' },
                         ],
                     },
-                ]
+                ],
             ];
             it.each(backfillTests)('should backfill groups for %s', async (testName, { groupsJSON, waypointsJSON, existingGroups }) => {
                 getIndexedDB().open = () => openRequest;
@@ -270,8 +269,8 @@ describe('Database', () => {
                 const waypointsCountRequest = new MockIDBRequest();
                 const groupsAddRequest1 = new MockIDBRequest();
                 const groupsAddRequest1b = new MockIDBRequest();
-                const groupsAddRequest2 = new MockIDBRequest();
                 const groupsAddRequest3_2 = new MockIDBRequest();
+                const groupsAddRequest2 = new MockIDBRequest();
                 const waypointsAddRequest1 = new MockIDBRequest();
                 const waypointsAddRequest2 = new MockIDBRequest();
                 const waypointsAddRequest2_2 = new MockIDBRequest();
@@ -287,8 +286,8 @@ describe('Database', () => {
                     add: jest.fn()
                         .mockReturnValueOnce(groupsAddRequest1)
                         .mockReturnValueOnce(groupsAddRequest1b)
-                        .mockReturnValueOnce(groupsAddRequest2)
-                        .mockReturnValueOnce(groupsAddRequest3_2),
+                        .mockReturnValueOnce(groupsAddRequest3_2)
+                        .mockReturnValueOnce(groupsAddRequest2),
                 };
                 const waypointsObjectStore = {
                     index: jest.fn().mockReturnValue(waypointsOrderIndex),
@@ -333,8 +332,8 @@ describe('Database', () => {
                 await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readwrite'));
                 groupsAddRequest1.dispatchEvent(mockEvent('success', { result: 1 }));
                 groupsAddRequest1b.dispatchEvent(mockEvent('success', { result: 11 }));
-                groupsAddRequest2.dispatchEvent(mockEvent('success', { result: 2 }));
                 groupsAddRequest3_2.dispatchEvent(mockEvent('success', { result: 3 }));
+                groupsAddRequest2.dispatchEvent(mockEvent('success', { result: 2 }));
                 transactionGW.dispatchEvent(mockEvent('complete', {}));
                 await waitFor(() => {
                     expect(db.transaction).toBeCalledWith(['waypoints'], 'readonly'); // i1, i2
@@ -361,8 +360,8 @@ describe('Database', () => {
                 expect(groupsObjectStore.add.mock.calls).toEqual([
                     [{ name: 'group 1', order: 111 }],
                     [{ name: 'group 1b', order: 112 }],
-                    [{ name: 'group 2', order: 113 }],
-                    [{ name: 'group 3_2', order: 114 }],
+                    [{ name: 'group 3_2', order: 113 }],
+                    [{ name: 'group', order: 114 }],
                 ]);
                 expect(waypointsObjectStore.index.mock.calls).toEqual([['order'], ['order']]);
                 expect(waypointsOrderIndex.count.mock.calls).toEqual([[waypointsGroup1Range], [waypointsGroup2Range]]);
