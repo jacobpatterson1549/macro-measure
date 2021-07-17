@@ -62,7 +62,8 @@ const handleExportStorage = ({ db, exportURL, setExportURL }) => async () => {
         ...localStorageObject,
         ...databaseObject,
     };
-    const file = new Blob([storage], { type: jsonMimeType });
+    const storageJSON = JSON.stringify(storage);
+    const file = new Blob([storageJSON], { type: jsonMimeType });
     revokeExportURL(exportURL);
     const newExportURL = createExportURL(file);
     setExportURL(newExportURL);

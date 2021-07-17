@@ -4,8 +4,9 @@ import { StorageSettings } from './StorageSettings';
 
 import { getAll as getAllLocalStorage, setAll as setAllLocalStorage, clear as clearLocalStorage } from '../utils/LocalStorage';
 import { getAll as getAllDatabase, deleteDatabase } from '../utils/Database';
-import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL } from '../utils/Global'
+import { getCurrentDate, reloadWindow, createObjectURL, revokeObjectURL, getLocalStorage } from '../utils/Global'
 
+jest.spyOn(window, 'Blob').mockImplementation();
 jest.mock('../utils/LocalStorage');
 jest.mock('../utils/Database', () => ({
     getAll: jest.fn().mockResolvedValue(),
@@ -28,6 +29,8 @@ describe('StorageSettings', () => {
         it('should export storage when clicked', async () => {
             const expectedURL = 'some_export_url'
             const expectedCurrentDate = 'MOCK_CURRENT_DATE';
+            getAllLocalStorage.mockReturnValue({ 'localStorage': true });
+            getAllDatabase.mockResolvedValue({ 'database': true });
             createObjectURL.mockReturnValue(expectedURL);
             getCurrentDate.mockReturnValue(expectedCurrentDate);
             render(<StorageSettings />);
@@ -35,13 +38,12 @@ describe('StorageSettings', () => {
             fireEvent.click(exportElement);
             expect(getAllLocalStorage).toBeCalled();
             await waitFor(getAllDatabase);
-            expect(createObjectURL).toBeCalled();
+            expect(Blob).toBeCalledWith(['{"localStorage":true,"database":true}'], { type: 'application/json' });
             const exportLink = screen.getByRole('link');
             expect(exportLink.href).toMatch(expectedURL);
             expect(exportLink.download).toContain(expectedCurrentDate);
             expect(exportLink.download).toMatch(/^\S+$/); // expect link to have no spaces
         });
-        // TODO: test combination of exported localStorage/database
         it('should import storage when changed', async () => {
             const textFn = jest.fn().mockReturnValue(allJSON);
             render(<StorageSettings />);
