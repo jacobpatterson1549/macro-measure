@@ -91,7 +91,7 @@ const handleCreateEnd = (createEnd, name) => () => {
 };
 const handleUpdateStart = (updateStart, setName, setNameInput) => (item) => {
     setName(item.name);
-    setNameInput(item.name); // TODO: are these setters needed?  React should take care of this when the view is changed.
+    setNameInput(item.name);
     updateStart(item);
 };
 const handleUpdateEnd = (updateEnd, name, itemID) => () => {
