@@ -140,7 +140,7 @@ describe('Item', () => {
             />);
             fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: expected } });
             screen.getByRole('button', { name: /update/i }).click();
-            const nameElement = container.querySelector('.name'); // TODO: hack! find better way to query item title (between arrows)
+            const nameElement = screen.getByRole('button', { name: / list/i});
             expect(nameElement.textContent).toBe(expected);
         });
     });
