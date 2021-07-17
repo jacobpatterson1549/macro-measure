@@ -3,7 +3,7 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
-import { getIndexedDB, getIDBKeyRange, getLocalStorage, getGeolocation } from './utils/Global';
+import { getIndexedDB, getIDBKeyRange, getLocalStorage, getGeolocation, createObjectURL } from './utils/Global';
 
 const mockIDBKeyRangeObj = (lower, upper, lowerOpen, upperOpen) => { lower, upper, lowerOpen, upperOpen };
 
@@ -32,4 +32,4 @@ beforeEach(() => {
         watchPosition: jest.fn(),
         clearWatch: jest.fn(),
     });
-})
+});
