@@ -16,7 +16,7 @@ describe('Database', () => {
         });
         const testData = {
             objectStoreNames: [GROUPS, WAYPOINTS],
-            viewType: [View.isGroup, View.isWaypoint],
+            viewTypes: [View.isGroup, View.isWaypoint],
             handlerParams: { // [inParams, outParams]
                 createStart: [[], [Number.MAX_SAFE_INTEGER]], // max integer to make it clear that new item is after others
                 createEnd: [['item'], ['item']],
@@ -59,10 +59,10 @@ describe('Database', () => {
             it.each(Object.entries(testData.expectedViews))('should set correct view when calling %s', (handlerFuncName, views) => {
                 const setItemID = jest.fn();
                 const setView = jest.fn();
-                const viewType = testData.viewType[index];
+                const getViewType = testData.viewTypes[index];
                 const params = testData.handlerParams[handlerFuncName];
                 const [inParams] = params;
-                const handlers = createHandlers(db, objectStoreName, setItemID, setView, viewType);
+                const handlers = createHandlers(db, objectStoreName, setItemID, setView, getViewType);
                 const expected = views[index];
                 handlers[handlerFuncName](...inParams);
                 expect(setView).toBeCalledWith(expected);
@@ -70,10 +70,10 @@ describe('Database', () => {
             it.each(testData.expectedSetItemIDActions)('should setItemID when calling %s', (handlerFuncName) => {
                 const setItemID = jest.fn();
                 const setView = jest.fn();
-                const viewType = testData.viewType[index];
+                const getViewType = testData.viewTypes[index];
                 const params = testData.handlerParams[handlerFuncName];
                 const [inParams, outParams] = params
-                const handlers = createHandlers(db, objectStoreName, setItemID, setView, viewType);
+                const handlers = createHandlers(db, objectStoreName, setItemID, setView, getViewType);
                 const expected = outParams;
                 handlers[handlerFuncName](...inParams);
                 expect(setItemID).toBeCalledWith(...expected);
@@ -81,10 +81,10 @@ describe('Database', () => {
             it.each(Object.entries(testData.expectedDatabaseActions))('should call %s with correct params', (handlerFuncName, databaseFunc) => {
                 const setItemID = jest.fn();
                 const setView = jest.fn();
-                const viewType = testData.viewType[index];
+                const getViewType = testData.viewTypes[index];
                 const params = testData.handlerParams[handlerFuncName];
                 const [inParams, outParams] = params
-                const handlers = createHandlers(db, objectStoreName, setItemID, setView, viewType);
+                const handlers = createHandlers(db, objectStoreName, setItemID, setView, getViewType);
                 const expected = [db, objectStoreName, ...outParams];
                 handlers[handlerFuncName](...inParams);
                 expect(databaseFunc).toBeCalledWith(...expected);
@@ -95,9 +95,9 @@ describe('Database', () => {
                 const handlerFuncName = 'createEnd';
                 const setItemID = jest.fn();
                 const setView = jest.fn();
-                const viewType = testData.viewType[index];
+                const getViewType = testData.viewTypes[index];
                 const inParam = { name: 'name' };
-                const handlers = createHandlers(db, objectStoreName, setItemID, setView, viewType);
+                const handlers = createHandlers(db, objectStoreName, setItemID, setView, getViewType);
                 handlers[handlerFuncName](inParam);
                 await waitFor(() => expect(setItemID).toBeCalledWith(expected));
             });
