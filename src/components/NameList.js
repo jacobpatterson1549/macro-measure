@@ -108,5 +108,5 @@ const handleDeleteEnd = (deleteEnd, itemID) => () => {
 
 const actions = Object.fromEntries(
     View.AllIDs
-        .filter((viewId) => View.isCreate(viewId) || View.isUpdate(viewId) || View.isDelete(viewId))
-        .map((viewId) => [viewId, View.isDelete(viewId) ? getDeleteAction : getCreateOrUpdateAction]));
+        .filter((viewID) => View.isCreate(viewID) || View.isUpdate(viewID) || View.isDelete(viewID))
+        .map((viewID) => [viewID, View.isDelete(viewID) ? getDeleteAction : getCreateOrUpdateAction]));

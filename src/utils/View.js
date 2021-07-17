@@ -25,18 +25,18 @@ const views = { // name: [id, flags]
     Group_Delete: [13, flags.isDelete | flags.isGroup],
 };
 
-const viewIdsByName = Object.fromEntries(
+const viewIDsByName = Object.fromEntries(
     Object.entries(views)
         .map(([name, view]) => [name, view[0]]));
 
-const viewFlagsById = Object.fromEntries(
+const viewFlagsByID = Object.fromEntries(
     Object.entries(views)
         .map(([_, view]) => [view[0], view[1]]));
 
-const allIds = Object.values(viewIdsByName);
+const allIDs = Object.values(viewIDsByName);
 
-const handleIsFlag = (flag) => (viewId) => ( // true if viewId has flag
-    !!(viewFlagsById[viewId] & flag)
+const handleIsFlag = (flag) => (viewID) => ( // true if viewID has flag
+    !!(viewFlagsByID[viewID] & flag)
 );
 
 const isFlagFuncs = Object.fromEntries(
@@ -44,7 +44,7 @@ const isFlagFuncs = Object.fromEntries(
         .map(([name, flag]) => [name, handleIsFlag(flag)]));
 
 export const View = {
-    ...viewIdsByName,
+    ...viewIDsByName,
     ...isFlagFuncs,
-    AllIDs: allIds,
+    AllIDs: allIDs,
 };

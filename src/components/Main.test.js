@@ -22,7 +22,6 @@ describe('Main', () => {
     });
   });
   describe('views', () => {
-    // TODO: add tests to ensure objectStoreName is passed for viewTypes
     const views = Object.values(View).filter(Number.isInteger);
     it.each(views)('should render with view id=%s', (view) => {
       render(

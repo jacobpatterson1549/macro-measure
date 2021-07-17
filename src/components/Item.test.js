@@ -229,7 +229,6 @@ describe('Item', () => {
                 valid: true,
             });
             render(<Item
-                itemId={3}
                 setGPSOn={jest.fn()}
             />);
             expect(screen.queryByRole('img')).toBeInTheDocument();

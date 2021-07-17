@@ -94,7 +94,7 @@ const getProps = (props) => {
 const mainViews = Object.fromEntries(
     View.AllIDs
         .filter(View.isWaypoint)
-        .map((viewId) => [viewId, getItemView]));
+        .map((viewID) => [viewID, getItemView]));
 mainViews[View.Waypoint_List] = getListView;
 mainViews[View.About] = getAboutView;
 mainViews[View.Help] = getHelpView;
