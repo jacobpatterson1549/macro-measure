@@ -76,7 +76,7 @@ describe('NameList', () => {
                 const expected = items[2];
                 const element = elements[2];
                 fireEvent.click(element);
-                expect(elements.length).toBe(items.length);;
+                expect(elements.length).toBe(items.length);
                 expect(deleteStart).toBeCalledWith(expected);
             });
         });

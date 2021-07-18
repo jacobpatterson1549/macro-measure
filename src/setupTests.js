@@ -5,7 +5,7 @@
 import '@testing-library/jest-dom';
 import { getIndexedDB, getIDBKeyRange, getLocalStorage, getGeolocation } from './utils/Global';
 
-const mockIDBKeyRangeObj = (lower, upper, lowerOpen, upperOpen) => { lower, upper, lowerOpen, upperOpen };
+const mockIDBKeyRangeObj = (lower, upper, lowerOpen, upperOpen) => ({ lower, upper, lowerOpen, upperOpen });
 
 jest.mock('./utils/Global');
 

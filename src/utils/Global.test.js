@@ -61,7 +61,7 @@ describe('Global', () => {
         delete window.location;
         window.location = { reload: jest.fn() };
         reloadWindow();
-        expect(window.location.reload).toBeCalled();
+        expect(window.location.reload).toBeCalledTimes(1);
         window.location = oldLocation;
     });
     it('should return geolocation', () => {

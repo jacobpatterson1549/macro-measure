@@ -14,21 +14,21 @@ describe('Window', () => {
         it.each(tests)('should initially be fullscreen=%s', (expected) => {
             isFullscreen.mockReturnValue(expected);
             const { result } = renderHook(() => useFullscreen());
-            const [fullscreen, _] = result.current;
+            const [fullscreen] = result.current;
             expect(fullscreen).toBe(expected);
         });
         it.each(tests)('should transition to fullscreen=%s', async (expected) => {
             isFullscreen.mockReturnValue(!expected);
             const { result } = renderHook(() => useFullscreen());
-            const [fullscreen, _] = result.current;
+            const [fullscreen] = result.current;
             expect(fullscreen).toBe(!expected); // sanity check
             expect(addWindowEventListener.mock.calls[0][0]).toBe('fullscreenchange');
             const fullscreenChangeHandler = addWindowEventListener.mock.calls[0][1];
             await waitFor(() => {
                 isFullscreen.mockReturnValue(expected);
                 fullscreenChangeHandler();
-                const [fullscreen, _] = result.current;
-                expect(fullscreen).toBe(expected);
+                const [fullscreenTransition] = result.current;
+                expect(fullscreenTransition).toBe(expected);
             });
         });
         const setterTests = [
@@ -37,7 +37,7 @@ describe('Window', () => {
         ];
         it.each(setterTests)('should exit fullscreen when set to false', (mock, requestedFullscreen) => {
             const { result } = renderHook(() => useFullscreen());
-            const [_, setFullscreen] = result.current;
+            const [, setFullscreen] = result.current;
             setFullscreen(requestedFullscreen);
             expect(mock).toBeCalled();
         });

@@ -1,9 +1,9 @@
 const fs = require('fs');
-const package = require('../package.json');
+const packageJSON = require('../package.json');
 const assetManifest = require('../build/asset-manifest.json');
 const swPath = 'build/service-worker.js';
 
-const cacheName = `cache-${package.version}`;
+const cacheName = `cache-${packageJSON.version}`;
 
 const manifestAssets = JSON.stringify(
     assetManifest.entrypoints
@@ -19,12 +19,12 @@ const throwError = (message) => {
     throw new Error(message);
 };
 
-fs.readFile(swPath, 'utf8', (err, data) => (
-    err
-        ? throwError(`reading service worker: ${err.message}`)
-        : fs.writeFile(swPath, updateServiceWorker(data), 'utf8', (err) => (
-            err
-                ? throwError(`writing service worker: ${err.message}`)
+fs.readFile(swPath, 'utf8', (readErr, data) => (
+    readErr
+        ? throwError(`reading service worker: ${readErr.message}`)
+        : fs.writeFile(swPath, updateServiceWorker(data), 'utf8', (writeErr) => (
+            writeErr
+                ? throwError(`writing service worker: ${writeErr.message}`)
                 : console.log('[generated service worker]')
         ))
 ));

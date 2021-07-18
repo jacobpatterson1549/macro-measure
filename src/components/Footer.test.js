@@ -20,9 +20,9 @@ describe('Footer', () => {
     it.each(elementTests)('should have element with "%s" text when props are gpsOn=%s and onLine=%s', (expected, gpsOn, onLine) => {
         useOnLine.mockReturnValue(onLine);
         render(<Footer gpsOn={gpsOn} />);
-        const element = screen.getByText((content, element) => (
+        const expectedElement = screen.getByText((content, element) => (
             element.textContent === expected
         ));
-        expect(element).toBeInTheDocument();
+        expect(expectedElement).toBeInTheDocument();
     })
 });

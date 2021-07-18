@@ -20,7 +20,6 @@ export const Item = (props) => {
     const [lng, setLng] = useLocalStorage(`${props.type}InputLng`, 0);
     const [items] = useItems(props.db, props.objectStoreName, props.parentItemID);
     const [item, setItem] = useState(null);
-    // const [distanceHeading, setDistanceHeading] = useState(null);
     useEffect(() => {
         if (item?.id !== props.itemID) {
             items?.filter((dbItem => dbItem.id === props.itemID))
@@ -33,7 +32,7 @@ export const Item = (props) => {
                 });
         }
     }, [items, setItem, props.itemID, setName, setLat, setLng, name, lat, lng, props.view, item]);
-    const distanceHeading = (View.isRead(props.view) && geolocation.latLng)
+    const distanceHeading = (View.isRead(props.view) && geolocation.latLng) // TODO: should the be a state variable and set with useEffect(()={?}, [view,latLng])?
         ? getDistanceHeading({ lat: lat, lng: lng }, geolocation.latLng, props.distanceUnit)
         : null;
     const state = {
@@ -64,10 +63,14 @@ const render = (props) => (
 
 const getHeader = (props) => {
     const prevDisabled = !props.item || props.item.order <= 0;
-    const headerName
-        = (View.isCreate(props.view)) ? `[Add ${props.type}]`
-            : (props.item) ? props.item.name
-                : '?';
+    const getItemName = () => (
+        (props.item)
+            ? props.item.name
+            : '?'
+    );
+    const headerName = (View.isCreate(props.view))
+        ? `[Add ${props.type}]`
+        : getItemName();
     const nextDisabled = !props.item || props.item.order + 1 >= props.items.length
     const showEdit = View.isRead(props.view);
     return (
@@ -125,10 +128,14 @@ const getHeader = (props) => {
 };
 
 const getMap = (props) => {
+    const getItem = () => (
+        (props.item)
+            ? [props.item.name, props.lat, props.lng]
+            : [null]
+    );
     const [itemName, itemLat, itemLng] = (View.isCreate(props.view) && props.geolocation.latLng)
         ? ['Waypoint', props.geolocation.latLng.lat, props.geolocation.latLng.lng]
-        : (props.item) ? [props.item.name, props.lat, props.lng]
-            : [null];
+        : getItem();
     const item = {
         name: itemName,
         lat: itemLat,
@@ -137,8 +144,9 @@ const getMap = (props) => {
     const [device, distanceHeading] = (props.geolocation.valid && props.distanceHeading)
         ? [props.geolocation.latLng, props.distanceHeading]
         : [];
-    return (!props.geolocation.valid) ? (<p>[Map disabled]</p>)
-        : (!itemLat || !itemLng) ? (<p>Waiting for GPS...</p>)
+    const getMapHelper = () => (
+        (!itemLat || !itemLng)
+            ? (<p>Waiting for GPS...</p>)
             : (
                 <Map
                     item={item}
@@ -147,7 +155,10 @@ const getMap = (props) => {
                     distanceHeading={distanceHeading}
                     distanceUnit={props.distanceUnit}
                 />
-            );
+            )
+    );
+    return (!props.geolocation.valid) ? (<p>[Map disabled]</p>)
+        : getMapHelper();
 };
 
 const getAction = (props) => (

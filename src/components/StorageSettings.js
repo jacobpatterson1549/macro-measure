@@ -43,7 +43,7 @@ const render = (props) => (
         <Label caption="Clear ALL Saved Data">
             <ButtonInput
                 value="Clear"
-                onClick={handleResetStorage(props)}
+                onClick={handleResetStorage()}
             />
         </Label>
         <Label caption="Reload page and Saved Data">

@@ -18,11 +18,16 @@ export const NameTable = (props) => (
     </table>
 );
 
-const getTableBody = ({ items, reloadItems, read, update, deleteValue, moveUp, moveDown }) => (
-    (!items) ? <></>
-        : (items.length)
-            ? tableRows(items, reloadItems, read, update, deleteValue, moveUp, moveDown)
-            : (<tr><td colSpan="5">No items exist.  Create one.</td></tr>)
+const getTableBody = (props) => (
+    (props.items)
+        ? getTableBodyHelper(props)
+        : <></>
+);
+
+const getTableBodyHelper = ({ items, reloadItems, read, update, deleteValue, moveUp, moveDown }) => (
+    (items.length)
+        ? tableRows(items, reloadItems, read, update, deleteValue, moveUp, moveDown)
+        : (<tr><td colSpan="5">No items exist.  Create one.</td></tr>)
 );
 
 const tableRows = (items, reloadItems, read, update, deleteValue, moveUp, moveDown) => (

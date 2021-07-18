@@ -619,11 +619,11 @@ describe('Database', () => {
                 const transactionR = new MockIDBTransaction(objectStoreR);
                 const transactionW = new MockIDBTransaction(objectStoreW);
                 const db = await mockTransaction(transactionR, transactionW);
-                const request = moveItem(db, 'os1', srcItem);
+                const request = moveItem(db, 'osM', srcItem);
                 getRequest.dispatchEvent(mockEvent('success', { result: dstItem }));
                 await waitFor(() => expect(db.transaction.mock.calls).toEqual([
-                    [['os1'], 'readonly'],
-                    [['os1'], 'readwrite'],
+                    [['osM'], 'readonly'],
+                    [['osM'], 'readwrite'],
                 ]));
                 transactionW.dispatchEvent(mockEvent('complete', {}));
                 await request;

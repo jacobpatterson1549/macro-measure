@@ -166,7 +166,7 @@ const getGroupsToBackfill = (existingGroups, oldGroups, oldWaypoints) => {
         // get the group to backfill by name
         const oldGroupsWithID = oldGroups.filter((oldGroup) => (oldGroup.id === oldWaypoint.parentItemID));
         const groupName = oldGroupsWithID[0].name;
-        const group = groups.filter((group) => (group.name === groupName))[0];
+        const group = groups.filter((group2) => (group2.name === groupName))[0];
         const waypoint = Object.assign({}, oldWaypoint, { name: getUniqueName(group.items, oldWaypoint.name) });
         group.items.push(waypoint);
     });
@@ -175,21 +175,20 @@ const getGroupsToBackfill = (existingGroups, oldGroups, oldWaypoints) => {
 
 const getUniqueName = (existingNameObjects, name) => {
     let uniqueName = name;
-    const hasName = (nameItems, name) => (
-        nameItems.some((item) => item.name === name)
+    const hasName = (nameItems, n) => (
+        nameItems.some((item) => item.name === n)
     );
-    for (let i = 2; hasName(existingNameObjects, uniqueName); i++) {
+    for (let i = 2; ; i++) {
+        if (!hasName(existingNameObjects, uniqueName)) {
+            break;
+        }
         uniqueName = `${name}_${i}`;
     }
     return uniqueName;
 };
 
 const createItems = async (db, objectStoreName, items) => {
-    const parentItemID = items[0].parentItemID;
-    // const differentParentIDs = !items.every((element, index) => index === 0 || parentItemID === element.parentItemID);
-    // if (differentParentIDs) {
-    //     throw new Error("different parent IDs among items"); // this is unreachable.
-    // }
+    const parentItemID = items[0].parentItemID; // it is assumed tha all items have the same parentItemID
     const numItems = await readItemCount(db, objectStoreName, parentItemID);
     const action = (transaction, resolve) => {
         const objectStore = transaction.objectStore(objectStoreName);
@@ -210,8 +209,8 @@ const createItems = async (db, objectStoreName, items) => {
 };
 
 export const createItem = async (db, objectStoreName, item) => {
-    const createItemIDs = await createItems(db, objectStoreName, [item]); // { createdID: item }
-    return parseInt(Object.entries(createItemIDs)[0][0]);
+    const createdItemIDs = await createItems(db, objectStoreName, [item]);
+    return parseInt(Object.entries(createdItemIDs)[0][0]);
 };
 
 export const readItem = (db, objectStoreName, itemID) => {
@@ -308,7 +307,7 @@ export const deleteItem = async (db, objectStoreName, itemID) => {
     return handle(db, objectStoreNames, action, READWRITE);
 };
 
-const getCascadeObjectStoreNameItemIDs = (db, objectStoreName, itemID) => {
+const getCascadeObjectStoreNameItemIDs = async (db, objectStoreName, itemID) => {
     if (objectStoreName === GROUPS) {
         const action = (transaction, resolve) => {
             const objectStore = transaction.objectStore(WAYPOINTS);

@@ -386,7 +386,6 @@ describe('Form', () => {
         expect(element.disabled).toBeTruthy();
     });
     it('should have one button', () => {
-        const onCancel = jest.fn();
         render(<Form />);
         const elements = screen.getAllByRole('button');
         expect(elements.length).toBe(1);

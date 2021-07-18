@@ -16,12 +16,11 @@ export const useGeolocation = (props) => {
             stopWatch(watchID, props.setGPSOn);
         };
     }, [props.view, props.highAccuracyGPS, props.setGPSOn]);
-    const state = {
+    return {
         latLng: latLng,
         accuracy: accuracy,
         valid: !!getGeolocation(), // not actually state, only fetched between refreshes
     };
-    return state;
 };
 
 const startWatch = (watchID, highAccuracyGPS, setLatLng, setAccuracy, setGPSOn) => {

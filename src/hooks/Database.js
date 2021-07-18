@@ -31,7 +31,7 @@ const actionHandler = async (setView, getViewType, viewAction, action, ...params
     const viewID = getView(getViewType, viewAction);
     setView(viewID);
     if (action) {
-        return await action(...params);
+        return action(...params);
     }
 };
 

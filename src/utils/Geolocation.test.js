@@ -1,4 +1,4 @@
-import { moveLatLngTo, getDistanceHeading, _toMeters, _fromMeters, getAccuracy } from './Geolocation';
+import { moveLatLngTo, getDistanceHeading, getAccuracy } from './Geolocation';
 
 describe('Geolocation', () => {
     describe('LatLng calculations', () => {

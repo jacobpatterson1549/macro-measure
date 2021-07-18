@@ -21,10 +21,10 @@ describe('Root', () => {
   });
   it('should default gpsOn to false', () => {
     render(<Root />);
-    const element = screen.getByText((content, element) => (
+    const expectedElement = screen.getByText((content, element) => (
       element.textContent === 'GPS: OFF'
     ));
-    expect(element).toBeInTheDocument();
+    expect(expectedElement).toBeInTheDocument();
   });
   it('should switch view to Waypoint_List when on Group_Read', () => {
     getLocalStorage().getItem.mockReturnValue(View.Group_Read);

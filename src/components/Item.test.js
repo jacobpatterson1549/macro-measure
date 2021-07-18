@@ -132,7 +132,7 @@ describe('Item', () => {
             useGeolocation.mockReturnValue({
                 valid: true,
             });
-            const { container } = render(<Item
+            render(<Item
                 view={View.Waypoint_Update}
                 setGPSOn={jest.fn()}
                 itemID={3}
@@ -140,7 +140,7 @@ describe('Item', () => {
             />);
             fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: expected } });
             screen.getByRole('button', { name: /update/i }).click();
-            const nameElement = screen.getByRole('button', { name: / list/i});
+            const nameElement = screen.getByRole('button', { name: / list/i });
             expect(nameElement.textContent).toBe(expected);
         });
     });
