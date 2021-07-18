@@ -193,68 +193,25 @@ describe('Database', () => {
                 [
                     'legacy import',
                     {
-                        groupsJSON: JSON.stringify([
-                            {
-                                name: 'group 1', // really old group with items
-                                items: [
-                                    { name: 'item1', lat: 2, lng: 3 },
-                                    { name: 'item2', lat: 22, lng: 7 },
-                                    { name: 'item2_2', lat: 22, lng: 7 },
-                                    { name: 'item2_3', lat: 22, lng: 7 },
-                                ],
-                            },
-                            {
-                                name: 'group 1b', // should get second id
-                            },
-                            {
-                                name: 'group 3_2', // exported group or old group with no items
-                            },
-                            {
-                                name: 'group', // older group with item
-                                items: [{ name: 'item7', lat: 20, lng: 31 }],
-                            },
-                        ]),
+                        groupsJSON: `[{"name":"group 1","items":[{"name":"item1","lat":2,"lng":3},{"name":"item2","lat":22,"lng":7},{"name":"item2_2","lat":22,"lng":7},{"name":"item2_3","lat":22,"lng":7}]},{"name":"group 1b"},{"name":"group 3_2"},{"name":"group","items":[{"name":"item7","lat":20,"lng":31}]}]`,
                         waypointsJSON: null,
                         existingGroups: [],
                     }
                 ],
                 [
                     'normal import',
-                    { 
-                        groupsJSON: JSON.stringify([
-                            { name: 'group 1', id: 'a' },
-                            { name: 'group 1b', id: 'a1' },
-                            { name: 'group 3_2', id: 'c' },
-                            { name: 'group', id: 'b' },
-                        ]),
-                        waypointsJSON: JSON.stringify([
-                            { name: 'item1', lat: 2, lng: 3, parentItemID: 'a' },
-                            { name: 'item2', lat: 22, lng: 7, parentItemID: 'a' },
-                            { name: 'item2_2', lat: 22, lng: 7, parentItemID: 'a' },
-                            { name: 'item2_3', lat: 22, lng: 7, parentItemID: 'a' },
-                            { name: 'item7', lat: 20, lng: 31, parentItemID: 'b' },
-                        ]),
+                    {
+                        groupsJSON: `[{"name":"group 1","id":"a"},{"name":"group 1b","id":"a1"},{"name":"group 3_2","id":"c"},{"name":"group","id":"b"}]`,
+                        waypointsJSON: `[{"name":"item1","lat":2,"lng":3,"parentItemID":"a"},{"name":"item2","lat":22,"lng":7,"parentItemID":"a"},{"name":"item2_2","lat":22,"lng":7,"parentItemID":"a"},{"name":"item2_3","lat":22,"lng":7,"parentItemID":"a"},{"name":"item7","lat":20,"lng":31,"parentItemID":"b"}]`,
                         existingGroups: [],
                     },
                 ],
                 [
                     'import with duplicate/existing names',
-                    { 
-                        groupsJSON: JSON.stringify([
-                            { name: 'group 1', id: 'a' },
-                            { name: 'group 1b', id: 'a1' },
-                            { name: 'group 3', id: 'c' },
-                        ]),
-                        waypointsJSON: JSON.stringify([
-                            { name: 'item1', lat: 2, lng: 3, parentItemID: 'a' },
-                            { name: 'item2', lat: 22, lng: 7, parentItemID: 'a' },
-                            { name: 'item2', lat: 22, lng: 7, parentItemID: 'a' },
-                            { name: 'item2', lat: 22, lng: 7, parentItemID: 'a' },
-                            { name: 'item7', lat: 20, lng: 31, parentItemID: 'b' },
-                        ]),
-                        existingGroups: [
-                            { name: 'group 3', id: 'OLD_C' },
-                        ],
+                    {
+                        groupsJSON: `[{"name":"group 1","id":"a"},{"name":"group 1b","id":"a1"},{"name":"group 3","id":"c"}]`,
+                        waypointsJSON: `[{"name":"item1","lat":2,"lng":3,"parentItemID":"a"},{"name":"item2","lat":22,"lng":7,"parentItemID":"a"},{"name":"item2","lat":22,"lng":7,"parentItemID":"a"},{"name":"item2","lat":22,"lng":7,"parentItemID":"a"},{"name":"item7","lat":20,"lng":31,"parentItemID":"b"}]`,
+                        existingGroups: [{ name: 'group 3', id: 'OLD_C' }],
                     },
                 ],
             ];

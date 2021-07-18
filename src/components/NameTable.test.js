@@ -37,88 +37,26 @@ describe('NameTable', () => {
             { name: 'd', id: '4X' },
             { name: 'e', id: '5X' },
         ];
-        it('should read element at index', async () => {
+        const handlerTests = [
+            ['read value', 'read', 0, 0, items.length],
+            ['move up', 'moveUp', 1, 2, items.length - 1], // no first row to move up
+            ['move down', 'moveDown', 2, 2, items.length - 1], // no last row to move down
+            ['update value', 'update', 3, 3, items.length],
+            ['delete value', 'deleteValue', 4, 4, items.length],
+        ]
+        it.each(handlerTests)('should %s at index', async (elementTitle, propName, tableIndex, itemsIndex, expectedElementsLength) => {
             const handler = jest.fn();
             const reloadItems = jest.fn();
-            const index = 0;
             render(<NameTable
                 items={items}
-                read={handler}
+                {...{ [propName]: handler }}
                 reloadItems={reloadItems}
             />);
-            const elements = screen.getAllByTitle('read value');
-            const element = elements[index];
-            const expected = items[index];
+            const elements = screen.getAllByTitle(elementTitle);
+            const element = elements[tableIndex];
+            const expected = items[itemsIndex];
             element.click();
-            expect(elements.length).toBe(items.length);
-            expect(handler).toBeCalledWith(expected);
-            await waitFor((expect(reloadItems).toBeCalled));
-        });
-        it('should move row up from index', async () => {
-            const handler = jest.fn();
-            const reloadItems = jest.fn();
-            const index = 1;
-            render(<NameTable
-                items={items}
-                moveUp={handler}
-                reloadItems={reloadItems}
-            />);
-            const elements = screen.getAllByTitle('move up');
-            const element = elements[index];
-            const expected = items[index + 1];
-            element.click();
-            expect(elements.length).toBe(items.length - 1); // no first move up
-            expect(handler).toBeCalledWith(expected);
-            await waitFor((expect(reloadItems).toBeCalled));
-        });
-        it('should move row down from index', async () => {
-            const handler = jest.fn();
-            const reloadItems = jest.fn();
-            const index = 2;
-            render(<NameTable
-                items={items}
-                moveDown={handler}
-                reloadItems={reloadItems}
-            />);
-            const elements = screen.getAllByTitle('move down');
-            const element = elements[index];
-            const expected = items[index];
-            element.click();
-            expect(elements.length).toBe(items.length - 1); // no last move down
-            expect(handler).toBeCalledWith(expected);
-            await waitFor((expect(reloadItems).toBeCalled));
-        });
-        it('should update name of row at index', async () => {
-            const handler = jest.fn();
-            const reloadItems = jest.fn();
-            const index = 3;
-            render(<NameTable
-                items={items}
-                update={handler}
-                reloadItems={reloadItems}
-            />);
-            const elements = screen.getAllByTitle('update value');
-            const element = elements[index];
-            const expected = items[index];
-            element.click();
-            expect(elements.length).toBe(items.length);
-            expect(handler).toBeCalledWith(expected);
-            await waitFor((expect(reloadItems).toBeCalled));
-        });
-        it('should delete row at index', async () => {
-            const handler = jest.fn();
-            const reloadItems = jest.fn();
-            const index = 4;
-            render(<NameTable
-                items={items}
-                deleteValue={handler}
-                reloadItems={reloadItems}
-            />);
-            const elements = screen.getAllByTitle('delete value');
-            const element = elements[index];
-            const expected = items[index];
-            element.click();
-            expect(elements.length).toBe(items.length);
+            expect(elements.length).toBe(expectedElementsLength);
             expect(handler).toBeCalledWith(expected);
             await waitFor((expect(reloadItems).toBeCalled));
         });
