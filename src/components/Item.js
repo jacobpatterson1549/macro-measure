@@ -118,7 +118,7 @@ const getHeader = (props) => {
                 <button
                     className="name"
                     title={`${props.type} list`}
-                    onClick={handleReadItemList(props)}
+                    onClick={handleReadList(props)}
                 >
                     <span>{props.headerName}</span>
                 </button>
@@ -185,7 +185,7 @@ const getAction = (props) => (
 
 const getCreateOrUpdateAction = (props) => {
     const [handleSubmit, hasLatLng, updateLatLngDisabled, actionName, updateID, handleCancel, submitValue] = (View.isCreate(props.view))
-        ? [handleCreateEnd(props), props.geolocation.lat && props.geolocation.lng, true, `Create ${props.type}`, null, handleReadItemList(props), `Create ${props.type}`]
+        ? [handleCreateEnd(props), props.geolocation.lat && props.geolocation.lng, true, `Create ${props.type}`, null, handleReadList(props), `Create ${props.type}`]
         : [handleUpdateEnd(props), true, false, `Update ${props.item?.name}`, props.item?.id, handleRead(0, props), `Update ${props.type}`];
     return (
         <Form
@@ -291,7 +291,7 @@ const handleRead = (delta, { read, items, item }) => () => {
     })
 };
 
-const handleReadItemList = ({ list }) => () => {
+const handleReadList = ({ list }) => () => {
     list();
 };
 
