@@ -7,7 +7,7 @@ export const getIDBKeyRange = () => window.IDBKeyRange;
 export const getLocalStorage = () => window.localStorage;
 export const addWindowEventListener = window.addEventListener;
 export const removeWindowEventListener = window.removeEventListener;
-export const reloadWindow = () => window.location.reload();
+export const reloadWindow = () => window.history.go();
 export const getGeolocation = () => window.navigator.geolocation;
 export const isOnLine = () => window.navigator.onLine;
 export const createURL = (object) => window.URL.createObjectURL(object);

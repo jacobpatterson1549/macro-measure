@@ -57,12 +57,12 @@ describe('Global', () => {
         window.localStorage = oldLocalStorage;
     });
     it('should reload the window', () => {
-        const oldLocation = window.location;
-        delete window.location;
-        window.location = { reload: jest.fn() };
+        const oldGo = window.history.go;
+        delete window.history.go;
+        window.history.go = jest.fn();
         reloadWindow();
-        expect(window.location.reload).toBeCalledTimes(1);
-        window.location = oldLocation;
+        expect(window.history.go).toBeCalledTimes(1);
+        window.history.go = oldGo;
     });
     it('should return geolocation', () => {
         const oldGeolocation = window.navigator.geolocation;
