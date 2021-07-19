@@ -18,7 +18,7 @@ describe('index', () => {
         });
     };
     it('should not render until the window is loaded', () => {
-        jest.isolateModules(() => require('./index'));
+        requireIndex();
         expect(registerSW).not.toBeCalled();
         expect(initDatabase).not.toBeCalled();
         expect(render).not.toBeCalled();
