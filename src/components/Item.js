@@ -13,7 +13,7 @@ import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/Geolocation'
 import { View } from '../utils/View';
 
 export const Item = (props) => {
-    const geolocation = useGeolocation(props);
+    const geolocation = useGeolocation(props.view, props.highAccuracyGPS, props.setGPSOn);
     const [items, reloadItems] = useItems(props.db, props.objectStoreName, props.parentItemID);
     const [item, setItem] = useState(null);
     const [mapItem, setMapItem] = useState(null);

@@ -22,52 +22,31 @@ describe('Geolocation', () => {
             [0, View.Waypoint_List],
         ];
         it.each(viewTests)('should watch position %d times when view is %s', (expected, view) => {
-            const props = {
-                view: view,
-                setGPSOn: jest.fn(),
-            };
-            renderHook(() => useGeolocation(props));
+            renderHook(() => useGeolocation(view, false, jest.fn()));
             expect(getGeolocation().watchPosition).toBeCalledTimes(expected);
         });
     });
     it('should not watch position if geolocation is falsy', () => {
         getGeolocation.mockReturnValue(null);
-        const props = {
-            view: View.Waypoint_Read,
-            setGPSOn: jest.fn(),
-        };
-        const { result } = renderHook(() => useGeolocation(props));
+        const { result } = renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
         const state = result.current;
         expect(state.lat).toBeFalsy();
         expect(state.lng).toBeFalsy();
     });
     it('should not clear watch if geolocation is falsy', () => {
         getGeolocation.mockReturnValue(null);
-        const props = {
-            view: View.Waypoint_Read,
-            setGPSOn: jest.fn(),
-        };
-        const { unmount } = renderHook(() => useGeolocation(props));
+        const { unmount } = renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
         unmount();
     });
     describe('highAccuracy', () => {
         const highAccuracyStates = [true, false];
         it.each(highAccuracyStates)('should set highAccuracy to %s', (expected) => {
-            const props = {
-                view: View.Waypoint_Read,
-                highAccuracyGPS: expected,
-                setGPSOn: jest.fn(),
-            };
-            renderHook(() => useGeolocation(props));
+            renderHook(() => useGeolocation(View.Waypoint_Read, expected, jest.fn()));
             expect(getGeolocation().watchPosition.mock.calls[0][2].enableHighAccuracy).toBe(expected);
         });
     });
     it('should show positions when success is called', async () => {
-        const props = {
-            view: View.Waypoint_Read,
-            setGPSOn: jest.fn(),
-        };
-        const { result } = renderHook(() => useGeolocation(props));
+        const { result } = renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
         const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
         await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
         const state = result.current;
@@ -75,11 +54,7 @@ describe('Geolocation', () => {
         expect(state.lng).toBe(-9);
     });
     it('should show positions when success is called', async () => {
-        const props = {
-            view: View.Waypoint_Read,
-            setGPSOn: jest.fn(),
-        };
-        const { result } = renderHook(() => useGeolocation(props));
+        const { result } = renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
         const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
         const expected = 20;
         await waitFor(() => successCallback({ coords: { accuracy: expected, } }));
@@ -87,11 +62,7 @@ describe('Geolocation', () => {
         expect(state.accuracy).toBe(expected);
     });
     it('should show last position when success is called', async () => {
-        const props = {
-            view: View.Waypoint_Read,
-            setGPSOn: jest.fn(),
-        };
-        const { result } = renderHook(() => useGeolocation(props));
+        const { result } = renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
         const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
         await waitFor(() => {
             successCallback({ coords: { latitude: 7, longitude: -9, } });
@@ -102,22 +73,14 @@ describe('Geolocation', () => {
         expect(state.lng).toBe(8);
     });
     it('should round position', async () => {
-        const props = {
-            view: View.Waypoint_Read,
-            setGPSOn: jest.fn(),
-        };
-        renderHook(() => useGeolocation(props));
+        renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
         const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
         await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
         const expected = { lat: 7, lng: -9 };
         expect(roundLatLng).toBeCalledWith(expected);
     });
     it('should clear position when error occurs', async () => {
-        const props = {
-            view: View.Waypoint_Read,
-            setGPSOn: jest.fn(),
-        };
-        const { result } = renderHook(() => useGeolocation(props));
+        const { result } = renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
         const [successCallback, errorCallback] = getGeolocation().watchPosition.mock.calls[0];
         await waitFor(() => {
             successCallback({ coords: { latitude: 7, longitude: -9, } });
@@ -128,11 +91,7 @@ describe('Geolocation', () => {
         expect(state.lng).toBeFalsy();
     });
     it('should clear watch when error occurs', async () => {
-        const props = {
-            view: View.Waypoint_Read,
-            setGPSOn: jest.fn(),
-        };
-        renderHook(() => useGeolocation(props));
+        renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
         const [successCallback, errorCallback] = getGeolocation().watchPosition.mock.calls[0];
         await waitFor(() => {
             successCallback({ coords: { latitude: 7, longitude: -9, } });
@@ -147,32 +106,22 @@ describe('Geolocation', () => {
         ];
         it.each(validTests)('should be valid when geolocation is %s: %s', (geolocation, expected) => {
             getGeolocation.mockReturnValue(geolocation);
-            const props = {
-                view: 'do not show latLng, but geolocation should still be valid',
-                setGPSOn: jest.fn(),
-            };
-            const { result } = renderHook(() => useGeolocation(props));
+            const { result } = renderHook(() => useGeolocation(View.About, false, jest.fn()));
             const state = result.current;
             expect(state.valid).toBe(expected);
         });
     });
     describe('setGPSOn', () => {
         it('should set GPS on', () => {
-            const props = {
-                view: View.Waypoint_Read,
-                setGPSOn: jest.fn(),
-            };
-            renderHook(() => useGeolocation(props));
-            expect(props.setGPSOn.mock.calls).toEqual([[false], [true]]); // stop before starting
+            const setGPSOn = jest.fn();
+            renderHook(() => useGeolocation(View.Waypoint_Read, false, setGPSOn));
+            expect(setGPSOn.mock.calls).toEqual([[false], [true]]); // stop before starting
         });
         it('should set GPS off', () => {
-            const props = {
-                view: View.Waypoint_Read,
-                setGPSOn: jest.fn(),
-            };
-            const { unmount } = renderHook(() => useGeolocation(props));
+            const setGPSOn = jest.fn();
+            const { unmount } = renderHook(() => useGeolocation(View.Waypoint_Read, false, setGPSOn));
             unmount();
-            expect(props.setGPSOn.mock.calls).toEqual([[false], [true], [false]]); // stop before starting then stop when unmounting
+            expect(setGPSOn.mock.calls).toEqual([[false], [true], [false]]); // stop before starting then stop when unmounting
         });
     });
 });

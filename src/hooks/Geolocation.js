@@ -4,18 +4,18 @@ import { roundLatLng } from '../utils/Geolocation';
 import { View } from '../utils/View';
 import { getGeolocation } from '../utils/Global';
 
-export const useGeolocation = (props) => {
+export const useGeolocation = (view, highAccuracyGPS, setGPSOn) => {
     const watchID = useRef(null);
     const [latLng, setLatLng] = useState(null);
     const [accuracy, setAccuracy] = useState(noAccuracy);
     useEffect(() => {
-        if (!watchID.current && View.needsGPS(props.view) && getGeolocation()) {
-            startWatch(watchID, props.highAccuracyGPS, setLatLng, setAccuracy, props.setGPSOn);
+        if (!watchID.current && View.needsGPS(view) && getGeolocation()) {
+            startWatch(watchID, highAccuracyGPS, setLatLng, setAccuracy, setGPSOn);
         }
         return () => {
-            stopWatch(watchID, props.setGPSOn);
+            stopWatch(watchID, setGPSOn);
         };
-    }, [props.view, props.highAccuracyGPS, props.setGPSOn]);
+    }, [view, highAccuracyGPS, setGPSOn]);
     return {
         ...latLng,
         accuracy: accuracy,
