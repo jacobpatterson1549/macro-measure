@@ -9,41 +9,82 @@ import { useItems } from '../hooks/Database';
 import { useGeolocation } from '../hooks/Geolocation';
 import { useLocalStorage } from '../hooks/LocalStorage';
 
-import { getDistanceHeading, moveLatLngTo, Heading, roundLatLng as latLngOnly } from '../utils/Geolocation';
+import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
 export const Item = (props) => {
     const geolocation = useGeolocation(props);
-    const [moveAmount, setMoveAmount] = useLocalStorage('moveAmount', 1);
-    const [name, setName] = useLocalStorage(`${props.type}InputName`, '?'); // same name as NameList.js
-    const [lat, setLat] = useLocalStorage(`${props.type}InputLat`, 0);
-    const [lng, setLng] = useLocalStorage(`${props.type}InputLng`, 0);
-    const [items] = useItems(props.db, props.objectStoreName, props.parentItemID);
+    const [items, reloadItems] = useItems(props.db, props.objectStoreName, props.parentItemID);
     const [item, setItem] = useState(null);
+    const [mapItem, setMapItem] = useState(null);
+    const [mapDevice, setMapDevice] = useState(null);
+    const [prevDisabled, setPrevDisabled] = useState(true);
+    const [nextDisabled, setNextDisabled] = useState(true);
+    const [headerName, setHeaderName] = useState('?');
+    const [nameInput, setNameInput] = useLocalStorage(`${props.type}InputName`, '?'); // same name as NameList.js
+    const [latInput, setLatInput] = useLocalStorage(`${props.type}InputLat`, 0);
+    const [lngInput, setLngInput] = useLocalStorage(`${props.type}InputLng`, 0);
+    const [moveAmountInput, setMoveAmountInput] = useLocalStorage('moveAmountInput', 1);
+    const [distanceHeading, setDistanceHeading] = useState(null);
     useEffect(() => {
-        if (item?.id !== props.itemID) {
-            items?.filter((dbItem => dbItem.id === props.itemID))
-                .forEach((dbItem) => {
-                    setItem(dbItem)
-                    setName(dbItem.name);
-                    const latLng = latLngOnly(dbItem);
-                    setLat(latLng.lat || 0);
-                    setLng(latLng.lng || 0);
-                });
+        if (props.itemID) {
+            const itemsWithID = items?.filter((dbItem) => dbItem.id === props.itemID);
+            const item2 = itemsWithID?.[0];
+            if (item2) {
+                setItem(item2);
+                setNameInput(item2.name);
+                setLatInput(item2.lat);
+                setLngInput(item2.lng);
+            }
         }
-    }, [items, setItem, props.itemID, setName, setLat, setLng, name, lat, lng, props.view, item]);
-    const distanceHeading = (View.isRead(props.view) && geolocation.latLng) // TODO: should the be a state variable and set with useEffect(()={?}, [view,latLng])?
-        ? getDistanceHeading({ lat: lat, lng: lng }, geolocation.latLng, props.distanceUnit)
-        : null;
+    }, [setItem, setNameInput, setLatInput, setLngInput, items, props.itemID]);
+    useEffect(() => {
+        setPrevDisabled(!item || item.order <= 0);
+        setNextDisabled(!item || !items || item.order + 1 >= items.length);
+    }, [setPrevDisabled, setNextDisabled, item, items]);
+    useEffect(() => {
+        const getItemName = () => (
+            (item)
+                ? item.name
+                : '?'
+        );
+        const headerName2 = (View.isCreate(props.view))
+            ? `[Add ${props.type}]`
+            : getItemName();
+        setHeaderName(headerName2);
+    }, [setHeaderName, item, props.view, props.type]);
+    useEffect(() => {
+        const mapItem2 = (View.isCreate(props.view) && geolocation.lat && geolocation.lng)
+            ? { name: 'Waypoint', lat: geolocation.lat, lng: geolocation.lng }
+            : item
+        setMapItem(mapItem2);
+    }, [setMapItem, item, props.view, geolocation.lat, geolocation.lng]);
+    useEffect(() => {
+        const distanceHeading2 = (View.isRead(props.view) && geolocation.lat && geolocation.lng && item && item.lat && item.lng)
+            ? getDistanceHeading(
+                { lat: item.lat, lng: item.lng },
+                { lat: geolocation.lat, lng: geolocation.lng },
+                props.distanceUnit)
+            : null;
+        setDistanceHeading(distanceHeading2);
+    }, [setDistanceHeading, props.view, geolocation.lat, geolocation.lng, item, props.distanceUnit]);
+    useEffect(() => {
+        const mapDevice2 = (geolocation.valid && distanceHeading && geolocation.lat && geolocation.lng)
+            ? { lat: geolocation.lat, lng: geolocation.lng }
+            : null;
+        setMapDevice(mapDevice2);
+    }, [setMapDevice, geolocation.valid, geolocation.lat, geolocation.lng, distanceHeading]);
     const state = {
+        prevDisabled, headerName, nextDisabled,
         geolocation, distanceHeading,
-        moveAmount, setMoveAmount,
-        name, setName,
-        lat, setLat,
-        lng, setLng,
-        items,
+        moveAmountInput, setMoveAmountInput,
+        nameInput, setNameInput,
+        latInput, setLatInput,
+        lngInput, setLngInput,
         item, setItem,
-    };
+        mapItem, mapDevice,
+        items, reloadItems,
+    }
     return render({ ...props, ...state });
 };
 
@@ -62,16 +103,6 @@ const render = (props) => (
 );
 
 const getHeader = (props) => {
-    const prevDisabled = !props.item || props.item.order <= 0;
-    const getItemName = () => (
-        (props.item)
-            ? props.item.name
-            : '?'
-    );
-    const headerName = (View.isCreate(props.view))
-        ? `[Add ${props.type}]`
-        : getItemName();
-    const nextDisabled = !props.item || props.item.order + 1 >= props.items.length
     const showEdit = View.isRead(props.view);
     return (
         <>
@@ -79,7 +110,7 @@ const getHeader = (props) => {
                 <button
                     className="left arrow"
                     title={`previous ${props.type}`}
-                    disabled={prevDisabled}
+                    disabled={props.prevDisabled}
                     onClick={handleRead(-1, props)}
                 >
                     <span>◀</span>
@@ -89,12 +120,12 @@ const getHeader = (props) => {
                     title={`${props.type} list`}
                     onClick={handleReadItemList(props)}
                 >
-                    <span>{headerName}</span>
+                    <span>{props.headerName}</span>
                 </button>
                 <button
                     className="right arrow"
                     title={`next ${props.type}`}
-                    disabled={nextDisabled}
+                    disabled={props.nextDisabled}
                     onClick={handleRead(+1, props)}
                 >
                     <span>▶</span>
@@ -128,36 +159,21 @@ const getHeader = (props) => {
 };
 
 const getMap = (props) => {
-    const getItem = () => (
-        (props.item)
-            ? [props.item.name, props.lat, props.lng]
-            : [null]
-    );
-    const [itemName, itemLat, itemLng] = (View.isCreate(props.view) && props.geolocation.latLng)
-        ? ['Waypoint', props.geolocation.latLng.lat, props.geolocation.latLng.lng]
-        : getItem();
-    const item = {
-        name: itemName,
-        lat: itemLat,
-        lng: itemLng,
-    };
-    const [device, distanceHeading] = (props.geolocation.valid && props.distanceHeading)
-        ? [props.geolocation.latLng, props.distanceHeading]
-        : [];
     const getMapHelper = () => (
-        (!itemLat || !itemLng)
+        (!props.mapItem || !props.mapItem.lat || !props.mapItem.lng)
             ? (<p>Waiting for GPS...</p>)
             : (
                 <Map
-                    item={item}
-                    device={device}
+                    item={props.mapItem}
+                    device={props.mapDevice}
                     accuracy={props.geolocation.accuracy}
-                    distanceHeading={distanceHeading}
+                    distanceHeading={props.distanceHeading}
                     distanceUnit={props.distanceUnit}
                 />
             )
     );
-    return (!props.geolocation.valid) ? (<p>[Map disabled]</p>)
+    return (!props.geolocation.valid)
+        ? (<p>[Map disabled]</p>)
         : getMapHelper();
 };
 
@@ -169,7 +185,7 @@ const getAction = (props) => (
 
 const getCreateOrUpdateAction = (props) => {
     const [handleSubmit, hasLatLng, updateLatLngDisabled, actionName, updateID, handleCancel, submitValue] = (View.isCreate(props.view))
-        ? [handleCreateEnd(props), !!props.geolocation.latLng, true, `Create ${props.type}`, null, handleReadItemList(props), `Create ${props.type}`]
+        ? [handleCreateEnd(props), props.geolocation.lat && props.geolocation.lng, true, `Create ${props.type}`, null, handleReadItemList(props), `Create ${props.type}`]
         : [handleUpdateEnd(props), true, false, `Update ${props.item?.name}`, props.item?.id, handleRead(0, props), `Update ${props.type}`];
     return (
         <Form
@@ -181,10 +197,10 @@ const getCreateOrUpdateAction = (props) => {
             <Fieldset caption={actionName}>
                 <Label caption="Name">
                     <NameInput
-                        value={props.name}
+                        value={props.nameInput}
                         values={props.items}
                         updateID={updateID}
-                        onChange={props.setName}
+                        onChange={props.setNameInput}
                     />
                 </Label>
                 <Fieldset disabled={!hasLatLng} border={false}>
@@ -206,10 +222,10 @@ const getCreateOrUpdateAction = (props) => {
                     </Label>
                     <Label caption={`Move Amount (${props.distanceUnit})`}>
                         <NumberInput
-                            value={props.moveAmount}
+                            value={props.moveAmountInput}
                             min="0"
                             max="1000"
-                            onChange={props.setMoveAmount}
+                            onChange={props.setMoveAmountInput}
                         />
                     </Label>
                 </Fieldset>
@@ -241,29 +257,30 @@ const getReadAction = (props) => (
         )
 );
 
-const getMoveLatLngButton = (heading, value, disabled, { moveAmount, lat, lng, setLat, setLng, distanceUnit }) => (
+const getMoveLatLngButton = (heading, value, disabled, { moveAmount: moveAmountInput, latInput, lngInput, setLatInput, setLngInput, distanceUnit }) => (
     <ButtonInput
         value={value}
         disabled={disabled}
-        onClick={handleUpdateLatLng(heading, moveAmount, lat, setLat, lng, setLng, distanceUnit)}
+        onClick={handleUpdateLatLng(heading, moveAmountInput, latInput, setLatInput, lngInput, setLngInput, distanceUnit)}
     />
 );
 
-const handleCreateStart = ({ type, createStart, setName, setLat, setLng }) => () => {
-    setName(`[New ${type} Name]`);
-    setLat('[current]');
-    setLng('[current]');
+const handleCreateStart = ({ type, createStart, setNameInput, setLatInput, setLngInput }) => () => {
+    setNameInput(`[New ${type} Name]`);
+    setLatInput('[current]');
+    setLngInput('[current]');
     createStart();
 };
 
-const handleCreateEnd = ({ createEnd, name, geolocation, parentItemID }) => () => {
+const handleCreateEnd = ({ createEnd, nameInput, geolocation, parentItemID, reloadItems }) => async () => {
     const item2 = {
-        name: name,
-        lat: geolocation.latLng.lat, // create with current position
-        lng: geolocation.latLng.lng,
+        name: nameInput,
+        lat: geolocation.lat, // create with current position
+        lng: geolocation.lng,
         parentItemID: parentItemID,
     }
-    createEnd(item2);
+    await createEnd(item2);
+    reloadItems();
 };
 
 const handleRead = (delta, { read, items, item }) => () => {
@@ -282,32 +299,34 @@ const handleUpdateStart = ({ updateStart, item }) => () => {
     updateStart(item);
 };
 
-const handleUpdateEnd = ({ updateEnd, item, name, lat, lng, setItem }) => () => {
+const handleUpdateEnd = ({ updateEnd, item, nameInput, latInput, lngInput, setItem, reloadItems, }) => () => {
     const item2 = Object.assign({}, item, {
-        name: name,
-        lat: lat,
-        lng: lng,
+        name: nameInput,
+        lat: latInput,
+        lng: lngInput,
     });
     setItem(item2);
     updateEnd(item2);
+    reloadItems();
 };
 
 const handleDeleteStart = ({ deleteStart, item }) => () => {
     deleteStart(item);
 };
 
-const handleDeleteEnd = ({ deleteEnd, item }) => () => {
+const handleDeleteEnd = ({ deleteEnd, item, reloadItems, }) => () => {
     deleteEnd(item);
+    reloadItems();
 };
 
-const handleUpdateLatLng = (heading, moveAmount, lat, setLat, lng, setLng, distanceUnit) => () => {
+const handleUpdateLatLng = (heading, moveAmountInput, latInput, setLatInput, lngInput, setLngInput, distanceUnit) => () => {
     const latLng = {
-        lat: lat,
-        lng: lng,
+        lat: latInput,
+        lng: lngInput,
     };
-    const latLng2 = moveLatLngTo(latLng, moveAmount, distanceUnit, heading);
-    setLat(latLng2.lat);
-    setLng(latLng2.lng);
+    const latLng2 = moveLatLngTo(latLng, moveAmountInput, distanceUnit, heading);
+    setLatInput(latLng2.lat);
+    setLngInput(latLng2.lng);
 };
 
 const actions = Object.fromEntries(

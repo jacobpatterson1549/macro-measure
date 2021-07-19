@@ -184,9 +184,11 @@ describe('Main', () => {
         screen.getByRole('button', { name: /create waypoint/i }).click();
         expect(handlers.createStart).toBeCalled();
       });
-      it('should create an waypoint', () => {
+      it('should create a waypoint', () => {
+        useItems.mockReturnValue([null, jest.fn()]);
         useGeolocation.mockReturnValue({
-          latLng: { lat: 7, lng: -9 },
+          lat: 7,
+          lng: -9,
           valid: true,
         });
         const parentItemID = 33;
@@ -290,7 +292,7 @@ describe('Main', () => {
         screen.getByRole('button', { name: /update waypoint/i }).click();
         expect(handlers.updateStart).toBeCalledWith(expected);
       });
-      it('should update a waypoint', async () => {
+      it('should update a waypoint', () => {
         const name = '[iC-EDITED]'
         const expected = { name: name, id: 'c', order: 3, lat: 4, lng: 1 };
         useItems.mockReturnValue([
@@ -304,7 +306,7 @@ describe('Main', () => {
         />);
         fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: name } });
         screen.getByRole('button', { name: /update waypoint/i }).click();
-        expect(handlers.updateEnd).toBeCalledWith(expected); // TODO: move position, ensure the changed values are called here
+        waitFor(() => expect(handlers.updateEnd).toBeCalledWith(expected)); // TODO: move position, ensure the changed values are called here
       });
       it('should start to delete an waypoint from list', () => {
         const expected = { name: 'iB', id: 'b' };

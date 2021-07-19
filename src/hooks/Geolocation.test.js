@@ -1,7 +1,7 @@
 import { waitFor } from '@testing-library/react';
 import { renderHook } from '@testing-library/react-hooks'
 
-import {  useGeolocation } from './Geolocation';
+import { useGeolocation } from './Geolocation';
 
 import { roundLatLng } from '../utils/Geolocation';
 import { View } from '../utils/View';
@@ -38,7 +38,8 @@ describe('Geolocation', () => {
         };
         const { result } = renderHook(() => useGeolocation(props));
         const state = result.current;
-        expect(state.latLng).toBeFalsy();
+        expect(state.lat).toBeFalsy();
+        expect(state.lng).toBeFalsy();
     });
     it('should not clear watch if geolocation is falsy', () => {
         getGeolocation.mockReturnValue(null);
@@ -69,9 +70,9 @@ describe('Geolocation', () => {
         const { result } = renderHook(() => useGeolocation(props));
         const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
         await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
-        const expected = { lat: 7, lng: -9 };
         const state = result.current;
-        expect(state.latLng).toStrictEqual(expected);
+        expect(state.lat).toBe(7);
+        expect(state.lng).toBe(-9);
     });
     it('should show positions when success is called', async () => {
         const props = {
@@ -96,9 +97,9 @@ describe('Geolocation', () => {
             successCallback({ coords: { latitude: 7, longitude: -9, } });
             successCallback({ coords: { latitude: 1, longitude: 8, } });
         });
-        const expected = { lat: 1, lng: 8 };
         const state = result.current;
-        expect(state.latLng).toStrictEqual(expected);
+        expect(state.lat).toBe(1);
+        expect(state.lng).toBe(8);
     });
     it('should round position', async () => {
         const props = {
@@ -123,7 +124,8 @@ describe('Geolocation', () => {
             errorCallback({ message: 'unavailable', code: 2 });
         });
         const state = result.current;
-        expect(state.latLng).toBeFalsy();
+        expect(state.lat).toBeFalsy();
+        expect(state.lng).toBeFalsy();
     });
     it('should clear watch when error occurs', async () => {
         const props = {

@@ -17,7 +17,7 @@ export const useGeolocation = (props) => {
         };
     }, [props.view, props.highAccuracyGPS, props.setGPSOn]);
     return {
-        latLng: latLng,
+        ...latLng,
         accuracy: accuracy,
         valid: !!getGeolocation(), // not actually state, only fetched between refreshes
     };
