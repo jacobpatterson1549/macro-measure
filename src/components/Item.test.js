@@ -1,17 +1,20 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { Item } from './Item';
 
 import { useItems } from '../hooks/Database';
-import { useGeolocation } from '../hooks/Geolocation';
 
 import { View } from '../utils/View';
-import { getLocalStorage } from '../utils/Global';
 
 jest.mock('../hooks/Database');
-jest.mock('../hooks/Geolocation');
+jest.mock('../utils/View');
 
 describe('Item', () => {
+    beforeEach(() => {
+        View.isRead = jest.fn();
+        View.isCreate = jest.fn();
+        View.AllIDs = [];
+    });
     describe('View', () => {
         const actionButtonNames = [
             'create item',
@@ -20,308 +23,114 @@ describe('Item', () => {
         ];
         it.each(actionButtonNames)('should have button with title: %s', (expected) => {
             useItems.mockReturnValue([[]]);
-            useGeolocation.mockReturnValue({});
+            View.isRead.mockReturnValue(true);
             render(<Item
-                view={View.Waypoint_Read}
                 type={'item'}
-                setGPSOn={jest.fn()}
             />);
-            const element = screen.getByRole('button', { name: expected });
-            expect(element).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: expected })).toBeInTheDocument();
         });
         const captionTests = [
-            ['[Add item]', View.Waypoint_Create, '[New Item]'],
-            ['here', View.Waypoint_Read, 'here'],
-            ['there', View.Waypoint_Update, 'there'],
-            ['nowhere', View.Waypoint_Delete, 'nowhere'],
+            ['[Add item]', '[user-defined name of item being added]', true, false],
+            ['--read', '--read', false, true],
+            ['UPDATE','UPDATE', false, false],
+            ['.delete', '.delete', false, false],
         ]
-        it.each(captionTests)('should have title of %s when view is %s and item name is %s', (expected, view, name) => {
+        it.each(captionTests)('should have title of %s when item name is %s', (expected, name, viewIsCreate, viewIsRead) => {
             useItems.mockReturnValue([[{ name: name, id: 3 }]]);
-            useGeolocation.mockReturnValue({});
+            View.isCreate.mockReturnValue(viewIsCreate);
+            View.isRead.mockReturnValue(viewIsRead);
+            const mockView = '[mock view]';
             render(<Item
-                view={view}
+                view={mockView}
                 type={'item'}
                 itemID={3}
-                setGPSOn={jest.fn()}
             />);
             const element = screen.queryByTitle('item list')
             expect(element.textContent).toBe(expected);
+            expect(View.isCreate).toBeCalledWith(mockView);
+            expect(View.isRead).toBeCalledWith(mockView);
         });
-        it('should read localStorage with props.type', () => {
-            const expected = [
-                ['XYZInputName'],
-                ['XYZInputLat'],
-                ['XYZInputLng'],
-                ['moveAmountInput'],
+    });
+    describe('button handlers', () => {
+        describe('crud buttons', () => {
+            const currentItem = { id: 3 };
+            const crudButtonTests = [
+                ['update item', 'updateStart', [currentItem]],
+                ['delete item', 'deleteStart', [currentItem]],
+                ['create item', 'createStart', []],
+            ]
+            it.each(crudButtonTests)('should trigger %s handler when clicked', (buttonTitle, handlerName, expected) => {
+                useItems.mockReturnValue([[currentItem]]);
+                View.isRead.mockReturnValue(true);
+                const handler = jest.fn();
+                render(<Item
+                    type={'item'}
+                    itemID={currentItem.id}
+                    {...{ [handlerName]: handler }}
+                />);
+                screen.getByRole('button', { name: buttonTitle }).click();
+                expect(handler).toBeCalledWith(...expected);
+            });
+        });
+        describe('read buttons', () => {
+            const items = [
+                { id: 'a', order: 0 },
+                { id: 'd', order: 1 },
+                { id: 'c', order: 2 },
+                { id: 'b', order: 3 },
+                { id: 'e', order: 4 },
+            ]
+            const disabledTests = [
+                ['previous item', 'a'],
+                ['next item', 'e'],
             ];
-            useItems.mockReturnValue([[]]);
-            useGeolocation.mockReturnValue({});
-            render(<Item
-                type={'XYZ'}
-                setGPSOn={jest.fn()}
-            />);
-            expect(getLocalStorage().getItem.mock.calls).toEqual(expected);
+            it.each(disabledTests)('should have disabled "%s" button when reading item with id %s', (buttonTitle, itemID) => {
+                useItems.mockReturnValue([items]);
+                render(<Item
+                    type={'item'}
+                    itemID={itemID}
+                />);
+                const element = screen.getByRole('button', { name: buttonTitle });
+                expect(element.disabled).toBeTruthy();
+            });
+            const readButtonTests = [
+                ['previous ITEM', 'd', items[0]],
+                ['previous ITEM', 'b', items[2]],
+                ['previous ITEM', 'e', items[3]],
+                ['next ITEM', 'a', items[1]],
+                ['next ITEM', 'd', items[2]],
+                ['next ITEM', 'b', items[4]],
+            ];
+            it.each(readButtonTests)('should read "%s" when at itemID=%s: %s', (buttonTitle, itemID, expected) => {
+                useItems.mockReturnValue([items]);
+                const readHandler = jest.fn();
+                render(<Item
+                    type={'ITEM'}
+                    itemID={itemID}
+                    read={readHandler}
+                />);
+                const element = screen.getByRole('button', { name: buttonTitle });
+                expect(element.disabled).toBeFalsy();
+                element.click();
+                expect(readHandler.mock.calls).toEqual([[expected]]);
+            });
+            it('should read the list when item name is clicked', () => {
+                useItems.mockReturnValue([]);
+                const listHandler = jest.fn();
+                render(<Item
+                    type={'ITEM'}
+                    list={listHandler}
+                />);
+                screen.getByTitle('ITEM list').click();
+                expect(listHandler).toBeCalled();
+            });
         });
     });
-    describe('read action', () => {
-        it('should NOT show distance when reading item without currentLatLng', () => {
-            useItems.mockReturnValue([[{ id: 4, lat: 7, lng: 8, name: 'something' }]]);
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Read}
-                itemID={4}
-                distanceUnit={'m'}
-                setGPSOn={jest.fn()}
-            />);
-            const re = new RegExp('getting location', 'i');
-            const element = screen.queryByText(re);
-            expect(element).toBeInTheDocument();
-        });
-        it('should show distance when reading item with currentLatLng', async () => {
-            const expected = 'km'
-            useItems.mockReturnValue([[{ lat: 7, lng: 9, id: 8 }]]);
-            useGeolocation.mockReturnValue({
-                lat: 7,
-                lng: -9,
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Read}
-                distanceUnit={expected}
-                setGPSOn={jest.fn()}
-                itemID={8}
-            />);
-            expect(screen.queryByText('1988.7')).toBeInTheDocument(); // REAL test (lng diff = 18)
-            expect(screen.queryByText(expected)).toBeInTheDocument();
-        });
-        it('should show NaN distance when reading item with currentLatLng and invalid distance unit', async () => {
-            const expected = 'INVALID_DISTANCE_UNIT'
-            useItems.mockReturnValue([[{ name: 'something', id: 3, lat: 7, lng: -9 }]]);
-            useGeolocation.mockReturnValue({
-                lat: 7,
-                lng: -9,
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Read}
-                distanceUnit={expected}
-                itemID={3}
-                setGPSOn={jest.fn()}
-            />);
-            expect(screen.queryByText('NaN')).toBeInTheDocument();
-            expect(screen.queryByText(expected)).toBeInTheDocument();
-        });
-    });
-    describe('update action', () => {
-        it('should set form item latLng', () => {
-            useItems.mockReturnValue([[{ name: 'something', lat: 1111, lng: 2222, id: 3 }]]);
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Update}
-                setGPSOn={jest.fn()}
-                itemID={3}
-            />);
-            waitFor(() => {
-                expect(screen.getByDisplayValue('1111')).toBeInTheDocument();
-                expect(screen.getByDisplayValue('2222')).toBeInTheDocument();
-            });
-        });
-        it('should update name', async () => {
-            const expected = 'something else';
-            const reloadItems = jest.fn();
-            useItems.mockReturnValue([[{ name: 'something', lat: 1111, lng: 2222, id: 3 }], reloadItems]);
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Update}
-                setGPSOn={jest.fn()}
-                itemID={3}
-                updateEnd={jest.fn()}
-            />);
-            fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), { target: { value: expected } });
-            screen.getByRole('button', { name: /update/i }).click();
-            expect(reloadItems).toBeCalled();
-        });
-    });
-    describe('create action', () => {
-        beforeEach(() => {
-            useItems.mockReturnValue([[]]);
-        })
-        it('should not crash when creating an item with the max id', () => {
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Create}
-                setGPSOn={jest.fn()}
-                itemID={Number.MAX_SAFE_INTEGER}
-            />);
-            const element = screen.queryByText(/waiting for/i);
-            expect(element).toBeInTheDocument();
-        });
-        it('should not show map when geolocation does not return latLng', () => {
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Create}
-                setGPSOn={jest.fn()}
-            />);
-            const element = screen.queryByText(/waiting for/i);
-            expect(element).toBeInTheDocument();
-        });
-        it('should have disabled submit when geolocation does not return latLng', () => {
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Create}
-                type={'item'}
-                setGPSOn={jest.fn()}
-            />);
-            const element = screen.getByRole('button', { name: /create item/i });
-            expect(element.disabled).toBeTruthy();
-        });
-        it('should show map when geolocation returns latLng', async () => {
-            useItems.mockReturnValue([[{ lat: 7, lng: -9 }]]);
-            useGeolocation.mockReturnValue({
-                lat: 7,
-                lng: -9,
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Create}
-                setGPSOn={jest.fn()}
-            />);
-            await waitFor(() => screen.queryByText(/waiting for/i) === null);
-        });
-        it('should NOT have disabled submit when geolocation returns latLng', async () => {
-            useGeolocation.mockReturnValue({
-                lat: 7,
-                lng: -9,
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Create}
-                type={'item'}
-                setGPSOn={jest.fn()}
-            />);
-            const element = screen.getByRole('button', { name: /create item/i });
-            expect(element.disabled).toBeFalsy();
-        });
-        it('should set localStorage when ended', async () => {
-            useGeolocation.mockReturnValue({
-                lat: 2,
-                lng: 4,
-                valid: true,
-            });
-            const createEnd = jest.fn();
-            const reloadItems = jest.fn();
-            const name = '[my custom item name]';
-            const expected = {
-                name: name,
-                lat: 2,
-                lng: 4,
-                parentItemID: 7,
-            };
-            useItems.mockReturnValue([[], reloadItems]);
-            render(<Item
-                view={View.Waypoint_Create}
-                type={'item'}
-                parentItemID={7}
-                createEnd={createEnd}
-                setGPSOn={jest.fn()}
-            />);
-            fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), { target: { value: name } });
-            await waitFor(() => expect(screen.getByRole('textbox', { name: 'Name' }).value).toBe(name));
-            screen.getByRole('button', { name: /create item/i }).click();
-            expect(createEnd).toBeCalledWith(expected);
-            waitFor(expect(reloadItems).toBeCalled);
-        });
-    });
-    describe('delete action', () => {
-        it('should call deleteEnd', () => {
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            const deleteEnd = jest.fn();
-            const reloadItems = jest.fn();
-            const expected = { id: 7, name: 'something', lat: 1, lng: -1 };
-            useItems.mockReturnValue([[{ id: 6, name: 'BAD', lat: 1, lng: 66 }, expected], reloadItems]);
-            render(<Item
-                view={View.Waypoint_Delete}
-                type={'item'}
-                itemID={7}
-                deleteEnd={deleteEnd}
-                setGPSOn={jest.fn()}
-            />);
-            screen.getByRole('button', { name: /delete item/i }).click();
-            expect(deleteEnd).toBeCalledWith(expected);
-            expect(reloadItems).toBeCalled();
-        });
-    });
-    describe('getMap', () => {
-        it('should have map when currentLatLng is null', () => {
-            useItems.mockReturnValue([[{ lat: 7, lng: 9, id: 3 }]]);
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            render(<Item
-                setGPSOn={jest.fn()}
-            />);
-            expect(screen.queryByRole('img')).toBeInTheDocument();
-        });
-        it('should have map', async () => {
-            useItems.mockReturnValue([[]]);
-            useGeolocation.mockReturnValue({
-                lat: 7,
-                lng: -9,
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Read}
-                setGPSOn={jest.fn()}
-            />);
-            expect(screen.queryByRole('img')).toBeInTheDocument();
-        });
-        it('should say map disabled when it does not have geolocation', () => {
-            useItems.mockReturnValue([[]]);
-            useGeolocation.mockReturnValue({
-                valid: false,
-            });
-            render(<Item setGPSOn={jest.fn()} />);
-            expect(screen.queryByText(/map disabled/i)).toBeInTheDocument();
-        });
-    });
-    describe('updateLatLng', () => {
-        const latLngTests = [
-            [+0.014457, 0, '+(N)'],
-            [-0.014457, 0, '-(S)'],
-            [0, -0.014457, '-(W)'],
-            [0, +0.014457, '+(E)'],
-        ];
-        it.each(latLngTests)('should update latLng to [%s,%s] when %s button is clicked', async (lat, lng, direction) => {
-            useItems.mockReturnValue([[{ name: 'something', lat: 0, lng: 0, id: 9 }]]);
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Update}
-                distanceUnit='mi' // moveAmount defaults to 1
-                setGPSOn={jest.fn()}
-                itemID={9}
-            />);
-            const element = screen.getByRole('button', { name: direction });
-            element.click();
-            waitFor(() => {
-                expect(screen.getByDisplayValue(lat)).toBeInTheDocument();
-                expect(screen.getByDisplayValue(lng)).toBeInTheDocument();
-            });
-        });
+    it('should display error for unknown view type', () => {
+        useItems.mockReturnValue([[]]);
+        render(<Item
+            type={'unKnown type'}
+        />);
+        expect(screen.getByText(/No child component for unKnown type/)).toBeInTheDocument();
     });
 });

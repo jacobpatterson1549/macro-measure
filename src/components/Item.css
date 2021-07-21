@@ -54,11 +54,3 @@
 .Item-Header .right {
     margin-left: auto;
 }
-
-.Item .distance {
-    font-size: 28vmin;
-}
-
-.Item .distance .unit {
-    font-size: .5em;
-}
