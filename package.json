@@ -22,6 +22,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build && npm run generate-sw",
     "test": "react-scripts test",
+    "test-ci": "CI=true npm run test -- --coverage",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
