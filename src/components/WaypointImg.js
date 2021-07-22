@@ -1,8 +1,8 @@
-import './Map.css';
+import './WaypointImg.css';
 
 import { moveLatLngTo, getAccuracy } from '../utils/Geolocation';
 
-export const Map = (props) => {
+export const WaypointImg = (props) => {
     const [center, heading] = (props.device && props.distanceHeading)
         ? [
             moveLatLngTo(props.item, props.distanceHeading.distance / 2, props.distanceUnit, props.distanceHeading.heading),
@@ -22,7 +22,7 @@ export const Map = (props) => {
 };
 
 const render = ({ item, device, center, heading, accuracy, distanceUnit }) => (
-    <div className="Map">
+    <div className="WaypointImg">
         <h3>TODO: map</h3>
         <p>{item.name}: [{item.lat}, {item.lng}]</p>
         {

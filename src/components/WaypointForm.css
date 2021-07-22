@@ -1,0 +1,7 @@
+.WaypointForm .distance {
+    font-size: 28vmin;
+}
+
+.WaypointForm .distance .unit {
+    font-size: .5em;
+}

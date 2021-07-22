@@ -1,14 +1,14 @@
 import { render, screen } from '@testing-library/react';
 
-import { Map } from './Map';
+import { WaypointImg } from './WaypointImg';
 
-describe('Map', () => {
+describe('WaypointImg', () => {
     const deviceTests = [
         ['', true, { item: { lat: 0, lng: 0 }, device: { lat: 0, lng: 0 } }],
         ['NOT ', false, { item: { lat: 0, lng: 0 } }],
     ];
     it.each(deviceTests)('should %shave your location', (q, expected, props) => {
-        render(<Map {...props} />);
+        render(<WaypointImg {...props} />);
         const element = screen.queryByText(/you/);
         expect(!!element === expected).toBeTruthy()
     });
@@ -17,7 +17,7 @@ describe('Map', () => {
         ['NOT ', false, { item: { lat: 0, lng: 0 } }],
     ];
     it.each(accuracyTests)('should %shave GPS accuracy', (q, expected, props) => {
-        render(<Map {...props} />);
+        render(<WaypointImg {...props} />);
         const element = screen.queryByText(/accuracy/);
         expect(!!element === expected).toBeTruthy()
     });
