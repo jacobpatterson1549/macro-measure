@@ -138,18 +138,18 @@ const handleReadList = ({ list }) => () => {
     list();
 };
 
-const handleUpdateEnd = ({ updateEnd, item, nameInput, latInput, lngInput, reloadItems, }) => () => {
+const handleUpdateEnd = ({ updateEnd, item, nameInput, latInput, lngInput, reloadItems }) => async () => {
     const item2 = Object.assign({}, item, {
         name: nameInput,
         lat: latInput,
         lng: lngInput,
     });
-    updateEnd(item2);
+    await updateEnd(item2);
     reloadItems();
 };
 
-const handleDeleteEnd = ({ deleteEnd, item, reloadItems, }) => () => {
-    deleteEnd(item);
+const handleDeleteEnd = ({ deleteEnd, item, reloadItems }) => async () => {
+    await deleteEnd(item);
     reloadItems();
 };
 

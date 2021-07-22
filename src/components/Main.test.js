@@ -16,7 +16,7 @@ jest.mock('../utils/Database');
 describe('Main', () => {
   beforeEach(() => {
     useItem.mockReturnValue([[]]);
-    useItems.mockReturnValue([[]]);
+    useItems.mockReturnValue([[], jest.fn()]);
     useGeolocation.mockReturnValue({
       valid: true,
     });
@@ -131,7 +131,7 @@ describe('Main', () => {
         expect(handlers.deleteStart).toBeCalledWith(expected);
       });
       it('should delete a group', () => {
-        const expected = { name: 'groupB', id: 'b' };
+        const expected = 'b';
         useItems.mockReturnValue([
           [{ name: 'groupA', id: 'a' }, { name: 'groupB', id: 'b' }, { name: 'groupC', id: 'c' }],
           jest.fn(),
@@ -141,7 +141,7 @@ describe('Main', () => {
           groupID={expected}
         />);
         screen.getByRole('button', { name: /delete group/i }).click();
-        expect(handlers.deleteEnd).toBeCalledWith(expected);
+        expect(handlers.deleteEnd).toBeCalledWith(expect.objectContaining({ id: 'b'}));
       });
       it('should move a group up', () => {
         const expected = { name: 'groupC', id: 'c' };

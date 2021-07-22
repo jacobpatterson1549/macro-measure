@@ -90,7 +90,7 @@ describe('WaypointForm', () => {
             />);
             fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), { target: { value: expected } });
             screen.getByRole('button', { name: /update/i }).click();
-            expect(reloadItems).toBeCalled();
+            waitFor(expect(reloadItems).toBeCalled);
         });
     });
     describe('create action', () => {
@@ -199,7 +199,7 @@ describe('WaypointForm', () => {
             />);
             screen.getByRole('button', { name: /delete waypoint/i }).click();
             expect(deleteEnd).toBeCalledWith(expected);
-            expect(reloadItems).toBeCalled();
+            waitFor(expect(reloadItems).toBeCalled);
         });
     });
     describe('updateLatLng', () => {
