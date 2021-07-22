@@ -22,7 +22,7 @@ export const WaypointImg = (props) => {
 };
 
 const render = ({ item, device, center, heading, accuracy, distanceUnit }) => (
-    <div className="WaypointImg">
+    <div className="WaypointImg" role="img">
         <h3>TODO: map</h3>
         <p>{item.name}: [{item.lat}, {item.lng}]</p>
         {

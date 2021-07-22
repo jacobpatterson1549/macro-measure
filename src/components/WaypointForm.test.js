@@ -37,7 +37,7 @@ describe('WaypointForm', () => {
             const element = screen.queryByText(re);
             expect(element).toBeInTheDocument();
         });
-        it.skip('should show distance when reading item with currentLatLng', async () => {
+        it('should show distance when reading item with currentLatLng', async () => {
             const expected = 'km'
             render(<WaypointForm
                 type={'waypoint'}
@@ -45,19 +45,19 @@ describe('WaypointForm', () => {
                 distanceUnit={expected}
                 setGPSOn={jest.fn()}
                 item={{ lat: 7, lng: 9 }}
-                distance={1988.7}
+                distanceHeading={{distance:1988.7}}
             />);
             expect(screen.queryByText('1988.7')).toBeInTheDocument(); // REAL test (lng diff = 18)
             expect(screen.queryByText(expected)).toBeInTheDocument();
         });
-        it.skip('should show NaN distance when reading item with currentLatLng and invalid distance unit', async () => {
+        it('should show NaN distance when reading item with currentLatLng and invalid distance unit', async () => {
             const expected = 'INVALID_DISTANCE_UNIT'
             render(<WaypointForm
                 type={'waypoint'}
                 view={View.Waypoint_Read}
                 distanceUnit={expected}
                 setGPSOn={jest.fn()}
-                distance={'NaN'}
+                distanceHeading={{distance:NaN}}
             />);
             expect(screen.queryByText('NaN')).toBeInTheDocument();
             expect(screen.queryByText(expected)).toBeInTheDocument();
@@ -94,27 +94,6 @@ describe('WaypointForm', () => {
         });
     });
     describe('create action', () => {
-        it.skip('should not crash when creating an item with the max id', () => {
-            render(<WaypointForm
-                type={'waypoint'}
-                view={View.Waypoint_Create}
-                setGPSOn={jest.fn()}
-                itemID={Number.MAX_SAFE_INTEGER}
-                geolocation={{valid: true}}
-            />);
-            const element = screen.queryByText(/waiting for/i);
-            expect(element).toBeInTheDocument();
-        });
-        it.skip('should not show map when geolocation does not return latLng', () => {
-            render(<WaypointForm
-                type={'waypoint'}
-                view={View.Waypoint_Create}
-                setGPSOn={jest.fn()}
-                geolocation={{valid: true}}
-            />);
-            const element = screen.queryByText(/waiting for/i);
-            expect(element).toBeInTheDocument();
-        });
         it('should have disabled submit when geolocation does not return latLng', () => {
             render(<WaypointForm
                 type={'waypoint'}

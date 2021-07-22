@@ -53,7 +53,7 @@ const getWaypointForm = (props) => {
     if (!props.geolocation.valid) {
         return (<span>Cannot get location</span>); // TODO: It should be possible to delete a waypoint when the geolocation is invalid.
     }
-    return (<WaypointForm {...props} />);
+    return (<WaypointForm {...props} />); // TODO: only pass necessary props
 };
 
 const getWaypointImg = (props) => {
