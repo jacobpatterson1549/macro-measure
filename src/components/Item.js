@@ -299,14 +299,14 @@ const handleUpdateStart = ({ updateStart, item }) => () => {
     updateStart(item);
 };
 
-const handleUpdateEnd = ({ updateEnd, item, nameInput, latInput, lngInput, setItem, reloadItems, }) => () => {
+const handleUpdateEnd = ({ updateEnd, item, nameInput, latInput, lngInput, setItem, reloadItems, }) => async () => {
     const item2 = Object.assign({}, item, {
         name: nameInput,
         lat: latInput,
         lng: lngInput,
     });
     setItem(item2);
-    updateEnd(item2);
+    await updateEnd(item2);
     reloadItems();
 };
 
@@ -314,8 +314,8 @@ const handleDeleteStart = ({ deleteStart, item }) => () => {
     deleteStart(item);
 };
 
-const handleDeleteEnd = ({ deleteEnd, item, reloadItems, }) => () => {
-    deleteEnd(item);
+const handleDeleteEnd = ({ deleteEnd, item, reloadItems, }) => async () => {
+    await deleteEnd(item);
     reloadItems();
 };
 

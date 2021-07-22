@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 import { NameList } from './NameList';
 
@@ -85,7 +85,7 @@ describe('NameList', () => {
                 const name = 'create_name_8';
                 const expected = { name: name };
                 getLocalStorage().getItem.mockReturnValue(JSON.stringify(name));
-                const createEnd = jest.fn();
+                const createEnd = jest.fn().mockResolvedValue();
                 render(<NameList
                     type={'test'}
                     view={View.Group_Create}
@@ -94,12 +94,13 @@ describe('NameList', () => {
                 const element = screen.getByRole('button', { name: 'Create test' });
                 fireEvent.submit(element);
                 expect(createEnd).toBeCalledWith(expected);
+                waitFor(() => expect(reloadItems).toBeCalled());
             });
             it('should finish updating when the form is submitted', () => {
                 const name = 'update_name_6';
                 const expected = { name: name, id: '2Z' };
                 getLocalStorage().getItem.mockReturnValue(JSON.stringify(name));
-                const updateEnd = jest.fn();
+                const updateEnd = jest.fn().mockResolvedValue();
                 render(<NameList
                     type={'test'}
                     view={View.Group_Update}
@@ -109,9 +110,10 @@ describe('NameList', () => {
                 const element = screen.getByRole('button', { name: 'Update test' });
                 fireEvent.submit(element);
                 expect(updateEnd).toBeCalledWith(expected);
+                waitFor(() => expect(reloadItems).toBeCalled());
             });
             it('should finish deleting when the form is submitted', () => {
-                const deleteEnd = jest.fn();
+                const deleteEnd = jest.fn().mockResolvedValue();
                 const expected = '3Z';
                 render(<NameList
                     type={'test'}
@@ -121,7 +123,8 @@ describe('NameList', () => {
                 />);
                 const element = screen.getByRole('button', { name: 'Delete test' });
                 fireEvent.submit(element);
-                expect(deleteEnd).toBeCalledWith(expected);
+                expect(deleteEnd).toBeCalledWith(expect.objectContaining({ id: expected }));
+                waitFor(() => expect(reloadItems).toBeCalled());
             });
         });
     });

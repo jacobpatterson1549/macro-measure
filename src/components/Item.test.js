@@ -132,7 +132,7 @@ describe('Item', () => {
         });
         it('should update name', async () => {
             const expected = 'something else';
-            const reloadItems = jest.fn();
+            const reloadItems = jest.fn().mockResolvedValue();
             useItems.mockReturnValue([[{ name: 'something', lat: 1111, lng: 2222, id: 3 }], reloadItems]);
             useGeolocation.mockReturnValue({
                 valid: true,
@@ -145,7 +145,7 @@ describe('Item', () => {
             />);
             fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), { target: { value: expected } });
             screen.getByRole('button', { name: /update/i }).click();
-            expect(reloadItems).toBeCalled();
+            waitFor(() => expect(reloadItems).toBeCalled());
         });
     });
     describe('create action', () => {
@@ -249,7 +249,7 @@ describe('Item', () => {
             useGeolocation.mockReturnValue({
                 valid: true,
             });
-            const deleteEnd = jest.fn();
+            const deleteEnd = jest.fn().mockResolvedValue();
             const reloadItems = jest.fn();
             const expected = { id: 7, name: 'something', lat: 1, lng: -1 };
             useItems.mockReturnValue([[{ id: 6, name: 'BAD', lat: 1, lng: 66 }, expected], reloadItems]);
@@ -262,7 +262,7 @@ describe('Item', () => {
             />);
             screen.getByRole('button', { name: /delete item/i }).click();
             expect(deleteEnd).toBeCalledWith(expected);
-            expect(reloadItems).toBeCalled();
+            waitFor(() => expect(reloadItems).toBeCalled());
         });
     });
     describe('getMap', () => {

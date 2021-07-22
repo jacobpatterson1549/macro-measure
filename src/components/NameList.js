@@ -38,10 +38,10 @@ const getAction = (props) => (
     (actions[props.view] || getReadAction)(props)
 );
 
-const getCreateOrUpdateAction = ({ view, type, items, itemID, createEnd, updateEnd, list, name, nameInput, setNameInput }) => {
+const getCreateOrUpdateAction = ({ view, type, items, itemID, createEnd, updateEnd, list, name, nameInput, setNameInput, reloadItems }) => {
     const [handleSubmit, actionName, submitValue, updateID] = View.isCreate(view)
-        ? [handleCreateEnd(createEnd, nameInput), `Create ${type}`, `Create ${type}`, null]
-        : [handleUpdateEnd(updateEnd, nameInput, itemID), `Update ${name}`, `Update ${type}`, itemID];
+        ? [handleCreateEnd(createEnd, nameInput, reloadItems), `Create ${type}`, `Create ${type}`, null]
+        : [handleUpdateEnd(updateEnd, nameInput, itemID, reloadItems), `Update ${name}`, `Update ${type}`, itemID];
     return (
         <Form
             submitValue={submitValue}
@@ -62,11 +62,11 @@ const getCreateOrUpdateAction = ({ view, type, items, itemID, createEnd, updateE
     );
 };
 
-const getDeleteAction = ({ deleteEnd, name, itemID, type, list }) => (
+const getDeleteAction = ({ deleteEnd, name, itemID, type, list, reloadItems }) => (
     <Form
         submitValue={'Delete ' + type}
         onCancel={list}
-        onSubmit={handleDeleteEnd(deleteEnd, itemID)}
+        onSubmit={handleDeleteEnd(deleteEnd, itemID, reloadItems)}
     >
         <Fieldset caption={`Delete ${name}`} />
     </Form>
@@ -85,25 +85,29 @@ const handleCreateStart = (createStart, setName, setNameInput) => () => {
     setNameInput(name);
     createStart();
 };
-const handleCreateEnd = (createEnd, name) => () => {
+const handleCreateEnd = (createEnd, name, reloadItems) => async () => {
     const item = { name: name };
-    createEnd(item);
+    await createEnd(item);
+    reloadItems();
 };
 const handleUpdateStart = (updateStart, setName, setNameInput) => (item) => {
     setName(item.name);
     setNameInput(item.name);
     updateStart(item);
 };
-const handleUpdateEnd = (updateEnd, name, itemID) => () => {
+const handleUpdateEnd = (updateEnd, name, itemID, reloadItems) => async () => {
     const item2 = { name: name, id: itemID };
-    updateEnd(item2);
+    await updateEnd(item2);
+    reloadItems();
 };
 const handleDeleteStart = (deleteStart, setName) => (item) => {
     setName(item.name);
     deleteStart(item);
 };
-const handleDeleteEnd = (deleteEnd, itemID) => () => {
-    deleteEnd(itemID);
+const handleDeleteEnd = (deleteEnd, itemID, reloadItems) => async () => {
+    const item = { id: itemID };
+    await deleteEnd(item);
+    reloadItems();
 };
 
 const actions = Object.fromEntries(
