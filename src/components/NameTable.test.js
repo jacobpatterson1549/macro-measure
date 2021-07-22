@@ -44,7 +44,7 @@ describe('NameTable', () => {
             ['update value', 'update', 3, 3, items.length],
             ['delete value', 'deleteValue', 4, 4, items.length],
         ]
-        it.each(handlerTests)('should %s at index', async (elementTitle, propName, tableIndex, itemsIndex, expectedElementsLength) => {
+        it.each(handlerTests)('should %s at index', (elementTitle, propName, tableIndex, itemsIndex, expectedElementsLength) => {
             const handler = jest.fn();
             const reloadItems = jest.fn();
             render(<NameTable
@@ -58,7 +58,7 @@ describe('NameTable', () => {
             element.click();
             expect(elements.length).toBe(expectedElementsLength);
             expect(handler).toBeCalledWith(expected);
-            await waitFor((expect(reloadItems).toBeCalled));
+            waitFor(expect(reloadItems).toBeCalled);
         });
     });
 });

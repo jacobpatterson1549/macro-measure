@@ -94,7 +94,7 @@ describe('NameList', () => {
                 const element = screen.getByRole('button', { name: 'Create test' });
                 fireEvent.submit(element);
                 expect(createEnd).toBeCalledWith(expected);
-                waitFor(() => expect(reloadItems).toBeCalled());
+                waitFor(expect(reloadItems).toBeCalled);
             });
             it('should finish updating when the form is submitted', () => {
                 const name = 'update_name_6';
@@ -110,7 +110,7 @@ describe('NameList', () => {
                 const element = screen.getByRole('button', { name: 'Update test' });
                 fireEvent.submit(element);
                 expect(updateEnd).toBeCalledWith(expected);
-                waitFor(() => expect(reloadItems).toBeCalled());
+                waitFor(expect(reloadItems).toBeCalled);
             });
             it('should finish deleting when the form is submitted', () => {
                 const deleteEnd = jest.fn().mockResolvedValue();
@@ -124,7 +124,7 @@ describe('NameList', () => {
                 const element = screen.getByRole('button', { name: 'Delete test' });
                 fireEvent.submit(element);
                 expect(deleteEnd).toBeCalledWith(expect.objectContaining({ id: expected }));
-                waitFor(() => expect(reloadItems).toBeCalled());
+                waitFor(expect(reloadItems).toBeCalled);
             });
         });
     });
