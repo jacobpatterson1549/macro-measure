@@ -40,6 +40,9 @@ export const Map = (props) => {
         return () => revokeFileURL(fileURL);
     }, [fileURL]);
     useEffect(() => {
+        setFileURL(null)
+    }, [props.itemID, setFileURL]);
+    useEffect(() => {
         if (props.item) {
             setNameInput(props.item.name);
             setFileInput(props.item.file)
@@ -52,7 +55,8 @@ export const Map = (props) => {
             setPixelBottomInput(props.item.pixelBottom);
             setPixelLeftInput(props.item.pixelLeft);
         }
-    }, [props.item, setNameInput, setFileInput, setLatNorthInput, setLngEastInput, setLatSouthInput, setLngWestInput, setPixelTopInput, setPixelRightInput, setPixelBottomInput, setPixelLeftInput]);
+    }, [props.item, props.view,
+        setNameInput, setFileInput, setLatNorthInput, setLngEastInput, setLatSouthInput, setLngWestInput, setPixelTopInput, setPixelRightInput, setPixelBottomInput, setPixelLeftInput]);
     const state = {
         nameInput, setNameInput,
         fileInput, setFileInput,
@@ -74,6 +78,7 @@ export const Map = (props) => {
 const render = (props) => (
     <>
         <MapImg
+            itemID={props.itemID}
             fileURL={props.fileURL}
             fileWidth={props.fileDimensions?.width}
             fileHeight={props.fileDimensions?.height}

@@ -12,15 +12,15 @@ export const MapImg = (props) => {
     const [pixelLeft, setPixelLeft] = useState(0);
     useEffect(() => {
         if (divRef.current) {
-            const parentWidth = divRef.current.parentElement.offsetWidth;
-            const containerHeight = divRef.current.offsetHeight;
-            const containerRatio = parentWidth  / containerHeight;
+            const containerWidth = divRef.current.parentElement.offsetWidth;
+            const containerHeight = divRef.current.parentElement.offsetHeight;
+            const containerRatio = containerWidth  / containerHeight;
             const imgRatio = props.fileWidth / props.fileHeight;
-            const widthRatio = parentWidth / props.fileWidth;
+            const widthRatio = containerWidth / props.fileWidth;
             const heightRatio = containerHeight / props.fileHeight;
             const [width, height] = (containerRatio > imgRatio)
                 ? [Math.trunc(props.fileWidth * heightRatio), containerHeight]
-                : [parentWidth, Math.trunc(props.fileHeight * widthRatio)];
+                : [containerWidth, Math.trunc(props.fileHeight * widthRatio)];
             const svgRatio = height / props.fileHeight;
             setSVGWidth(width);
             setSVGHeight(height);

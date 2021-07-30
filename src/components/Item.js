@@ -162,6 +162,7 @@ const children = {
         view={props.view}
         type={props.type}
         item={props.item}
+        itemID={props.itemID}
         reloadItems={props.reloadItems}
         setGPSOn={props.setGPSOn}
         createStart={props.createStart}
