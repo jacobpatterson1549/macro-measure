@@ -1,7 +1,8 @@
-.Root {
+body {
     background-color: lawngreen;
-    padding-left:  1vw;
-    padding-right: 1vw;
+}
+
+.Root {
     height: 100vh;
     color: red;
     display: flex;
