@@ -1,11 +1,15 @@
 import { getIndexedDB, getIDBKeyRange, getLocalStorage } from "./Global";
 
 const DATABASE_NAME = 'MACRO_MEASURE_DB';
-const DB_VERSION = parseInt('2'); // must be integer
+// version history:
+// 2: initial version (groups, waypoints)
+// 3: addition of maps object store
+const DB_VERSION = parseInt('3'); // must be integer
 const READ = 'readonly';
 const READWRITE = 'readwrite';
 export const GROUPS = 'groups';
 export const WAYPOINTS = 'waypoints';
+export const MAPS = 'maps';
 
 export const initDatabase = () => {
     return new Promise((resolve, reject) => {
@@ -23,7 +27,7 @@ export const initDatabase = () => {
 };
 
 export const getAll = (db) => {
-    const objectStoreNames = [GROUPS, WAYPOINTS];
+    const objectStoreNames = [GROUPS, WAYPOINTS]; // Do not export maps
     const action = (transaction, resolve) => {
         const objectStores = {};
         objectStoreNames.forEach((objectStoreName) => {
@@ -82,12 +86,16 @@ const createObjectStores = (db) => {
     if (!db.objectStoreNames.contains(WAYPOINTS)) {
         db.createObjectStore(WAYPOINTS, { keyPath: 'id', autoIncrement: true });
     }
+    if (!db.objectStoreNames.contains(MAPS)) {
+        db.createObjectStore(MAPS, { keyPath: 'id', autoIncrement: true });
+    }
 };
 
 const refreshIndexes = (transaction) => {
     const groupsObjectStore = transaction.objectStore(GROUPS);
     const waypointsObjectStore = transaction.objectStore(WAYPOINTS);
-    [groupsObjectStore, waypointsObjectStore].forEach((objectStore) => {
+    const mapsObjectStore = transaction.objectStore(MAPS);
+    [groupsObjectStore, waypointsObjectStore, mapsObjectStore].forEach((objectStore) => {
         const indexNames = Array.from(objectStore.indexNames);
         indexNames.forEach((name) => {
             objectStore.deleteIndex(name);
@@ -98,6 +106,8 @@ const refreshIndexes = (transaction) => {
     waypointsObjectStore.createIndex('order', ['parentItemID', 'order'], { unique: true });
     waypointsObjectStore.createIndex('parentItemID', ['parentItemID'], { unique: false });
     waypointsObjectStore.createIndex('name', ['parentItemID', 'name'], { unique: true });
+    mapsObjectStore.createIndex('order', 'order', { unique: true });
+    mapsObjectStore.createIndex('name', 'name', { unique: true });
 };
 
 const addLocalStorage = async (db) => {

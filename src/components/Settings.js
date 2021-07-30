@@ -1,6 +1,7 @@
 import { GPSSettings } from './GPSSettings';
 import { FullscreenSettings } from './FullscreenSettings';
 import { StorageSettings } from './StorageSettings';
+import { MapSettings } from './MapSettings';
 
 export const Settings = (props) => (
     <div>
@@ -14,6 +15,9 @@ export const Settings = (props) => (
         <FullscreenSettings />
         <StorageSettings
             db={props.db}
+        />
+        <MapSettings
+            setView={props.setView}
         />
     </div>
 );

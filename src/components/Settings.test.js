@@ -7,6 +7,7 @@ describe('Settings', () => {
         'GPS Settings',
         'Fullscreen Settings',
         'Storage Settings',
+        'Map Settings',
     ];
     it.each(groups)('should have settings for group %s', (groupName) => {
         render(<Settings />)

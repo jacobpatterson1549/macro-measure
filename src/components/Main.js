@@ -10,7 +10,7 @@ import { createHandlers } from '../hooks/Database';
 import { useLocalStorage } from '../hooks/LocalStorage';
 
 import { View } from '../utils/View';
-import { GROUPS, WAYPOINTS } from '../utils/Database';
+import { GROUPS, WAYPOINTS, MAPS } from '../utils/Database';
 import { units as distanceUnits } from '../utils/Distance';
 
 export const Main = (props) => {
@@ -48,14 +48,12 @@ const getSettingsView = (props) => (
         setDistanceUnit={props.setDistanceUnit}
         highAccuracyGPS={props.highAccuracyGPS}
         setHighAccuracyGPS={props.setHighAccuracyGPS}
+        setView={props.setView}
     />
 );
 
 const getItemView = (props) => (
     <Item
-        distanceUnit={props.distanceUnit}
-        highAccuracyGPS={props.highAccuracyGPS}
-        setGPSOn={props.setGPSOn}
         {...getProps(props)}
     />
 );
@@ -82,10 +80,24 @@ const getProps = (props) => {
             db: props.db,
             view: props.view,
             itemID: props.waypointID,
+            distanceUnit: props.distanceUnit,
+            highAccuracyGPS: props.highAccuracyGPS,
+            setGPSOn: props.setGPSOn,
+            mapID: props.mapID,
             parentItemID: props.groupID,
             objectStoreName: WAYPOINTS,
             type: 'waypoint',
             ...createHandlers(props.db, WAYPOINTS, props.setWaypointID, props.setView, View.isWaypoint),
+        };
+    }
+    if (View.isMap(props.view)) {
+        return {
+            db: props.db,
+            view: props.view,
+            itemID: props.mapID,
+            objectStoreName: MAPS,
+            type: 'map',
+            ...createHandlers(props.db, MAPS, props.setMapID, props.setView, View.isMap),
         };
     }
     return {};
@@ -93,9 +105,10 @@ const getProps = (props) => {
 
 const mainViews = Object.fromEntries(
     View.AllIDs
-        .filter(View.isWaypoint)
+        .filter((viewID) => (View.isWaypoint(viewID) || View.isMap(viewID)))
         .map((viewID) => [viewID, getItemView]));
 mainViews[View.Waypoint_List] = getListView;
+mainViews[View.Map_List] = getListView;
 mainViews[View.About] = getAboutView;
 mainViews[View.Help] = getHelpView;
 mainViews[View.Settings] = getSettingsView;

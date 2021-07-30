@@ -15,6 +15,7 @@ export const Root = (props) => {
   const [gpsOn, setGPSOn] = useState(false);
   const [groupID, setGroupID] = useLocalStorage('groupID', 0);
   const [waypointID, setWaypointID] = useLocalStorage('waypointID', 0);
+  const [mapID, setMapID] = useLocalStorage('mapID', 0);
   useEffect(() => {
     if (view === View.Group_Read) {
       setView(View.Waypoint_List);
@@ -24,6 +25,7 @@ export const Root = (props) => {
     view, setView,
     groupID, setGroupID,
     waypointID, setWaypointID,
+    mapID, setMapID,
     gpsOn, setGPSOn,
   };
   return render({ ...props, ...state });
@@ -42,10 +44,12 @@ const render = (props) => (
       view={props.view}
       groupID={props.groupID}
       waypointID={props.waypointID}
+      mapID={props.mapID}
       setView={props.setView}
       setGPSOn={props.setGPSOn}
       setGroupID={props.setGroupID}
       setWaypointID={props.setWaypointID}
+      setMapID={props.setMapID}
     />
     <Footer
       gpsOn={props.gpsOn}

@@ -17,11 +17,11 @@ export const TextInput = ({ value, onChange, disabled }) => (
     />
 );
 
-export const NumberInput = ({ value, onChange, min, max }) => (
+export const NumberInput = ({ value, onChange, min, max, validateFn, invalidMessage }) => (
     <Input
         type="number"
         value={value}
-        onChange={handleOnTextChange(onChange)}
+        onChange={handleOnTextChange(onChange, validateFn, invalidMessage)}
         min={min}
         max={max}
     />
@@ -31,7 +31,7 @@ export const NameInput = ({ value, values, onChange, updateID }) => (
     <Input
         type="text"
         value={value}
-        onChange={handleOnNameChange(onChange, values, updateID)}
+        onChange={handleOnTextChange(onChange, (name) => isUniqueName(name, values, updateID), 'duplicate name')}
     />
 );
 
@@ -124,17 +124,14 @@ const handleOnFocus = () => (event) => {
     event.target.select();
 }
 
-const handleOnTextChange = (onChange) => (event) => {
-    const value = event.target.value;
+const handleOnTextChange = (onChange, validateFn, invalidMessage) => (event) => {
+    const input = event.target;
+    const value = input.value;
+    if (validateFn) {
+        const valid = validateFn(value);
+        input.setCustomValidity(valid ? '' : invalidMessage);
+    }
     onChange(value);
-};
-
-const handleOnNameChange = (onChange, items, updateID) => (event) => {
-    const nameInput = event.target;
-    const name = nameInput.value;
-    const unique = isUniqueName(name, items, updateID);
-    nameInput.setCustomValidity(unique ? '' : 'duplicate name');
-    onChange(name);
 };
 
 const handleOnCheckboxChange = (onChange) => (event) => {

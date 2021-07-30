@@ -101,7 +101,7 @@ describe('Database', () => {
     describe('initDatabase', () => {
         describe('onupgradeneeded', () => {
             const upgradeTests = [
-                [2, -1],
+                [3, -1],
                 [0, Number.MAX_SAFE_INTEGER],
             ];
             it.each(upgradeTests)('should create %d object stores when version is %d', (expected, oldVersion) => {
@@ -113,7 +113,11 @@ describe('Database', () => {
                         createIndex: jest.fn(),
                     }),
                 };
-                const transaction = new MockIDBTransaction(mockUpgradeObjectStore(), mockUpgradeObjectStore());
+                const transaction = new MockIDBTransaction(
+                    mockUpgradeObjectStore(), // groups
+                    mockUpgradeObjectStore(), // waypoints
+                    mockUpgradeObjectStore(), // maps
+                );
                 const event = mockEvent('upgradeneeded', { result: db, transaction: transaction });
                 event.oldVersion = oldVersion;
                 initDatabase();
@@ -121,11 +125,12 @@ describe('Database', () => {
                 expect(db.createObjectStore).toBeCalledTimes(expected);
             });
             const createObjectStoreCountTests = [
-                [2, []],
-                [2, ['unused', 'object', 'stores']],
-                [1, ['groups']],
-                [1, ['waypoints']],
-                [0, ['waypoints', 'groups']],
+                [3, []],
+                [3, ['unused', 'object', 'stores']],
+                [2, ['groups']],
+                [2, ['waypoints']],
+                [2, ['maps']],
+                [0, ['waypoints', 'groups', 'maps']],
             ]
             it.each(createObjectStoreCountTests)('should create %d object stores when object stores were previously %s', (expected, oldObjectStoresNames) => {
                 const openRequest = new MockIDBOpenDBRequest();
@@ -136,7 +141,11 @@ describe('Database', () => {
                         createIndex: jest.fn(),
                     }),
                 };
-                const transaction = new MockIDBTransaction(mockUpgradeObjectStore(), mockUpgradeObjectStore());
+                const transaction = new MockIDBTransaction(
+                    mockUpgradeObjectStore(), // groups
+                    mockUpgradeObjectStore(), // waypoints
+                    mockUpgradeObjectStore(), // maps
+                );
                 const event = mockEvent('upgradeneeded', { result: db, transaction: transaction });
                 event.oldVersion = -1;
                 initDatabase();
@@ -146,14 +155,15 @@ describe('Database', () => {
             const oldIndexesTests = [
                 [{}],
                 [{ 'groups': ['a', 'b', 'c'] }],
-                [{ 'groups': ['a'], 'waypoints': ['a'] }],
+                [{ 'groups': ['a'], 'waypoints': ['a'], 'maps': ['a'] }],
             ];
             it.each(oldIndexesTests)('should remove remove old indexes and create new ones when old indexes are %s', (oldIndexes) => {
                 const openRequest = new MockIDBOpenDBRequest();
                 getIndexedDB().open = () => openRequest;
                 const groupsObjectStore = mockUpgradeObjectStore(oldIndexes['groups']);
                 const waypointsObjectStore = mockUpgradeObjectStore(oldIndexes['waypoints']);
-                const transaction = new MockIDBTransaction(groupsObjectStore, waypointsObjectStore);
+                const mapsObjectStore = mockUpgradeObjectStore(oldIndexes['maps']);
+                const transaction = new MockIDBTransaction(groupsObjectStore, waypointsObjectStore, mapsObjectStore);
                 const db = {
                     objectStoreNames: mockDOMStringList(),
                     createObjectStore: jest.fn().mockReturnValue({
@@ -166,9 +176,11 @@ describe('Database', () => {
                 openRequest.dispatchEvent(event);
                 expect(groupsObjectStore.deleteIndex.mock.calls).toEqual(groupsObjectStore.expectedDeleteIndexCalls);
                 expect(waypointsObjectStore.deleteIndex.mock.calls).toEqual(waypointsObjectStore.expectedDeleteIndexCalls);
+                expect(mapsObjectStore.deleteIndex.mock.calls).toEqual(mapsObjectStore.expectedDeleteIndexCalls);
                 // the expectations below are fragile and will need to be changed when more indexes are added or removed
                 expect(groupsObjectStore.createIndex).toHaveBeenCalledTimes(2);
                 expect(waypointsObjectStore.createIndex).toHaveBeenCalledTimes(3);
+                expect(mapsObjectStore.createIndex).toHaveBeenCalledTimes(2);
             });
         });
         it('should reject with the error message when an error is thrown', () => {

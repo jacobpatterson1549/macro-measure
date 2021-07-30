@@ -7,6 +7,7 @@ const flags = {
     needsGPS: 1 << 4,
     isWaypoint: 1 << 5,
     isGroup: 1 << 6,
+    isMap: 1 << 8,
 }
 
 const views = { // name: [id, flags]
@@ -23,6 +24,11 @@ const views = { // name: [id, flags]
     Group_List: [11, flags.isList | flags.isGroup],
     Group_Update: [12, flags.isUpdate | flags.isGroup],
     Group_Delete: [13, flags.isDelete | flags.isGroup],
+    Map_Create: [14, flags.isCreate | flags.isMap],
+    Map_Read: [15, flags.isRead | flags.isMap],
+    Map_List: [16, flags.isList | flags.isMap],
+    Map_Update: [17, flags.isUpdate | flags.isMap],
+    Map_Delete: [18, flags.isDelete | flags.isMap],
 };
 
 const viewIDsByName = Object.fromEntries(

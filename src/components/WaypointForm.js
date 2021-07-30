@@ -165,5 +165,6 @@ const handleUpdateLatLng = (heading, moveAmountInput, latInput, setLatInput, lng
 
 const actions = Object.fromEntries(
     View.AllIDs
+        .filter((viewID) => View.isWaypoint(viewID))
         .filter((viewID) => View.isCreate(viewID) || View.isUpdate(viewID) || View.isDelete(viewID))
         .map((viewID) => [viewID, View.isDelete(viewID) ? getDeleteAction : getCreateOrUpdateAction]));

@@ -6,6 +6,7 @@ import { useItems } from '../hooks/Database';
 
 import { View } from '../utils/View';
 import { Waypoint } from './Waypoint';
+import { Map } from './Map';
 
 export const Item = (props) => {
     const [items, reloadItems] = useItems(props.db, props.objectStoreName, props.parentItemID);
@@ -37,8 +38,7 @@ export const Item = (props) => {
     }, [setHeaderName, item, props.view, props.type]);
     const state = {
         prevDisabled, headerName, nextDisabled,
-        item, setItem,
-        items, reloadItems,
+        item, items, reloadItems,
     }
     return render({ ...props, ...state });
 };
@@ -108,12 +108,12 @@ const getHeader = (props) => {
     );
 };
 
-const getChild = (props) => (
-    (
+const getChild = (props) => {
+    return (
         children[props.type]
         || (() => (<p>{`ERROR: No child component for ${props.type}`}</p>))
-    )(props)
-);
+    )(props);
+};
 
 const handleCreateStart = ({ createStart }) => () => {
     createStart();
@@ -140,6 +140,37 @@ const handleDeleteStart = ({ deleteStart, item }) => () => {
 };
 
 const children = {
-    'waypoint': (props) => (<Waypoint {...props} />), // TODO: Pass only necessary props (do not pass items)
-    // 'map': TODO create map component
-}
+    'waypoint': (props) => (<Waypoint
+        view={props.view}
+        type={props.type}
+        item={props.item}
+        parentItemID={props.parentItemID}
+        reloadItems={props.reloadItems}
+        distanceUnit={props.distanceUnit}
+        highAccuracyGPS={props.highAccuracyGPS}
+        setGPSOn={props.setGPSOn}
+        createStart={props.createStart}
+        createEnd={props.createEnd}
+        read={props.read}
+        list={props.list}
+        updateStart={props.updateStart}
+        updateEnd={props.updateEnd}
+        deleteStart={props.deleteStart}
+        deleteEnd={props.deleteEnd}
+    />),
+    'map': (props) => (<Map
+        view={props.view}
+        type={props.type}
+        item={props.item}
+        reloadItems={props.reloadItems}
+        setGPSOn={props.setGPSOn}
+        createStart={props.createStart}
+        createEnd={props.createEnd}
+        read={props.read}
+        list={props.list}
+        updateStart={props.updateStart}
+        updateEnd={props.updateEnd}
+        deleteStart={props.deleteStart}
+        deleteEnd={props.deleteEnd}
+    />),
+};
