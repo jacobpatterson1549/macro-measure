@@ -32,9 +32,13 @@ export const WaypointForm = (props) => {
 };
 
 const render = (props) => (
-    (actions[props.view]
-        || getReadAction
-    )(props)
+    <div className="WaypointForm">
+        {
+            (actions[props.view]
+                || getReadAction
+            )(props)
+        }
+    </div>
 );
 
 const getCreateOrUpdateAction = (props) => {
