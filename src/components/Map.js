@@ -8,8 +8,9 @@ import { useLocalStorage } from '../hooks/LocalStorage';
 import { createURL, revokeURL } from '../utils/Global';
 
 export const Map = (props) => {
-    const [nameInput, setNameInput] = useLocalStorage(`${props.type}InputName`, '?');
+    const [file, setFile] = useState(null);
     const [fileInput, setFileInput] = useState(null);
+    const [nameInput, setNameInput] = useLocalStorage(`${props.type}InputName`, '?');
     const [latNorthInput, setLatNorthInput] = useLocalStorage(`${props.type}InputLatNorth`, 0);
     const [lngEastInput, setLngEastInput] = useLocalStorage(`${props.type}InputLngEast`, 0);
     const [latSouthInput, setLatSouthInput] = useLocalStorage(`${props.type}InputLatSouth`, 0);
@@ -19,7 +20,6 @@ export const Map = (props) => {
     const [pixelBottomInput, setPixelBottomInput] = useLocalStorage(`${props.type}InputPixelBottom`, 0);
     const [pixelLeftInput, setPixelLeftInput] = useLocalStorage(`${props.type}InputPixelLeft`, 0);
     const [moveAmountInput, setMoveAmountInput] = useLocalStorage('moveAmountInput', 1);
-    const [file, setFile] = useState(null);
     useEffect(() => {
         revokeFileURL();
         if (fileInput) {
@@ -37,15 +37,16 @@ export const Map = (props) => {
         }
     }, [fileInput, setFileInput, setFile]);
     useEffect(() => {
-        return () => revokeFileURL(file);
+        return () => revokeFileURL(file?.url);
     }, [file]);
     useEffect(() => {
         setFile(null)
     }, [props.itemID, setFile]);
     useEffect(() => {
         if (props.item) {
-            setNameInput(props.item.name);
+            console.log(props.item);
             setFileInput(props.item.file)
+            setNameInput(props.item.name);
             setLatNorthInput(props.item.latNorth);
             setLngEastInput(props.item.lngEast);
             setLatSouthInput(props.item.latSouth);
@@ -55,11 +56,15 @@ export const Map = (props) => {
             setPixelBottomInput(props.item.pixelBottom);
             setPixelLeftInput(props.item.pixelLeft);
         }
-    }, [props.item, props.view,
-        setNameInput, setFileInput, setLatNorthInput, setLngEastInput, setLatSouthInput, setLngWestInput, setPixelTopInput, setPixelRightInput, setPixelBottomInput, setPixelLeftInput]);
+    }, [props.item,
+        setFileInput, setNameInput,
+        setLatNorthInput, setLngEastInput, setLatSouthInput, setLngWestInput,
+        setPixelTopInput, setPixelRightInput, setPixelBottomInput, setPixelLeftInput,
+    ]);
     const state = {
-        nameInput, setNameInput,
+        file,
         fileInput, setFileInput,
+        nameInput, setNameInput,
         latNorthInput, setLatNorthInput,
         lngEastInput, setLngEastInput,
         latSouthInput, setLatSouthInput,
@@ -69,7 +74,6 @@ export const Map = (props) => {
         pixelBottomInput, setPixelBottomInput,
         pixelLeftInput, setPixelLeftInput,
         moveAmountInput, setMoveAmountInput,
-        file,
     };
     return render({ ...props, ...state });
 };
