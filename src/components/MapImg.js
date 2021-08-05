@@ -4,100 +4,67 @@ import './MapImg.css';
 
 export const MapImg = (props) => {
     const divRef = useRef(null);
-    const [svgWidth, setSVGWidth] = useState(0);
-    const [svgHeight, setSVGHeight] = useState(0);
-    const [pixelTop, setPixelTop] = useState(0);
-    const [pixelRight, setPixelRight] = useState(0);
-    const [pixelBottom, setPixelBottom] = useState(0);
-    const [pixelLeft, setPixelLeft] = useState(0);
+    const [dimensions, setDimensions] = useState(null);
     useEffect(() => {
-        if (divRef.current) {
-            const containerWidth = divRef.current.parentElement.offsetWidth;
-            const containerHeight = divRef.current.parentElement.offsetHeight;
-            const containerRatio = containerWidth  / containerHeight;
-            const imgRatio = props.fileWidth / props.fileHeight;
-            const widthRatio = containerWidth / props.fileWidth;
-            const heightRatio = containerHeight / props.fileHeight;
+        const container = divRef.current;
+        if (container && props.file) {
+            const containerWidth = container.parentElement.offsetWidth;
+            const containerHeight = container.parentElement.offsetHeight;
+            const containerRatio = containerWidth / containerHeight;
+            const imgRatio = props.file.width / props.file.height;
+            const widthRatio = containerWidth / props.file.width;
+            const heightRatio = containerHeight / props.file.height;
             const [width, height] = (containerRatio > imgRatio)
-                ? [Math.trunc(props.fileWidth * heightRatio), containerHeight]
-                : [containerWidth, Math.trunc(props.fileHeight * widthRatio)];
-            const svgRatio = height / props.fileHeight;
-            setSVGWidth(width);
-            setSVGHeight(height);
-            setPixelTop(Math.trunc(props.pixelTop * svgRatio));
-            setPixelRight(Math.trunc(props.pixelRight * svgRatio));
-            setPixelBottom(Math.trunc(props.pixelBottom * svgRatio));
-            setPixelLeft(Math.trunc(props.pixelLeft * svgRatio));
+                ? [Math.trunc(props.file.width * heightRatio), containerHeight]
+                : [containerWidth, Math.trunc(props.file.height * widthRatio)];
+            const svgRatio = height / props.file.height;
+            const dimensions2 = {
+                svgWidth: width,
+                svgHeight: height,
+                pixelTop: Math.trunc(props.pixelTop * svgRatio),
+                pixelRight: Math.trunc(props.pixelRight * svgRatio),
+                pixelBottom: Math.trunc(props.pixelBottom * svgRatio),
+                pixelLeft: Math.trunc(props.pixelLeft * svgRatio),
+            };
+            setDimensions(dimensions2);
         }
     }, [divRef,
-        props.fileWidth, props.fileHeight,
+        props.file,
         props.pixelTop, props.pixelRight, props.pixelLeft, props.pixelBottom,
-        setSVGWidth, setSVGHeight, setPixelTop, setPixelRight, setPixelLeft, setPixelBottom]);
-    const state = {
-        divRef,
-        svgWidth,
-        svgHeight,
-        pixelTop,
-        pixelRight,
-        pixelBottom,
-        pixelLeft,
-    };
-    return render({ url: props.fileURL, ...state });
+        setDimensions]);
+    return render({ file: props.file, divRef, dimensions });
 };
 
 const render = (props) => (
-    props.url
-        ? renderFile(props)
-        : (<span>Choose file so it can be displayed here.</span>)
+    <div
+        className="MapImg"
+        ref={props.divRef}
+    >
+        {
+            props.file && props.dimensions
+                ? getSVG({ ...props.file, ...props.dimensions })
+                : (<span>Choose image file so it can be displayed here.</span>)
+        }
+    </div >
 );
 
-const renderFile = (props) => {
-    const lineColor = "red";
-    return (
-        <div
-            className="MapImg"
-            ref={props.divRef}
-        >
-            <svg
-                role="img"
-                width={props.svgWidth}
-                height={props.svgHeight}
-                xmlns="http://www.w3.org/2000/svg"
-            >
-                <image
-                    href={props.url}
-                    width={props.svgWidth}
-                    height={props.svgHeight}
-                />
-                <line
-                    x1={0}
-                    y1={props.pixelTop}
-                    x2={props.svgWidth}
-                    y2={props.pixelTop}
-                    stroke={lineColor}
-                />
-                <line
-                    x1={props.svgWidth - props.pixelRight}
-                    y1={0}
-                    x2={props.svgWidth - props.pixelRight}
-                    y2={props.svgHeight}
-                    stroke={lineColor}
-                />
-                <line
-                    x1={0}
-                    y1={props.svgHeight - props.pixelBottom}
-                    x2={props.svgWidth}
-                    y2={props.svgHeight - props.pixelBottom}
-                    stroke={lineColor}
-                />
-                <line
-                    x1={props.pixelLeft}
-                    y1={0}
-                    x2={props.pixelLeft}
-                    y2={props.svgHeight}
-                    stroke={lineColor}
-                />
-            </svg>
-        </div>
-    );
-};
+const getSVG = (props) => (
+    <svg
+        role="img"
+        width={props.svgWidth}
+        height={props.svgHeight}
+        xmlns="http://www.w3.org/2000/svg"
+    >
+        <image href={props.url} width={props.svgWidth} height={props.svgHeight} />
+        {getSVGLine(0, props.pixelTop, props.svgWidth, props.pixelTop)}
+        {getSVGLine(props.svgWidth - props.pixelRight, 0, props.svgWidth - props.pixelRight, props.svgHeight)}
+        {getSVGLine(0, props.svgHeight - props.pixelBottom, props.svgWidth, props.svgHeight - props.pixelBottom)}
+        {getSVGLine(props.pixelLeft, 0, props.pixelLeft, props.svgHeight)}
+    </svg>
+
+);
+
+const getSVGLine = (x1, y1, x2, y2) => {
+    const props = { x1, y1, x2, y2, stroke: 'red' }; // TODO: use css for stroke color? ".MapImg line" ?
+    return (<line {...props} />);
+}

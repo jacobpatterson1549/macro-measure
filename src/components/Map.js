@@ -10,8 +10,6 @@ import { createURL, revokeURL } from '../utils/Global';
 export const Map = (props) => {
     const [nameInput, setNameInput] = useLocalStorage(`${props.type}InputName`, '?');
     const [fileInput, setFileInput] = useState(null);
-    const [fileURL, setFileURL] = useState(null);
-    const [fileDimensions, setFileDimensions] = useState(null);
     const [latNorthInput, setLatNorthInput] = useLocalStorage(`${props.type}InputLatNorth`, 0);
     const [lngEastInput, setLngEastInput] = useLocalStorage(`${props.type}InputLngEast`, 0);
     const [latSouthInput, setLatSouthInput] = useLocalStorage(`${props.type}InputLatSouth`, 0);
@@ -21,27 +19,29 @@ export const Map = (props) => {
     const [pixelBottomInput, setPixelBottomInput] = useLocalStorage(`${props.type}InputPixelBottom`, 0);
     const [pixelLeftInput, setPixelLeftInput] = useLocalStorage(`${props.type}InputPixelLeft`, 0);
     const [moveAmountInput, setMoveAmountInput] = useLocalStorage('moveAmountInput', 1);
+    const [file, setFile] = useState(null);
     useEffect(() => {
         revokeFileURL();
         if (fileInput) {
             const url = createURL(fileInput);
             const img = new Image();
             img.onload = function() {
-                setFileURL(url);
-                setFileDimensions({
+                const file2 = {
+                    url: url,
                     width: this.width,
                     height: this.height,
-                });
+                }
+                setFile(file2);
             };
             img.src = url;
         }
-    }, [fileInput, setFileInput, setFileURL, setFileDimensions]);
+    }, [fileInput, setFileInput, setFile]);
     useEffect(() => {
-        return () => revokeFileURL(fileURL);
-    }, [fileURL]);
+        return () => revokeFileURL(file);
+    }, [file]);
     useEffect(() => {
-        setFileURL(null)
-    }, [props.itemID, setFileURL]);
+        setFile(null)
+    }, [props.itemID, setFile]);
     useEffect(() => {
         if (props.item) {
             setNameInput(props.item.name);
@@ -60,8 +60,6 @@ export const Map = (props) => {
     const state = {
         nameInput, setNameInput,
         fileInput, setFileInput,
-        fileURL,
-        fileDimensions,
         latNorthInput, setLatNorthInput,
         lngEastInput, setLngEastInput,
         latSouthInput, setLatSouthInput,
@@ -71,6 +69,7 @@ export const Map = (props) => {
         pixelBottomInput, setPixelBottomInput,
         pixelLeftInput, setPixelLeftInput,
         moveAmountInput, setMoveAmountInput,
+        file,
     };
     return render({ ...props, ...state });
 };
@@ -79,9 +78,7 @@ const render = (props) => (
     <>
         <MapImg
             itemID={props.itemID}
-            fileURL={props.fileURL}
-            fileWidth={props.fileDimensions?.width}
-            fileHeight={props.fileDimensions?.height}
+            file={props.file}
             latNorth={props.latNorthInput}
             lngEast={props.lngEastInput}
             latSouth={props.latSouthInput}
@@ -95,11 +92,9 @@ const render = (props) => (
             view={props.view}
             type={props.type}
             item={props.item}
+            file={props.file}
             nameInput={props.nameInput}
-            fileURL={props.fileURL}
             fileInput={props.fileInput}
-            fileWidth={props.fileDimensions?.width}
-            fileHeight={props.fileDimensions?.height}
             latNorthInput={props.latNorthInput}
             lngEastInput={props.lngEastInput}
             latSouthInput={props.latSouthInput}

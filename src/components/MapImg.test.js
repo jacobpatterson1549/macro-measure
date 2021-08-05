@@ -15,9 +15,11 @@ describe('Map', () => {
                 offsetHeight: { value: containerHeight },
             });
             render(<MapImg
-                fileURL="mock_url"
-                fileWidth={fileWidth}
-                fileHeight={fileHeight}
+                file={{
+                    url: 'mock_url',
+                    width: fileWidth,
+                    height: fileHeight,
+                }}
                 pixelTop={0}
                 pixelRight={0}
                 pixelBottom={0}

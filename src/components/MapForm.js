@@ -40,11 +40,11 @@ const getCreateOrUpdateAction = (props) => {
                     />
                 </Label>
                 {
-                    props.fileInput &&
-                    <span>Dimensions: [{props.fileWidth} x {props.fileHeight}]</span>
+                    props.file &&
+                    <span>Dimensions: [{props.file.width} x {props.file.height}]</span>
                 }
                 <Fieldset
-                    disabled={!props.fileURL}
+                    disabled={!props.file}
                     border={false}
                 >
                     <MapCoordinatePixel
@@ -57,7 +57,7 @@ const getCreateOrUpdateAction = (props) => {
                         pixelName="pixels from top"
                         pixelValue={props.pixelTopInput}
                         pixelMin={0}
-                        pixelMax={props.fileHeight}
+                        pixelMax={props.file?.height}
                         setPixel={props.setPixelTopInput}
                         validatePixel={(value) => value > props.pixelBottomInput}
                     />
@@ -71,7 +71,7 @@ const getCreateOrUpdateAction = (props) => {
                         pixelName="pixels from right"
                         pixelValue={props.pixelRightInput}
                         pixelMin={0}
-                        pixelMax={props.fileWidth}
+                        pixelMax={props.file?.width}
                         setPixel={props.setPixelRightInput}
                         validatePixel={(value) => value > props.pixelLeftInput}
                     />
@@ -85,7 +85,7 @@ const getCreateOrUpdateAction = (props) => {
                         pixelName="pixels from bottom"
                         pixelValue={props.pixelBottomInput}
                         pixelMin={0}
-                        pixelMax={props.fileHeight}
+                        pixelMax={props.file?.height}
                         setPixel={props.setPixelBottomInput}
                         validatePixel={(value) => value < props.pixelTopInput}
                     />
@@ -99,7 +99,7 @@ const getCreateOrUpdateAction = (props) => {
                         pixelName="pixels from left"
                         pixelValue={props.pixelLeftInput}
                         pixelMin={0}
-                        pixelMax={props.fileWidth}
+                        pixelMax={props.file?.width}
                         setPixel={props.setPixelLeftInput}
                         validatePixel={(value) => value < props.pixelRightInput}
                     />
