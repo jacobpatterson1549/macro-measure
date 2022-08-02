@@ -5,6 +5,7 @@ import { registerSW } from './serviceWorkerRegistration';
 import { App } from './components/App';
 
 import { initDatabase } from './utils/Database'
+import React from 'react';
 
 jest.spyOn(window, 'addEventListener');
 jest.mock('react-dom');
@@ -35,6 +36,11 @@ describe('index', () => {
         await loadFn();
         expect(registerSW).toBeCalled();
         expect(initDatabase).toBeCalled();
-        expect(render).toHaveBeenCalledWith(<App db={mockDB} />, rootElement);
+        expect(render).toBeCalled();
+        const calls = render.mock.calls;
+        expect(calls.length).toBe(1);
+        expect(calls[0].length).toBe(2);
+        expect(calls[0][0].props).toStrictEqual({db:mockDB});
+        expect(calls[0][1]).toStrictEqual(rootElement);
     });
 });
