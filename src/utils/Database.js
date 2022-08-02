@@ -1,7 +1,10 @@
 import { getIndexedDB, getIDBKeyRange, getLocalStorage } from "./Global";
 
 const DATABASE_NAME = 'MACRO_MEASURE_DB';
-const DB_VERSION = parseInt('2'); // must be integer
+// version history:
+// 2: initial version (groups, waypoints)
+// 3: addition of maps object store
+const DB_VERSION = parseInt('4'); // must be integer
 const READ = 'readonly';
 const READWRITE = 'readwrite';
 export const GROUPS = 'groups';
