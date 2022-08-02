@@ -58,14 +58,13 @@ export const deleteDatabase = async () => {
 
 const handle = (db, objectStoreNames, action, mode) => {
     return new Promise((resolve, reject) => {
-        if (!db) {
-            reject('db not initialized, call initDatabase() first');
+        if (db) {
+            const transaction = db.transaction(objectStoreNames, mode);
+            action(transaction, resolve);
+            transaction.onerror = (event) => {
+                reject(`transaction error: ${event.target.error.message}`);
+            };
         }
-        const transaction = db.transaction(objectStoreNames, mode);
-        action(transaction, resolve);
-        transaction.onerror = (event) => {
-            reject(`transaction error: ${event.target.error.message}`);
-        };
     });
 };
 

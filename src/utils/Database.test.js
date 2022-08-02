@@ -407,10 +407,9 @@ describe('Database', () => {
     });
     describe('C.R.U.D. handlers', () => {
         it('should have previously called initDB', () => { // KEEP THIS TEST FIRST, or reset the module between tests
-            const expected = 'call initDatabase() first';
             const db = null;
             const request = readItem(db, 'os1', 'key1');
-            expect(request).rejects.toContain(expected);
+            expect(request).resolves.toBeFalsy(); // should not return any data
         });
         it('should handle transaction errors', async () => {
             const expected = 'mock key missing message';
