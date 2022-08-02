@@ -19,7 +19,8 @@ The scripts in the package.json file perform build tasks.
 * `npm install` downloads build dependencies
 * `npm run build` compiles a production build to the build/ folder
 * `npm start` serves a development version of the site
-* `npm test` runs the tests in interactive mode, run `CI=true npm test -- --coverage` to generate test coverage to the coverage/ folder
+* `npm test` runs the tests in interactive mode, run `CI=true npm test -- --coverage` to generate test coverage to the coverage/ folder.
+To debug tests in Visual Studio Code, run `npm test` in a separate terminal and then run the command `Debug: Attach to Node Process`.  The attach command can be searched for with ctrl+shift+p.  If
 * `npm clean` removes dependencies, the production build, test coverage reports, and generated code, excluding user certificates and environment configuration files
 * `npm eject` removes react plugins that manage the majority of dependencies
 
