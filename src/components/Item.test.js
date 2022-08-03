@@ -63,57 +63,6 @@ describe('Item', () => {
             expect(getLocalStorage().getItem.mock.calls).toEqual(expected);
         });
     });
-    describe('read action', () => {
-        it('should NOT show distance when reading item without currentLatLng', () => {
-            useItems.mockReturnValue([[{ id: 4, lat: 7, lng: 8, name: 'something' }]]);
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Read}
-                itemID={4}
-                distanceUnit={'m'}
-                setGPSOn={jest.fn()}
-            />);
-            const re = new RegExp('getting location', 'i');
-            const element = screen.queryByText(re);
-            expect(element).toBeInTheDocument();
-        });
-        it('should show distance when reading item with currentLatLng', async () => {
-            const expected = 'km'
-            useItems.mockReturnValue([[{ lat: 7, lng: 9, id: 8 }]]);
-            useGeolocation.mockReturnValue({
-                lat: 7,
-                lng: -9,
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Read}
-                distanceUnit={expected}
-                setGPSOn={jest.fn()}
-                itemID={8}
-            />);
-            expect(screen.queryByText('1988.7')).toBeInTheDocument(); // REAL test (lng diff = 18)
-            expect(screen.queryByText(expected)).toBeInTheDocument();
-        });
-        it('should show NaN distance when reading item with currentLatLng and invalid distance unit', async () => {
-            const expected = 'INVALID_DISTANCE_UNIT'
-            useItems.mockReturnValue([[{ name: 'something', id: 3, lat: 7, lng: -9 }]]);
-            useGeolocation.mockReturnValue({
-                lat: 7,
-                lng: -9,
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Read}
-                distanceUnit={expected}
-                itemID={3}
-                setGPSOn={jest.fn()}
-            />);
-            expect(screen.queryByText('NaN')).toBeInTheDocument();
-            expect(screen.queryByText(expected)).toBeInTheDocument();
-        });
-    });
     describe('update action', () => {
         it('should set form item latLng', () => {
             useItems.mockReturnValue([[{ name: 'something', lat: 1111, lng: 2222, id: 3 }]]);
@@ -161,18 +110,7 @@ describe('Item', () => {
                 setGPSOn={jest.fn()}
                 itemID={Number.MAX_SAFE_INTEGER}
             />);
-            const element = screen.queryByText(/waiting for/i);
-            expect(element).toBeInTheDocument();
-        });
-        it('should not show map when geolocation does not return latLng', () => {
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Create}
-                setGPSOn={jest.fn()}
-            />);
-            const element = screen.queryByText(/waiting for/i);
+            const element = screen.queryByText(/Cancel/i);
             expect(element).toBeInTheDocument();
         });
         it('should have disabled submit when geolocation does not return latLng', () => {
@@ -263,39 +201,6 @@ describe('Item', () => {
             screen.getByRole('button', { name: /delete item/i }).click();
             expect(deleteEnd).toBeCalledWith(expected);
             waitFor(() => expect(reloadItems).toBeCalled());
-        });
-    });
-    describe('getMap', () => {
-        it('should have map when currentLatLng is null', () => {
-            useItems.mockReturnValue([[{ lat: 7, lng: 9, id: 3 }]]);
-            useGeolocation.mockReturnValue({
-                valid: true,
-            });
-            render(<Item
-                setGPSOn={jest.fn()}
-            />);
-            expect(screen.queryByRole('img')).toBeInTheDocument();
-        });
-        it('should have map', async () => {
-            useItems.mockReturnValue([[]]);
-            useGeolocation.mockReturnValue({
-                lat: 7,
-                lng: -9,
-                valid: true,
-            });
-            render(<Item
-                view={View.Waypoint_Read}
-                setGPSOn={jest.fn()}
-            />);
-            expect(screen.queryByRole('img')).toBeInTheDocument();
-        });
-        it('should say map disabled when it does not have geolocation', () => {
-            useItems.mockReturnValue([[]]);
-            useGeolocation.mockReturnValue({
-                valid: false,
-            });
-            render(<Item setGPSOn={jest.fn()} />);
-            expect(screen.queryByText(/map disabled/i)).toBeInTheDocument();
         });
     });
     describe('updateLatLng', () => {

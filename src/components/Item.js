@@ -2,22 +2,21 @@ import { useState, useEffect } from 'react';
 
 import './Item.css';
 
-import { Map } from './Map';
+import { Compass } from './Compass';
 import { Form, Fieldset, Label, NameInput, TextInput, NumberInput, ButtonInput } from './Form';
 
 import { useItems } from '../hooks/Database';
 import { useGeolocation } from '../hooks/Geolocation';
 import { useLocalStorage } from '../hooks/LocalStorage';
 
-import { getDistanceHeading, moveLatLngTo, Heading } from '../utils/Geolocation';
+import { moveLatLngTo, Heading } from '../utils/Geolocation';
 import { View } from '../utils/View';
 
 export const Item = (props) => {
     const geolocation = useGeolocation(props.view, props.highAccuracyGPS, props.setGPSOn);
     const [items, reloadItems] = useItems(props.db, props.objectStoreName, props.parentItemID);
     const [item, setItem] = useState(null);
-    const [mapItem, setMapItem] = useState(null);
-    const [mapDevice, setMapDevice] = useState(null);
+    const [device, setDevice] = useState(null);
     const [prevDisabled, setPrevDisabled] = useState(true);
     const [nextDisabled, setNextDisabled] = useState(true);
     const [headerName, setHeaderName] = useState('?');
@@ -25,7 +24,6 @@ export const Item = (props) => {
     const [latInput, setLatInput] = useLocalStorage(`${props.type}InputLat`, 0);
     const [lngInput, setLngInput] = useLocalStorage(`${props.type}InputLng`, 0);
     const [moveAmountInput, setMoveAmountInput] = useLocalStorage('moveAmountInput', 1);
-    const [distanceHeading, setDistanceHeading] = useState(null);
     useEffect(() => {
         if (props.itemID) {
             const itemsWithID = items?.filter((dbItem) => dbItem.id === props.itemID);
@@ -54,35 +52,20 @@ export const Item = (props) => {
         setHeaderName(headerName2);
     }, [setHeaderName, item, props.view, props.type]);
     useEffect(() => {
-        const mapItem2 = (View.isCreate(props.view) && geolocation.lat && geolocation.lng)
-            ? { name: 'Waypoint', lat: geolocation.lat, lng: geolocation.lng }
-            : item
-        setMapItem(mapItem2);
-    }, [setMapItem, item, props.view, geolocation.lat, geolocation.lng]);
-    useEffect(() => {
-        const distanceHeading2 = (View.isRead(props.view) && geolocation.lat && geolocation.lng && item && item.lat && item.lng)
-            ? getDistanceHeading(
-                { lat: item.lat, lng: item.lng },
-                { lat: geolocation.lat, lng: geolocation.lng },
-                props.distanceUnit)
+        const device2 = (geolocation.valid && geolocation.lat && geolocation.lng)
+            ? { lat: geolocation.lat, lng: geolocation.lng, speed: geolocation.speed, heading: geolocation.heading }
             : null;
-        setDistanceHeading(distanceHeading2);
-    }, [setDistanceHeading, props.view, geolocation.lat, geolocation.lng, item, props.distanceUnit]);
-    useEffect(() => {
-        const mapDevice2 = (geolocation.valid && distanceHeading && geolocation.lat && geolocation.lng)
-            ? { lat: geolocation.lat, lng: geolocation.lng }
-            : null;
-        setMapDevice(mapDevice2);
-    }, [setMapDevice, geolocation.valid, geolocation.lat, geolocation.lng, distanceHeading]);
+        setDevice(device2);
+    }, [setDevice, geolocation.valid, geolocation.lat, geolocation.lng, geolocation.speed, geolocation.heading]);
     const state = {
         prevDisabled, headerName, nextDisabled,
-        geolocation, distanceHeading,
+        geolocation,
         moveAmountInput, setMoveAmountInput,
         nameInput, setNameInput,
         latInput, setLatInput,
         lngInput, setLngInput,
         item, setItem,
-        mapItem, mapDevice,
+        device,
         items, reloadItems,
     }
     return render({ ...props, ...state });
@@ -93,9 +76,12 @@ const render = (props) => (
         <div className="Item-Header">
             {getHeader(props)}
         </div>
-        <div role="img">
-            {getMap(props)}
-        </div>
+        <Compass
+            item={props.item}
+            device={props.device}
+            accuracy={props.geolocation.accuracy}
+            distanceUnit={props.distanceUnit}
+        />
         <div className="Actions">
             {getAction(props)}
         </div>
@@ -156,25 +142,6 @@ const getHeader = (props) => {
             }
         </>
     );
-};
-
-const getMap = (props) => {
-    const getMapHelper = () => (
-        (!props.mapItem || !props.mapItem.lat || !props.mapItem.lng)
-            ? (<p>Waiting for GPS...</p>)
-            : (
-                <Map
-                    item={props.mapItem}
-                    device={props.mapDevice}
-                    accuracy={props.geolocation.accuracy}
-                    distanceHeading={props.distanceHeading}
-                    distanceUnit={props.distanceUnit}
-                />
-            )
-    );
-    return (!props.geolocation.valid)
-        ? (<p>[Map disabled]</p>)
-        : getMapHelper();
 };
 
 const getAction = (props) => (
@@ -245,16 +212,7 @@ const getDeleteAction = (props) => (
 );
 
 const getReadAction = (props) => (
-    (props.distanceHeading)
-        ? (
-            <div className="distance">
-                <span>{String(props.distanceHeading.distance)}</span>
-                <span className="unit"> {props.distanceUnit}</span>
-            </div>
-        )
-        : (
-            <span>Getting location...</span>
-        )
+    <></> // no additional components for read action
 );
 
 const getMoveLatLngButton = (heading, value, disabled, { moveAmount: moveAmountInput, latInput, lngInput, setLatInput, setLngInput, distanceUnit }) => (

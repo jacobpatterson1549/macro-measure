@@ -45,21 +45,21 @@ describe('Geolocation', () => {
             expect(getGeolocation().watchPosition.mock.calls[0][2].enableHighAccuracy).toBe(expected);
         });
     });
-    it('should show positions when success is called', async () => {
-        const { result } = renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
-        const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
-        await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
-        const state = result.current;
-        expect(state.lat).toBe(7);
-        expect(state.lng).toBe(-9);
-    });
-    it('should show positions when success is called', async () => {
-        const { result } = renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
-        const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
-        const expected = 20;
-        await waitFor(() => successCallback({ coords: { accuracy: expected, } }));
-        const state = result.current;
-        expect(state.accuracy).toBe(expected);
+    describe('fields', () => {
+        const fields = [
+            ['latitude and longitude', { latitude: 7, longitude: 9 }, { lat: 7, lng: 9 }], // must be tested together
+            ['accuracy', { accuracy: 20 }, { accuracy: 20 }],
+            ['speed and heading', { speed: 1.5, heading: 90 }, { speed: 1.5, heading: 90 }],
+            ['[all]', { latitude: 1, longitude: 2, accuracy: 3, speed: 4, heading: 5 }, { lat: 1, lng: 2, accuracy: 3, speed: 4, heading: 5 }],
+
+        ];
+        it.each(fields)('should contain "%s" field', async (name, src, expected) => {
+            const { result } = renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
+            const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
+            await waitFor(() => successCallback({ coords: src }));
+            const state = result.current;
+            expect(state).toEqual(expect.objectContaining(expected));
+        });
     });
     it('should show last position when success is called', async () => {
         const { result } = renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));

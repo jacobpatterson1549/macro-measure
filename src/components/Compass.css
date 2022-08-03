@@ -1,0 +1,16 @@
+.Compass {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Compass svg {
+    width: 75%;
+}
+.Compass .distance {
+    font-size: 25vmin;
+}
+
+.Compass .distance .unit {
+    font-size: .5em;
+}
