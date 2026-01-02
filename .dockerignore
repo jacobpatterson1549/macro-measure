@@ -1,0 +1,8 @@
+# Ignore everything
+*
+
+# Necessary files
+!package*.json
+!src
+!scripts
+!public
