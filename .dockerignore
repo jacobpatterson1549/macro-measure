@@ -4,5 +4,4 @@
 # Necessary files
 !package*.json
 !src
-!scripts
 !public

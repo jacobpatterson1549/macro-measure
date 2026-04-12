@@ -8,9 +8,6 @@ const assets = [
     './favicon512.png',
     './manifest.json',
     './robots.txt',
-    './static/js/bundle.js',
-    './static/js/main.chunk.js',
-    './static/js/vendors~main.chunk.js',
 ]; // %ASSET_MANIFEST%
 
 self.addEventListener('install', event => (

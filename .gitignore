@@ -6,17 +6,3 @@
 
 # production
 /build
-
-# https dev certificates
-*.pem
-
-# environment configurations
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# npm files
-npm-debug.log*
-npm-error.log*
