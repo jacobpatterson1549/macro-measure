@@ -7,11 +7,12 @@
     "node": ">=14"
   },
   "dependencies": {
-    "esbuild": "^0.28.0",
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.7",
     "@testing-library/react-hooks": "^7.0.0",
+    "babel-jest": "^27.5.1",
     "babel-preset-react-app": "^10.0.1",
+    "esbuild": "^0.28.0",
     "geolocation-utils": "^1.2.5",
     "jest": "^27.4.3",
     "react": "^17.0.2"
@@ -42,6 +43,16 @@
       "last 1 safari version"
     ]
   },
+  "babel": {
+    "presets": [
+      [
+        "babel-preset-react-app",
+        {
+          "runtime": "automatic"
+        }
+      ]
+    ]
+  },
   "jest": {
     "setupFilesAfterEnv": [
       "<rootDir>/src/setupTests.js"
@@ -51,7 +62,7 @@
       "\\.css$": "<rootDir>/src/jestCssMock.js"
     },
     "transform": {
-      "^.+\\.js$": "<rootDir>/src/jestBabelTransform.js"
+      "\\.js$": "babel-jest"
     },
     "resetMocks": true
   }
