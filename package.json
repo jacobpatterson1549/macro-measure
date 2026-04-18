@@ -6,6 +6,7 @@
   "engines": {
     "node": ">=24"
   },
+  "type": "commonjs",
   "dependencies": {
     "@babel/preset-env": "^7.29.2",
     "@babel/preset-react": "^7.28.5",
@@ -19,9 +20,11 @@
     "react": "^19.2.5"
   },
   "scripts": {
-    "generate-build": "node src/generate-build.js",
     "clean": "echo 'build coverage node_modules' | xargs rm -rf",
-    "build": "cp -R public build && esbuild src/index.js --bundle --loader:.js=jsx --outfile=build/index.js --entry-names=[name]-[hash] && npm run generate-build",
+    "build": "npm run _public-copy && npm run _esbuild && npm run _public-generate",
+    "_esbuild": "esbuild src/index.js --bundle --minify --loader:.js=jsx --format=esm --jsx=automatic --target=esnext --define:process.env.NODE_ENV='\"production\"' --define:process.env.PUBLIC_URL='\"\"' --outdir=build --entry-names=[name]-[hash]",
+    "_public-copy": "cp -R public build",
+    "_public-generate": "node src/generate-build.js",
     "dev": "npm run build && esbuild --servedir=build --serve=localhost:3000",
     "test": "jest",
     "test-dev": "jest --watch"
