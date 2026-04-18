@@ -34,7 +34,7 @@ describe('FullscreenSettings', () => {
                 render(<FullscreenSettings />);
                 const element = screen.getByRole('checkbox');
                 element.click();
-                expect(setFullscreen).toBeCalledWith(true);
+                expect(setFullscreen).toHaveBeenCalledWith(true);
             });
             it('should cancel fullscreen when clicked', () => {
                 const setFullscreen = jest.fn();
@@ -42,7 +42,7 @@ describe('FullscreenSettings', () => {
                 render(<FullscreenSettings />);
                 const element = screen.getByRole('checkbox');
                 element.click();
-                expect(setFullscreen).toBeCalledWith(false);
+                expect(setFullscreen).toHaveBeenCalledWith(false);
             });
         });
     });
@@ -86,8 +86,8 @@ describe('FullscreenSettings', () => {
                 render(<FullscreenSettings />);
                 const element = screen.queryByRole('button');
                 element.click();
-                await waitFor(expect(installPromptEvent.prompt).toBeCalled);
-                expect(reloadWindow).toBeCalledTimes(expected);
+                await waitFor(expect(installPromptEvent.prompt).toHaveBeenCalled);
+                expect(reloadWindow).toHaveBeenCalledTimes(expected);
             });
         });
     });

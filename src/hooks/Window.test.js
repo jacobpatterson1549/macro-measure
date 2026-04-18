@@ -39,7 +39,7 @@ describe('Window', () => {
             const { result } = renderHook(() => useFullscreen());
             const [, setFullscreen] = result.current;
             setFullscreen(requestedFullscreen);
-            expect(mock).toBeCalled();
+            expect(mock).toHaveBeenCalled();
         });
     });
     describe('onLine', () => {
@@ -87,7 +87,7 @@ describe('Window', () => {
         it('should preventDefault when the event is fired', async () => {
             renderHook(() => useInstallPromptEvent());
             const event = await mockAndFireOnBeforeInstallPromptEvent();
-            expect(event.preventDefault).toBeCalled();
+            expect(event.preventDefault).toHaveBeenCalled();
         });
     });
 });

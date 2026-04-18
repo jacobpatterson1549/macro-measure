@@ -28,7 +28,7 @@ describe('LocalStorage', () => {
     describe('clear', () => {
         it('should call clear on localStorage', () => {
             clear();
-            expect(getLocalStorage().clear).toBeCalled();
+            expect(getLocalStorage().clear).toHaveBeenCalled();
         });
     });
 });

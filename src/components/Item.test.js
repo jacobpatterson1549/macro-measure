@@ -94,7 +94,7 @@ describe('Item', () => {
             />);
             fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), { target: { value: expected } });
             screen.getByRole('button', { name: /update/i }).click();
-            waitFor(() => expect(reloadItems).toBeCalled());
+            waitFor(() => expect(reloadItems).toHaveBeenCalled());
         });
     });
     describe('create action', () => {
@@ -178,8 +178,8 @@ describe('Item', () => {
             fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), { target: { value: name } });
             await waitFor(() => expect(screen.getByRole('textbox', { name: 'Name' }).value).toBe(name));
             screen.getByRole('button', { name: /create item/i }).click();
-            expect(createEnd).toBeCalledWith(expected);
-            waitFor(expect(reloadItems).toBeCalled);
+            expect(createEnd).toHaveBeenCalledWith(expected);
+            waitFor(expect(reloadItems).toHaveBeenCalled);
         });
     });
     describe('delete action', () => {
@@ -199,8 +199,8 @@ describe('Item', () => {
                 setGPSOn={jest.fn()}
             />);
             screen.getByRole('button', { name: /delete item/i }).click();
-            expect(deleteEnd).toBeCalledWith(expected);
-            waitFor(() => expect(reloadItems).toBeCalled());
+            expect(deleteEnd).toHaveBeenCalledWith(expected);
+            waitFor(() => expect(reloadItems).toHaveBeenCalled());
         });
     });
     describe('updateLatLng', () => {

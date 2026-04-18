@@ -22,7 +22,7 @@ describe('LocalStorage', () => {
             render(<MockComponent defaultValue={expected} />);
             const element = screen.getByText(expected);
             expect(element).toBeInTheDocument();
-            expect(getLocalStorage().getItem).toBeCalledWith(key);
+            expect(getLocalStorage().getItem).toHaveBeenCalledWith(key);
         });
         it('should get the saved value', () => {
             const expected = 'test2';
@@ -31,7 +31,7 @@ describe('LocalStorage', () => {
             render(<MockComponent />);
             const element = screen.getByText(expected);
             expect(element).toBeInTheDocument();
-            expect(getLocalStorage().getItem).toBeCalledWith(key);
+            expect(getLocalStorage().getItem).toHaveBeenCalledWith(key);
         });
         it('should setItem when clicked', () => {
             const before = 'this should not be saved';
@@ -40,7 +40,7 @@ describe('LocalStorage', () => {
             render(<MockComponent defaultValue={before} clickValue={expected} />);
             const element = screen.getByText(before);
             element.click();
-            expect(getLocalStorage().setItem).toBeCalledWith(key, expectedJSON);
+            expect(getLocalStorage().setItem).toHaveBeenCalledWith(key, expectedJSON);
         });
         it('should setItem five times when clicked five times', () => {
             const before = 'this should not be saved';
@@ -52,7 +52,7 @@ describe('LocalStorage', () => {
             element.click();
             element.click();
             element.click();
-            expect(getLocalStorage().setItem).toBeCalledTimes(5);
+            expect(getLocalStorage().setItem).toHaveBeenCalledTimes(5);
         });
     });
 });

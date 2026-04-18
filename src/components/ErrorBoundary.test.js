@@ -40,6 +40,6 @@ describe('ErrorBoundary', () => {
             </ErrorBoundary>
         );
         expect(screen.queryByText(errorBoundaryText)).toBeInTheDocument();
-        expect(clearLocalStorage).toBeCalled();
+        expect(clearLocalStorage).toHaveBeenCalled();
     });
 });

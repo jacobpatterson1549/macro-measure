@@ -19,9 +19,9 @@ describe('StorageSettings', () => {
             render(<StorageSettings />);
             const clearStorageElement = screen.getByLabelText(/clear/i);
             fireEvent.click(clearStorageElement);
-            expect(clearLocalStorage).toBeCalled();
+            expect(clearLocalStorage).toHaveBeenCalled();
             await waitFor(deleteDatabase);
-            expect(reloadWindow).toBeCalled();
+            expect(reloadWindow).toHaveBeenCalled();
         });
     });
     describe('import/export', () => {
@@ -36,9 +36,9 @@ describe('StorageSettings', () => {
             render(<StorageSettings />);
             const exportElement = screen.getByLabelText(/export/i);
             fireEvent.click(exportElement);
-            expect(getAllLocalStorage).toBeCalled();
+            expect(getAllLocalStorage).toHaveBeenCalled();
             await waitFor(getAllDatabase);
-            expect(Blob).toBeCalledWith(['{"localStorage":true,"database":true}'], { type: 'application/json' });
+            expect(Blob).toHaveBeenCalledWith(['{"localStorage":true,"database":true}'], { type: 'application/json' });
             const exportLink = screen.getByRole('link');
             expect(exportLink.href).toMatch(expectedURL);
             expect(exportLink.download).toContain(expectedCurrentDate);
@@ -53,10 +53,10 @@ describe('StorageSettings', () => {
                     files: [{ text: textFn }],
                 }
             });
-            await waitFor(expect(textFn).toBeCalled);
-            expect(clearLocalStorage).toBeCalled();
-            expect(setAllLocalStorage).toBeCalledWith(allJSON);
-            expect(reloadWindow).toBeCalled();
+            await waitFor(expect(textFn).toHaveBeenCalled);
+            expect(clearLocalStorage).toHaveBeenCalled();
+            expect(setAllLocalStorage).toHaveBeenCalledWith(allJSON);
+            expect(reloadWindow).toHaveBeenCalled();
         });
         it('should revokeURL', async () => {
             const expectedURLs = ['url1', 'url2', 'url3']
@@ -66,7 +66,7 @@ describe('StorageSettings', () => {
             fireEvent.click(exportElement);
             fireEvent.click(exportElement);
             fireEvent.click(exportElement);
-            expect(getAllLocalStorage).toBeCalledTimes(3);
+            expect(getAllLocalStorage).toHaveBeenCalledTimes(3);
             await waitFor(getAllDatabase);
             expect(revokeURL.mock.calls).toEqual([['url1'], ['url2']]);
             unmount();
@@ -78,7 +78,7 @@ describe('StorageSettings', () => {
             render(<StorageSettings />);
             const reloadButtonElement = screen.getByLabelText(/reload/i);
             fireEvent.click(reloadButtonElement);
-            expect(reloadWindow).toBeCalled();
+            expect(reloadWindow).toHaveBeenCalled();
         });
     });
 });

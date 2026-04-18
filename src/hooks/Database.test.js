@@ -65,7 +65,7 @@ describe('Database', () => {
                 const handlers = createHandlers(db, objectStoreName, setItemID, setView, getViewType);
                 const expected = views[index];
                 handlers[handlerFuncName](...inParams);
-                expect(setView).toBeCalledWith(expected);
+                expect(setView).toHaveBeenCalledWith(expected);
             });
             it.each(testData.expectedSetItemIDActions)('should setItemID when calling %s', (handlerFuncName) => {
                 const setItemID = jest.fn();
@@ -76,7 +76,7 @@ describe('Database', () => {
                 const handlers = createHandlers(db, objectStoreName, setItemID, setView, getViewType);
                 const expected = outParams;
                 handlers[handlerFuncName](...inParams);
-                expect(setItemID).toBeCalledWith(...expected);
+                expect(setItemID).toHaveBeenCalledWith(...expected);
             });
             it.each(Object.entries(testData.expectedDatabaseActions))('should call %s with correct params', (handlerFuncName, databaseFunc) => {
                 const setItemID = jest.fn();
@@ -87,7 +87,7 @@ describe('Database', () => {
                 const handlers = createHandlers(db, objectStoreName, setItemID, setView, getViewType);
                 const expected = [db, objectStoreName, ...outParams];
                 handlers[handlerFuncName](...inParams);
-                expect(databaseFunc).toBeCalledWith(...expected);
+                expect(databaseFunc).toHaveBeenCalledWith(...expected);
             });
             it('should also setID for create-end actions', async () => {
                 const expected = 'newID';
@@ -99,7 +99,7 @@ describe('Database', () => {
                 const inParam = { name: 'name' };
                 const handlers = createHandlers(db, objectStoreName, setItemID, setView, getViewType);
                 handlers[handlerFuncName](inParam);
-                await waitFor(() => expect(setItemID).toBeCalledWith(expected));
+                await waitFor(() => expect(setItemID).toHaveBeenCalledWith(expected));
             });
         });
     });
@@ -115,7 +115,7 @@ describe('Database', () => {
                 readItem.mockReturnValue(expected);
                 const { result } = renderHook(() => useItem(db, objectStoreName, filter));
                 expect(result.current[0]).toBeFalsy();
-                await waitFor(() => expect(readItem).toBeCalledWith(db, objectStoreName, filter));
+                await waitFor(() => expect(readItem).toHaveBeenCalledWith(db, objectStoreName, filter));
                 const value = result.current[0];
                 expect(value).toBe(expected);
             });
@@ -127,7 +127,7 @@ describe('Database', () => {
                 const expected = 'value2'
                 readItems.mockReturnValue(expected);
                 const { result } = renderHook(() => useItems(db, objectStoreName, filter));
-                await waitFor(() => expect(readItems).toBeCalledWith(db, objectStoreName, filter));
+                await waitFor(() => expect(readItems).toHaveBeenCalledWith(db, objectStoreName, filter));
                 const value = result.current[0];
                 expect(value).toBe(expected);
             });

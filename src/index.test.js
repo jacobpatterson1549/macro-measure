@@ -20,9 +20,9 @@ describe('index', () => {
     };
     it('should not render until the window is loaded', () => {
         requireIndex();
-        expect(registerSW).not.toBeCalled();
-        expect(initDatabase).not.toBeCalled();
-        expect(render).not.toBeCalled();
+        expect(registerSW).not.toHaveBeenCalled();
+        expect(initDatabase).not.toHaveBeenCalled();
+        expect(render).not.toHaveBeenCalled();
     });
     it('should load sw, db, app', async () => {
         const mockDB = 'mock database';
@@ -34,9 +34,9 @@ describe('index', () => {
         expect(window.addEventListener.mock.calls[0][0]).toBe('load');
         const loadFn = window.addEventListener.mock.calls[0][1];
         await loadFn();
-        expect(registerSW).toBeCalled();
-        expect(initDatabase).toBeCalled();
-        expect(render).toBeCalled();
+        expect(registerSW).toHaveBeenCalled();
+        expect(initDatabase).toHaveBeenCalled();
+        expect(render).toHaveBeenCalled();
         const calls = render.mock.calls;
         expect(calls.length).toBe(1);
         expect(calls[0].length).toBe(2);

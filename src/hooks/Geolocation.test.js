@@ -23,7 +23,7 @@ describe('Geolocation', () => {
         ];
         it.each(viewTests)('should watch position %d times when view is %s', (expected, view) => {
             renderHook(() => useGeolocation(view, false, jest.fn()));
-            expect(getGeolocation().watchPosition).toBeCalledTimes(expected);
+            expect(getGeolocation().watchPosition).toHaveBeenCalledTimes(expected);
         });
     });
     it('should not watch position if geolocation is falsy', () => {
@@ -77,7 +77,7 @@ describe('Geolocation', () => {
         const successCallback = getGeolocation().watchPosition.mock.calls[0][0];
         await waitFor(() => successCallback({ coords: { latitude: 7, longitude: -9, } }));
         const expected = { lat: 7, lng: -9 };
-        expect(roundLatLng).toBeCalledWith(expected);
+        expect(roundLatLng).toHaveBeenCalledWith(expected);
     });
     it('should clear position when error occurs', async () => {
         const { result } = renderHook(() => useGeolocation(View.Waypoint_Read, false, jest.fn()));
@@ -97,7 +97,7 @@ describe('Geolocation', () => {
             successCallback({ coords: { latitude: 7, longitude: -9, } });
             errorCallback({ message: 'unavailable', code: 2 });
         });
-        expect(getGeolocation().clearWatch).toBeCalledTimes(2); // 1 to start watch, 1 on error
+        expect(getGeolocation().clearWatch).toHaveBeenCalledTimes(2); // 1 to start watch, 1 on error
     });
     describe('valid', () => {
         const validTests = [
