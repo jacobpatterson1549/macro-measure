@@ -1,22 +1,22 @@
 {
   "name": "macro-measure",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">=14"
+    "node": ">=24"
   },
   "dependencies": {
+    "@babel/preset-env": "^7.29.2",
+    "@babel/preset-react": "^7.28.5",
     "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/react-hooks": "^7.0.0",
+    "@testing-library/react": "^16.3.2",
     "babel-jest": "^30.3.0",
-    "babel-preset-react-app": "^10.0.1",
     "esbuild": "^0.28.0",
-    "geolocation-utils": "^1.2.5",
+    "geolocation-utils": "^1.2.6",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
-    "react": "^17.0.2"
+    "react": "^19.2.5"
   },
   "scripts": {
     "generate-build": "node src/generate-build.js",
@@ -46,8 +46,9 @@
   },
   "babel": {
     "presets": [
+      "@babel/preset-env",
       [
-        "babel-preset-react-app",
+        "@babel/preset-react",
         {
           "runtime": "automatic"
         }
