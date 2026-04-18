@@ -1,5 +1,4 @@
-import { waitFor } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, waitFor, act } from '@testing-library/react';
 
 import { useFullscreen, useOnLine, useInstallPromptEvent } from './Window';
 
@@ -70,7 +69,7 @@ describe('Window', () => {
             const event = {
                 preventDefault: jest.fn(),
             };
-            await waitFor(() => handlePreventDefault(event));
+            act(() => handlePreventDefault(event));
             return event;
         };
         it('should not have event when no beforeinstallprompt event is fired', () => {

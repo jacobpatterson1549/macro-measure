@@ -1,5 +1,4 @@
-import { waitFor } from '@testing-library/react';
-import { renderHook } from '@testing-library/react-hooks'
+import { renderHook, act } from '@testing-library/react';
 
 import { createHandlers, useItem, useItems } from './Database';
 
@@ -98,8 +97,8 @@ describe('Database', () => {
                 const getViewType = testData.viewTypes[index];
                 const inParam = { name: 'name' };
                 const handlers = createHandlers(db, objectStoreName, setItemID, setView, getViewType);
-                handlers[handlerFuncName](inParam);
-                await waitFor(() => expect(setItemID).toHaveBeenCalledWith(expected));
+                await handlers[handlerFuncName](inParam);
+                act(() => expect(setItemID).toHaveBeenCalledWith(expected));
             });
         });
     });
@@ -115,7 +114,7 @@ describe('Database', () => {
                 readItem.mockReturnValue(expected);
                 const { result } = renderHook(() => useItem(db, objectStoreName, filter));
                 expect(result.current[0]).toBeFalsy();
-                await waitFor(() => expect(readItem).toHaveBeenCalledWith(db, objectStoreName, filter));
+                await act(async () => expect(readItem).toHaveBeenCalledWith(db, objectStoreName, filter));
                 const value = result.current[0];
                 expect(value).toBe(expected);
             });
@@ -127,7 +126,7 @@ describe('Database', () => {
                 const expected = 'value2'
                 readItems.mockReturnValue(expected);
                 const { result } = renderHook(() => useItems(db, objectStoreName, filter));
-                await waitFor(() => expect(readItems).toHaveBeenCalledWith(db, objectStoreName, filter));
+                await act(async () => expect(readItems).toHaveBeenCalledWith(db, objectStoreName, filter));
                 const value = result.current[0];
                 expect(value).toBe(expected);
             });
@@ -139,7 +138,7 @@ describe('Database', () => {
                 readItems.mockReturnValueOnce(initialItems).mockReturnValueOnce(expected);
                 const { result } = renderHook(() => useItems(db, objectStoreName, filter));
                 const reloadValue = result.current[1];
-                await waitFor(reloadValue);
+                await act(async () => reloadValue());
                 const value = result.current[0];
                 expect(value).toBe(expected);
             });

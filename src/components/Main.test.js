@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 
 import { Main } from './Main';
 
@@ -59,7 +59,7 @@ describe('Main', () => {
         render(<Main
           view={View.Group_List}
         />);
-        screen.getByRole('button', { name: /create group/i }).click();
+        act(() => screen.getByRole('button', { name: /create group/i }).click());
         expect(handlers.createStart).toHaveBeenCalled();
       });
       it('should create a group', () => {
@@ -69,7 +69,7 @@ describe('Main', () => {
           view={View.Group_Create}
         />);
         fireEvent.change(screen.getByRole('textbox'), { target: { value: name } });
-        screen.getByRole('button', { name: /create group/i }).click();
+        act(() => screen.getByRole('button', { name: /create group/i }).click());
         expect(handlers.createEnd).toHaveBeenCalledWith(expected);
       });
       it('should read a group', async () => {
@@ -81,14 +81,14 @@ describe('Main', () => {
         render(<Main
           view={View.Group_List}
         />);
-        screen.getByText('groupB').click();
+        act(() => screen.getByText('groupB').click());
         expect(handlers.read).toHaveBeenCalledWith(expected);
       });
       it.each([View.Group_Create, View.Group_Update, View.Group_Delete])('should read groups when %s is cancelled', (view) => {
         render(<Main
           view={view}
         />);
-        screen.getByText(/cancel/i).click();
+        act(() => screen.getByText(/cancel/i).click());
         expect(handlers.list).toHaveBeenCalled();
       });
       it('should start to update a group', () => {
@@ -100,7 +100,7 @@ describe('Main', () => {
         render(<Main
           view={View.Group_List}
         />);
-        screen.getAllByRole('button', { name: /update/i })[2].click();
+        act(() => screen.getAllByTitle(/update/i)[2].click());
         expect(handlers.updateStart).toHaveBeenCalledWith(expected);
       });
       it('should update a group', () => {
@@ -115,7 +115,7 @@ describe('Main', () => {
           groupID={expected.id}
         />);
         fireEvent.change(screen.getByRole('textbox'), { target: { value: name } });
-        screen.getByRole('button', { name: /update group/i }).click();
+        act(() => screen.getByRole('button', { name: /update group/i }).click());
         expect(handlers.updateEnd).toHaveBeenCalledWith(expected);
       });
       it('should start to delete a group', () => {
@@ -127,7 +127,7 @@ describe('Main', () => {
         render(<Main
           view={View.Group_List}
         />);
-        screen.getAllByRole('button', { name: /delete/i })[1].click();
+        act(() => screen.getAllByRole('button', { name: /delete/i })[1].click());
         expect(handlers.deleteStart).toHaveBeenCalledWith(expected);
       });
       it('should delete a group', () => {
@@ -140,7 +140,7 @@ describe('Main', () => {
           view={View.Group_Delete}
           groupID={expected}
         />);
-        screen.getByRole('button', { name: /delete group/i }).click();
+        act(() => screen.getByRole('button', { name: /delete group/i }).click());
         expect(handlers.deleteEnd).toHaveBeenCalledWith(expect.objectContaining({ id: 'b'}));
       });
       it('should move a group up', () => {
@@ -152,7 +152,7 @@ describe('Main', () => {
         render(<Main
           view={View.Group_List}
         />);
-        screen.getAllByRole('button', { name: /move up/i })[1].click(); // first group cannot be moved up
+        act(() => screen.getAllByTitle(/move up/i)[1].click()); // first group cannot be moved up
         expect(handlers.moveUp).toHaveBeenCalledWith(expected);
       });
       it('should move a group down', () => {
@@ -164,7 +164,7 @@ describe('Main', () => {
         render(<Main
           view={View.Group_List}
         />);
-        screen.getAllByRole('button', { name: /move down/i })[0].click();
+        act(() => screen.getAllByTitle(/move down/i)[0].click());
         expect(handlers.moveDown).toHaveBeenCalledWith(expected);
       });
     });
@@ -173,7 +173,7 @@ describe('Main', () => {
         render(<Main
           view={View.Waypoint_List}
         />);
-        screen.getByRole('button', { name: /create waypoint/i }).click();
+        act(() => screen.getByRole('button', { name: /create waypoint/i }).click());
         expect(handlers.createStart).toHaveBeenCalled();
       });
       it('should start to create a waypoint', () => {
@@ -181,7 +181,7 @@ describe('Main', () => {
           view={View.Waypoint_Read}
           setGPSOn={jest.fn()}
         />);
-        screen.getByRole('button', { name: /create waypoint/i }).click();
+        act(() => screen.getByTitle(/create waypoint/i).click());
         expect(handlers.createStart).toHaveBeenCalled();
       });
       it('should create a waypoint', () => {
@@ -205,7 +205,7 @@ describe('Main', () => {
           setGPSOn={jest.fn()}
         />);
         fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: name } });
-        screen.getByRole('button', { name: /create waypoint/i }).click();
+        act(() => screen.getByRole('button', { name: /create waypoint/i }).click());
         expect(handlers.createEnd).toHaveBeenCalledWith(expected);
       });
       it('should read a waypoint', () => {
@@ -218,7 +218,7 @@ describe('Main', () => {
           view={View.Waypoint_List}
           setGPSOn={jest.fn()}
         />);
-        screen.getByText('iB').click();
+        act(() => screen.getByText('iB').click());
         expect(handlers.read).toHaveBeenCalledWith(expected);
       });
       const itemArrowReadTests = [
@@ -237,7 +237,7 @@ describe('Main', () => {
           waypointID={'b'}
           setGPSOn={jest.fn()}
         />);
-        screen.getByRole('button', { name: buttonName }).click();
+        act(() => screen.getByTitle(buttonName).click());
         expect(handlers.read).toHaveBeenCalledWith(expected);
       });
       it('should read waypoints when create is cancelled', async () => {
@@ -245,7 +245,7 @@ describe('Main', () => {
           view={View.Waypoint_Create}
           setGPSOn={jest.fn()}
         />);
-        screen.getByText(/cancel/i).click();
+        act(() => screen.getByText(/cancel/i).click());
         expect(handlers.list).toHaveBeenCalledWith();
       });
       const itemCancelTests = [
@@ -263,7 +263,7 @@ describe('Main', () => {
           waypointID={expected.id}
           setGPSOn={jest.fn()}
         />);
-        screen.getByText(/cancel/i).click();
+        act(() => screen.getByText(/cancel/i).click());
         expect(handlers.read).toHaveBeenCalledWith(expected);
       });
       it('should start to update a waypoint from list', () => {
@@ -275,7 +275,7 @@ describe('Main', () => {
         render(<Main
           view={View.Waypoint_List}
         />);
-        screen.getAllByRole('button', { name: /update value/i })[2].click();
+        act(() => screen.getAllByTitle(/update value/i)[2].click());
         expect(handlers.updateStart).toHaveBeenCalledWith(expected);
       });
       it('should start to update a waypoint', () => {
@@ -289,7 +289,7 @@ describe('Main', () => {
           waypointID={expected.id}
           setGPSOn={jest.fn()}
         />);
-        screen.getByRole('button', { name: /update waypoint/i }).click();
+        act(() => screen.getByTitle(/update waypoint/i).click());
         expect(handlers.updateStart).toHaveBeenCalledWith(expected);
       });
       it('should update a waypoint', () => {
@@ -305,7 +305,7 @@ describe('Main', () => {
           setGPSOn={jest.fn()}
         />);
         fireEvent.change(screen.getAllByRole('textbox')[0], { target: { value: name } });
-        screen.getByRole('button', { name: /update waypoint/i }).click();
+        act(() => screen.getByRole('button', { name: /update waypoint/i }).click());
         waitFor(() => expect(handlers.updateEnd).toHaveBeenCalledWith(expected)); // TODO: move position, ensure the changed values are called here
       });
       it('should start to delete an waypoint from list', () => {
@@ -318,7 +318,7 @@ describe('Main', () => {
           view={View.Waypoint_List}
           setGPSOn={jest.fn()}
         />);
-        screen.getAllByRole('button', { name: /delete value/i })[1].click();
+        act(() => screen.getAllByTitle(/delete value/i)[2].click()); // skip header
         expect(handlers.deleteStart).toHaveBeenCalledWith(expected);
       });
       it('should start to delete a waypoint', () => {
@@ -332,7 +332,7 @@ describe('Main', () => {
           waypointID={expected.id}
           setGPSOn={jest.fn()}
         />);
-        screen.getByRole('button', { name: /delete waypoint/i }).click();
+        act(() => screen.getByTitle(/delete waypoint/i).click());
         expect(handlers.deleteStart).toHaveBeenCalledWith(expected);
       });
       it('should delete a waypoint', () => {
@@ -346,7 +346,7 @@ describe('Main', () => {
           waypointID={expected.id}
           setGPSOn={jest.fn()}
         />);
-        screen.getByRole('button', { name: /delete waypoint/i }).click();
+        act(() => screen.getByRole('button', { name: /delete waypoint/i }).click());
         expect(handlers.deleteEnd).toHaveBeenCalledWith(expected);
       });
       it('should move a waypoint up', () => {
@@ -358,7 +358,7 @@ describe('Main', () => {
         render(<Main
           view={View.Waypoint_List}
         />);
-        screen.getAllByRole('button', { name: /move up/i })[0].click(); // first item cannot be moved up
+        act(() => screen.getAllByTitle(/move up/)[0].click()); // first item cannot be moved up
         expect(handlers.moveUp).toHaveBeenCalledWith(expected);
       });
       it('should move a waypoint down', () => {
@@ -370,7 +370,7 @@ describe('Main', () => {
         render(<Main
           view={View.Waypoint_List}
         />);
-        screen.getAllByRole('button', { name: /move down/i })[1].click();
+        act(() => screen.getAllByTitle(/move down/i)[1].click());
         expect(handlers.moveDown).toHaveBeenCalledWith(expected);
       });
     });
@@ -381,7 +381,7 @@ describe('Main', () => {
         view={View.Settings}
       />);
       const element = screen.getByRole('checkbox', { name: /GPS/ });
-      element.click(); // will crash if state props are not correctly appended to inherited props
+      act(() => element.click()); // will crash if state props are not correctly appended to inherited props
       expect(element.checked).toBe(true);
     });
     it('should pass db to settings to export storage', async () => {

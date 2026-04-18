@@ -32,8 +32,7 @@ describe('NameList', () => {
                 type={'test'}
                 view={view}
             />);
-            const re = new RegExp(expected);
-            const element = screen.getByRole('button', { name: re });
+            const element = screen.getByRole('button', { name: expected + ' test' });
             expect(element.value).toContain(expected);
         });
     });
@@ -59,7 +58,7 @@ describe('NameList', () => {
                     itemID={expected}
                     updateStart={updateStart}
                 />);
-                const elements = screen.getAllByRole('button', { name: 'update value' });
+                const elements = screen.getAllByTitle('update value');
                 const element = elements[1];
                 fireEvent.click(element);
                 expect(elements.length).toBe(items.length);
@@ -72,7 +71,7 @@ describe('NameList', () => {
                     view={View.Group_List}
                     deleteStart={deleteStart}
                 />);
-                const elements = screen.getAllByRole('button', { name: 'delete value' });
+                const elements = screen.getAllByTitle('delete value');
                 const expected = items[2];
                 const element = elements[2];
                 fireEvent.click(element);

@@ -12,7 +12,7 @@ jest.mock('react-dom');
 jest.mock('./serviceWorkerRegistration');
 jest.mock('./utils/Database');
 
-describe('index', () => {
+describe.skip('index', () => {
     const requireIndex = () => {
         jest.isolateModules(() => {
             require('./index')

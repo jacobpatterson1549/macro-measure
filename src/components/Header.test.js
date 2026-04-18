@@ -53,7 +53,7 @@ describe('Header', () => {
                 view={view}
                 group={group}
                 />);
-            const groupElement = screen.getByRole('button', { name: 'groups list' });
+            const groupElement = screen.getByTitle('groups list');
             expect(groupElement).toHaveTextContent(expected);
         });
     })

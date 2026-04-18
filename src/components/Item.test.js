@@ -26,7 +26,7 @@ describe('Item', () => {
                 type={'item'}
                 setGPSOn={jest.fn()}
             />);
-            const element = screen.getByRole('button', { name: expected });
+            const element = screen.getByTitle(expected);
             expect(element).toBeInTheDocument();
         });
         const captionTests = [
