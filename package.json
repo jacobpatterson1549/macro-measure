@@ -1,28 +1,33 @@
 {
   "name": "macro-measure",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "license": "MIT",
   "engines": {
-    "node": ">=14"
+    "node": ">=24"
   },
+  "type": "commonjs",
   "dependencies": {
-    "@testing-library/jest-dom": "^5.12.0",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/react-hooks": "^7.0.0",
-    "@testing-library/user-event": "^12.8.3",
-    "geolocation-utils": "^1.2.5",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "^5.0.1"
+    "@babel/preset-env": "^7.29.2",
+    "@babel/preset-react": "^7.28.5",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "babel-jest": "^30.3.0",
+    "esbuild": "^0.28.0",
+    "geolocation-utils": "^1.2.6",
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "react": "^19.2.5"
   },
   "scripts": {
-    "generate-sw": "node scripts/generate-sw.js",
     "clean": "echo 'build coverage node_modules' | xargs rm -rf",
-    "start": "react-scripts start",
-    "build": "react-scripts build && npm run generate-sw",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "npm run _public-copy && npm run _esbuild && npm run _public-generate",
+    "_esbuild": "esbuild src/index.js --bundle --minify --loader:.js=jsx --format=esm --jsx=automatic --target=esnext --define:process.env.NODE_ENV='\"production\"' --define:process.env.PUBLIC_URL='\"\"' --outdir=build --entry-names=[name]-[hash]",
+    "_public-copy": "cp -R public build",
+    "_public-generate": "node src/generate-build.js",
+    "dev": "npm run build && esbuild --servedir=build --serve=localhost:3000",
+    "test": "jest",
+    "test-dev": "jest --watch"
   },
   "eslintConfig": {
     "extends": [
@@ -41,5 +46,29 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      [
+        "@babel/preset-react",
+        {
+          "runtime": "automatic"
+        }
+      ]
+    ]
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/src/setupTests.js"
+    ],
+    "testEnvironment": "jsdom",
+    "moduleNameMapper": {
+      "\\.css$": "<rootDir>/src/jestCssMock.js"
+    },
+    "transform": {
+      "\\.js$": "babel-jest"
+    },
+    "resetMocks": true
   }
 }

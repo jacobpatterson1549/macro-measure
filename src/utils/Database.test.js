@@ -118,7 +118,7 @@ describe('Database', () => {
                 event.oldVersion = oldVersion;
                 initDatabase();
                 openRequest.dispatchEvent(event);
-                expect(db.createObjectStore).toBeCalledTimes(expected);
+                expect(db.createObjectStore).toHaveBeenCalledTimes(expected);
             });
             const createObjectStoreCountTests = [
                 [2, []],
@@ -141,7 +141,7 @@ describe('Database', () => {
                 event.oldVersion = -1;
                 initDatabase();
                 openRequest.dispatchEvent(event);
-                expect(db.createObjectStore).toBeCalledTimes(expected);
+                expect(db.createObjectStore).toHaveBeenCalledTimes(expected);
             });
             const oldIndexesTests = [
                 [{}],
@@ -282,25 +282,25 @@ describe('Database', () => {
                 // actions
                 const initRequest = initDatabase();
                 openRequest.dispatchEvent(mockEvent('success', { result: db }));
-                await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readonly'));
+                await waitFor(() => expect(db.transaction).toHaveBeenCalledWith(['groups'], 'readonly'));
                 getAllGroupsRequest.dispatchEvent(mockEvent('success', { result: existingGroups }));
-                await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readonly'));
+                await waitFor(() => expect(db.transaction).toHaveBeenCalledWith(['groups'], 'readonly'));
                 groupsCountRequest.dispatchEvent(mockEvent('success', { result: 111 }));
-                await waitFor(() => expect(db.transaction).toBeCalledWith(['groups'], 'readwrite'));
+                await waitFor(() => expect(db.transaction).toHaveBeenCalledWith(['groups'], 'readwrite'));
                 groupsAddRequest1.dispatchEvent(mockEvent('success', { result: 1 }));
                 groupsAddRequest1b.dispatchEvent(mockEvent('success', { result: 11 }));
                 groupsAddRequest3_2.dispatchEvent(mockEvent('success', { result: 3 }));
                 groupsAddRequest2.dispatchEvent(mockEvent('success', { result: 2 }));
                 transactionGW.dispatchEvent(mockEvent('complete', {}));
                 await waitFor(() => {
-                    expect(db.transaction).toBeCalledWith(['waypoints'], 'readonly'); // i1, i2
-                    expect(db.transaction).toBeCalledWith(['waypoints'], 'readonly'); // i7
+                    expect(db.transaction).toHaveBeenCalledWith(['waypoints'], 'readonly'); // i1, i2
+                    expect(db.transaction).toHaveBeenCalledWith(['waypoints'], 'readonly'); // i7
                 });
                 waypointsCountRequest.dispatchEvent(mockEvent('success', { result: 0 })); // i1, i2, i2_2, i2_3
                 waypointsCountRequest.dispatchEvent(mockEvent('success', { result: 0 })); // i7
                 await waitFor(() => {
-                    expect(db.transaction).toBeCalledWith(['waypoints'], 'readwrite'); // i1, i2, i2_2, i2_3
-                    expect(db.transaction).toBeCalledWith(['waypoints'], 'readwrite'); // i7
+                    expect(db.transaction).toHaveBeenCalledWith(['waypoints'], 'readwrite'); // i1, i2, i2_2, i2_3
+                    expect(db.transaction).toHaveBeenCalledWith(['waypoints'], 'readwrite'); // i7
                 });
                 waypointsAddRequest1.dispatchEvent(mockEvent('success', { result: 'i1' }));
                 waypointsAddRequest2.dispatchEvent(mockEvent('success', { result: 'i2' }));
@@ -311,9 +311,9 @@ describe('Database', () => {
                 transactionWW2.dispatchEvent(mockEvent('complete', {}));
                 await initRequest;
                 // checks
-                expect(groupsOrderIndex.getAll).toBeCalledWith(groupsReadAllRange);
-                expect(groupsObjectStore.index).toBeCalledWith('order');
-                expect(groupsOrderIndex.count).toBeCalledWith(groupsCountRange);
+                expect(groupsOrderIndex.getAll).toHaveBeenCalledWith(groupsReadAllRange);
+                expect(groupsObjectStore.index).toHaveBeenCalledWith('order');
+                expect(groupsOrderIndex.count).toHaveBeenCalledWith(groupsCountRange);
                 expect(groupsObjectStore.add.mock.calls).toEqual([
                     [{ name: 'group 1', order: 111 }],
                     [{ name: 'group 1b', order: 112 }],
@@ -340,7 +340,7 @@ describe('Database', () => {
                 const db = { transaction: jest.fn() };
                 openRequest.dispatchEvent(mockEvent('success', { result: db }));
                 expect(initRequest).resolves.toBeTruthy();
-                expect(db.transaction).toBeCalledTimes(0);
+                expect(db.transaction).toHaveBeenCalledTimes(0);
             });
             it('should remove localStorage for groups and waypoints after the backfill', async () => {
                 const openRequest = new MockIDBOpenDBRequest();
@@ -456,8 +456,8 @@ describe('Database', () => {
             addRequest.dispatchEvent(mockEvent('success', { result: expectedItemID }));
             transactionW.dispatchEvent(mockEvent('complete', {}));
             const actualItemID = await request;
-            expect(objectStoreR.index).toBeCalledWith('order');
-            expect(orderIndex.count).toBeCalledWith(expectedRange);
+            expect(objectStoreR.index).toHaveBeenCalledWith('order');
+            expect(orderIndex.count).toHaveBeenCalledWith(expectedRange);
             expect(objectStoreW.add.mock.calls).toEqual([[expectedItem]]);
             expect(actualItemID).toEqual(expectedItemID);
         });
@@ -471,7 +471,7 @@ describe('Database', () => {
             getRequest.dispatchEvent(mockEvent('success', { result: expected }));
             transaction.dispatchEvent(mockEvent('complete', {}));
             expect(db.transaction.mock.calls).toEqual([[['os1'], 'readonly']]);
-            expect(objectStore.get).toBeCalledWith('key1');
+            expect(objectStore.get).toHaveBeenCalledWith('key1');
             expect(request).resolves.toEqual(expected);
         });
         const readItemTests = [
@@ -494,8 +494,8 @@ describe('Database', () => {
             getAllRequest.dispatchEvent(mockEvent('success', { result: expectedItems }));
             expect(db.transaction.mock.calls).toEqual([[['os1'], 'readonly']]);
             const actual = await request;
-            expect(objectStore.index).toBeCalledWith('order');
-            expect(orderIndex.getAll).toBeCalledWith(expectedRange);
+            expect(objectStore.index).toHaveBeenCalledWith('order');
+            expect(orderIndex.getAll).toHaveBeenCalledWith(expectedRange);
             expect(actual).toEqual(expectedItems);
         });
         it('should updateItem', async () => {
@@ -509,7 +509,7 @@ describe('Database', () => {
             transaction.dispatchEvent(mockEvent('complete', {}));
             await request;
             expect(db.transaction.mock.calls).toEqual([[['os1'], 'readwrite']]);
-            expect(objectStore.put).toBeCalledWith(expected);
+            expect(objectStore.put).toHaveBeenCalledWith(expected);
         });
         it('should deleteItem', async () => {
             const itemID = 'test id';
@@ -520,7 +520,7 @@ describe('Database', () => {
             const request = deleteItem(db, 'child_object_store', itemID);
             await waitFor(() => expect(db.transaction.mock.calls).toEqual([[['child_object_store'], 'readwrite']]));
             transaction.dispatchEvent(mockEvent('complete', {}));
-            expect(objectStore.delete).toBeCalledWith(itemID);
+            expect(objectStore.delete).toHaveBeenCalledWith(itemID);
             expect(request).resolves.toBeTruthy();
         });
         it('should deleteItem for group and cascade delete waypoints', async () => {
@@ -541,8 +541,8 @@ describe('Database', () => {
                 [['waypoints'], 'readonly'],
                 [['groups', 'waypoints'], 'readwrite'],
             ]));
-            expect(parentItemIDIndex.getAllKeys).toBeCalledWith(range)
-            expect(objectStoreGW.delete).toBeCalledWith(groupID);
+            expect(parentItemIDIndex.getAllKeys).toHaveBeenCalledWith(range)
+            expect(objectStoreGW.delete).toHaveBeenCalledWith(groupID);
             expect(objectStoreWW.delete.mock.calls).toEqual([[7], [8], [14]]);
             expect(request).resolves.toBeTruthy();
         });
@@ -583,8 +583,8 @@ describe('Database', () => {
                 ]));
                 transactionW.dispatchEvent(mockEvent('complete', {}));
                 await request;
-                expect(objectStoreR.index).toBeCalledWith('order');
-                expect(orderIndex.get).toBeCalledWith(expectedRange);
+                expect(objectStoreR.index).toHaveBeenCalledWith('order');
+                expect(orderIndex.get).toHaveBeenCalledWith(expectedRange);
                 expect(objectStoreW.put.mock.calls).toEqual(expectedPuts);
             });
         });

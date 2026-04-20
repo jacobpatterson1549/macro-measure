@@ -21,14 +21,14 @@ describe('Global', () => {
         delete window.document.body;
         window.document.body.requestFullscreen =  jest.fn();
         requestFullscreen();
-        expect(window.document.body.requestFullscreen).toBeCalled();
+        expect(window.document.body.requestFullscreen).toHaveBeenCalled();
         window.document.body.requestFullscreen = oldRequestFullscreen;
     });
     it('should exit fullscreen', () => {
         const oldExitFullscreen = window.document.exitFullscreen;
         window.document.exitFullscreen = jest.fn();
         exitFullscreen();
-        expect(window.document.exitFullscreen).toBeCalled();
+        expect(window.document.exitFullscreen).toHaveBeenCalled();
         window.document.exitFullscreen = oldExitFullscreen;
     });
     it('should return indexedDB', () => {
@@ -61,7 +61,7 @@ describe('Global', () => {
         delete window.history.go;
         window.history.go = jest.fn();
         reloadWindow();
-        expect(window.history.go).toBeCalledTimes(1);
+        expect(window.history.go).toHaveBeenCalledTimes(1);
         window.history.go = oldGo;
     });
     it('should return geolocation', () => {
@@ -86,7 +86,7 @@ describe('Global', () => {
         window.URL.createObjectURL = jest.fn();
         const expected = 'test 6';
         createURL(expected);
-        expect(window.URL.createObjectURL).toBeCalledWith(expected);
+        expect(window.URL.createObjectURL).toHaveBeenCalledWith(expected);
         window.URL.createObjectURL = oldCreateObjectURL;
     });
     it('should revoke a URL for an object', () => {
@@ -94,7 +94,7 @@ describe('Global', () => {
         window.URL.revokeObjectURL = jest.fn();
         const expected = 'test 7';
         revokeURL(expected);
-        expect(window.URL.revokeObjectURL).toBeCalledWith(expected);
+        expect(window.URL.revokeObjectURL).toHaveBeenCalledWith(expected);
         window.URL.revokeObjectURL = oldRevokeObjectURL;
     });
     describe('getCurrentDate', () => {

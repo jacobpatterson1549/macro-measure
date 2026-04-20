@@ -20,14 +20,14 @@ describe('TextInput', () => {
         render(<TextInput onChange={onChange} />);
         const element = screen.getByRole('textbox');
         fireEvent.change(element, { target: { value: expected } });
-        expect(onChange).toBeCalledWith(expected);
+        expect(onChange).toHaveBeenCalledWith(expected);
     });
     it('should select when focused', () => {
         const selectFn = jest.fn();
         render(<TextInput />);
         const element = screen.getByRole('textbox');
         fireEvent.focus(element, { target: { select: selectFn } });
-        expect(selectFn).toBeCalled();
+        expect(selectFn).toHaveBeenCalled();
     });
     it('should be required', () => {
         render(<TextInput />);
@@ -74,21 +74,21 @@ describe('NumberInput', () => {
         render(<NumberInput onChange={onChange} />);
         const element = screen.getByRole('spinbutton');
         fireEvent.change(element, { target: { value: expected } });
-        expect(onChange).toBeCalledWith(expected);
+        expect(onChange).toHaveBeenCalledWith(expected);
     });
     it('should NOT call onChange when changed to invalid number', () => {
         const onChange = jest.fn();
         render(<NumberInput onChange={onChange} />);
         const element = screen.getByRole('spinbutton');
         fireEvent.change(element, { target: { value: 'INVALID NUMBER' } });
-        expect(onChange).not.toBeCalled();
+        expect(onChange).not.toHaveBeenCalled();
     });
     it('should select when focused', () => {
         const selectFn = jest.fn();
         render(<NumberInput />);
         const element = screen.getByRole('spinbutton');
         fireEvent.focus(element, { target: { select: selectFn } });
-        expect(selectFn).toBeCalled();
+        expect(selectFn).toHaveBeenCalled();
     });
     it('should be required', () => {
         render(<NumberInput />);
@@ -124,14 +124,14 @@ describe('NameInput', () => {
         render(<NameInput value={value} values={values} onChange={onChange} />);
         const element = screen.getByRole('textbox');
         fireEvent.change(element, { target: { value: expected } });
-        expect(onChange).toBeCalledWith(expected)
+        expect(onChange).toHaveBeenCalledWith(expected)
     });
     it('should select when focused', () => {
         const selectFn = jest.fn();
         render(<NameInput />);
         const element = screen.getByRole('textbox');
         fireEvent.focus(element, { target: { select: selectFn } });
-        expect(selectFn).toBeCalled();
+        expect(selectFn).toHaveBeenCalled();
     });
     const uniqueNameTests = [
         [true, [{ name: 'a', id: 0 }, { name: 'c', id: 1 }], -1, 'b', ''],
@@ -174,7 +174,7 @@ describe('ButtonInput', () => {
         render(<ButtonInput onClick={onClick} />);
         const element = screen.getByRole('button');
         fireEvent.click(element);
-        expect(onClick).toBeCalled();
+        expect(onClick).toHaveBeenCalled();
     });
     it('should preventDefault when clicked', () => {
         const onClick = jest.fn();
@@ -207,7 +207,7 @@ describe('CheckboxInput', () => {
         render(<CheckboxInput checked={checked} onChange={onChange} />);
         const element = screen.getByRole('checkbox');
         fireEvent.click(element)
-        expect(onChange).toBeCalledWith(expected);
+        expect(onChange).toHaveBeenCalledWith(expected);
     });
 });
 
@@ -229,7 +229,7 @@ describe('FileInput', () => {
         render(<FileInput onChange={onChange} />);
         const element = screen.getByRole('button');
         fireEvent.change(element, { target: { files: [expected] } });
-        expect(onChange).toBeCalledWith(expected);
+        expect(onChange).toHaveBeenCalledWith(expected);
     });
 });
 
@@ -260,7 +260,7 @@ describe('SelectInput', () => {
         render(<SelectInput value={value} values={['test5a', 'test5b', 'test5c']} onChange={onChange} />);
         const element = screen.getByRole('combobox');
         fireEvent.change(element, { target: { value: expected } });
-        expect(onChange).toBeCalledWith(expected);
+        expect(onChange).toHaveBeenCalledWith(expected);
     });
 })
 
@@ -336,7 +336,7 @@ describe('Form', () => {
         render(<Form onSubmit={onSubmit} />);
         const element = screen.getByRole('button');
         fireEvent.submit(element);
-        expect(onSubmit).toBeCalled();
+        expect(onSubmit).toHaveBeenCalled();
     });
     it('should preventDefault when submitted', () => {
         const onSubmit = jest.fn();
@@ -401,7 +401,7 @@ describe('Form', () => {
         render(<Form onCancel={onCancel} />);
         const element = screen.getByRole('button', { name: 'Cancel' });
         fireEvent.click(element)
-        expect(onCancel).toBeCalled();
+        expect(onCancel).toHaveBeenCalled();
     });
     it('should NOT disable cancel button when submit button is', () => {
         const onCancel = jest.fn();
@@ -415,13 +415,13 @@ describe('handlePreventDefault', () => {
     it('should call preventDefault', () => {
         const event = { preventDefault: jest.fn() }
         handlePreventDefault()(event);
-        expect(event.preventDefault).toBeCalled();
+        expect(event.preventDefault).toHaveBeenCalled();
         // should not crash if callback not provided
     });
     it('should call fn with event', () => {
         const callback = jest.fn();
         const event = { preventDefault: jest.fn() }
         handlePreventDefault(callback)(event);
-        expect(callback).toBeCalledWith(event);
+        expect(callback).toHaveBeenCalledWith(event);
     })
 });

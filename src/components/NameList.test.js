@@ -32,8 +32,7 @@ describe('NameList', () => {
                 type={'test'}
                 view={view}
             />);
-            const re = new RegExp(expected);
-            const element = screen.getByRole('button', { name: re });
+            const element = screen.getByRole('button', { name: expected + ' test' });
             expect(element.value).toContain(expected);
         });
     });
@@ -48,7 +47,7 @@ describe('NameList', () => {
                 />);
                 const element = screen.getByRole('button', { name: /test/ });
                 fireEvent.click(element);
-                expect(createStart).toBeCalled();
+                expect(createStart).toHaveBeenCalled();
             });
             it('should start updating when the edit button is clicked', () => {
                 const updateStart = jest.fn();
@@ -59,11 +58,11 @@ describe('NameList', () => {
                     itemID={expected}
                     updateStart={updateStart}
                 />);
-                const elements = screen.getAllByRole('button', { name: 'update value' });
+                const elements = screen.getAllByTitle('update value');
                 const element = elements[1];
                 fireEvent.click(element);
                 expect(elements.length).toBe(items.length);
-                expect(updateStart).toBeCalledWith(expected);
+                expect(updateStart).toHaveBeenCalledWith(expected);
             });
             it('should start deleting when the delete button is clicked', () => {
                 const deleteStart = jest.fn();
@@ -72,12 +71,12 @@ describe('NameList', () => {
                     view={View.Group_List}
                     deleteStart={deleteStart}
                 />);
-                const elements = screen.getAllByRole('button', { name: 'delete value' });
+                const elements = screen.getAllByTitle('delete value');
                 const expected = items[2];
                 const element = elements[2];
                 fireEvent.click(element);
                 expect(elements.length).toBe(items.length);
-                expect(deleteStart).toBeCalledWith(expected);
+                expect(deleteStart).toHaveBeenCalledWith(expected);
             });
         });
         describe('finish', () => {
@@ -93,8 +92,8 @@ describe('NameList', () => {
                 />);
                 const element = screen.getByRole('button', { name: 'Create test' });
                 fireEvent.submit(element);
-                expect(createEnd).toBeCalledWith(expected);
-                waitFor(() => expect(reloadItems).toBeCalled());
+                expect(createEnd).toHaveBeenCalledWith(expected);
+                waitFor(() => expect(reloadItems).toHaveBeenCalled());
             });
             it('should finish updating when the form is submitted', () => {
                 const name = 'update_name_6';
@@ -109,8 +108,8 @@ describe('NameList', () => {
                 />);
                 const element = screen.getByRole('button', { name: 'Update test' });
                 fireEvent.submit(element);
-                expect(updateEnd).toBeCalledWith(expected);
-                waitFor(() => expect(reloadItems).toBeCalled());
+                expect(updateEnd).toHaveBeenCalledWith(expected);
+                waitFor(() => expect(reloadItems).toHaveBeenCalled());
             });
             it('should finish deleting when the form is submitted', () => {
                 const deleteEnd = jest.fn().mockResolvedValue();
@@ -123,8 +122,8 @@ describe('NameList', () => {
                 />);
                 const element = screen.getByRole('button', { name: 'Delete test' });
                 fireEvent.submit(element);
-                expect(deleteEnd).toBeCalledWith(expect.objectContaining({ id: expected }));
-                waitFor(() => expect(reloadItems).toBeCalled());
+                expect(deleteEnd).toHaveBeenCalledWith(expect.objectContaining({ id: expected }));
+                waitFor(() => expect(reloadItems).toHaveBeenCalled());
             });
         });
     });

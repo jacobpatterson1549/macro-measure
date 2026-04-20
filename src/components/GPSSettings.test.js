@@ -16,7 +16,7 @@ describe('GPSSettings', () => {
             render(<GPSSettings distanceUnit={distanceUnit} setDistanceUnit={setDistanceUnitFn} />);
             const selectElement = screen.getByLabelText(/distance unit/i);
             fireEvent.change(selectElement);
-            expect(setDistanceUnitFn).toBeCalledWith(distanceUnit);
+            expect(setDistanceUnitFn).toHaveBeenCalledWith(distanceUnit);
         });
     });
     describe('gps', () => {
@@ -31,7 +31,7 @@ describe('GPSSettings', () => {
             render(<GPSSettings highAccuracyGPS={expected} setHighAccuracyGPS={setHighAccuracyGPSFn} />);
             const checkboxElement = screen.getByLabelText(/GPS/i);
             fireEvent.click(checkboxElement);
-            expect(setHighAccuracyGPSFn).toBeCalledWith(!expected);
+            expect(setHighAccuracyGPSFn).toHaveBeenCalledWith(!expected);
         });
     });
 });

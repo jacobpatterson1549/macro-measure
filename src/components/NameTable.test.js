@@ -57,8 +57,8 @@ describe('NameTable', () => {
             const expected = items[itemsIndex];
             element.click();
             expect(elements.length).toBe(expectedElementsLength);
-            expect(handler).toBeCalledWith(expected);
-            await waitFor((expect(reloadItems).toBeCalled));
+            expect(handler).toHaveBeenCalledWith(expected);
+            await waitFor((expect(reloadItems).toHaveBeenCalled));
         });
     });
 });

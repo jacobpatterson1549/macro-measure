@@ -21,12 +21,12 @@ describe('register', () => {
         navigator.serviceWorker = { register: jest.fn() };
         process.env.NODE_ENV = 'development';
         registerSW();
-        expect(navigator.serviceWorker.register).not.toBeCalled();
+        expect(navigator.serviceWorker.register).not.toHaveBeenCalled();
     });
     it('should register service worker', () => {
         navigator.serviceWorker = { register: jest.fn() };
         process.env.NODE_ENV = 'production';
         registerSW();
-        expect(navigator.serviceWorker.register).toBeCalled();
+        expect(navigator.serviceWorker.register).toHaveBeenCalled();
     });
 });
